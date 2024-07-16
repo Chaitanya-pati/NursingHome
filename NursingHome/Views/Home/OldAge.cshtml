@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Modal Form</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+
+</head>
+<body>
+
+    <!-- Button to trigger modal -->
+    <div class="col-md-2">
+    <div class="container">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            Open Modal
+        </button>
+    </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body registrationFormContent">
+                    <form>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="row mt-2">
+                                            <div class="col-3">
+                                                <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                            </div>
+                                            <div class="col-6 contentCenter">
+                                                <label style="font-family:fantasy;font-size:50px;color:red">VEDHANTH</label>
+
+                                            </div>
+                                            <div class="col-3 contentEnd">
+                                                <img src="~/images/stethoscope.png" style="height:100%;width:90px" />
+                                            </div>
+                                            <div class="col-3"></div>
+                                            <div class="col-6 contentCenter" style="margin-top:-20px">
+                                                <label style="font-family:math;font-size:19px;color:red">Home Nursing Helpline</label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td colspan="2">
+                                        <div class="row mt-2">
+                                            <label for="" class="col-6 contentCenter" style="color:red;font-size:large;">Registration From:</label>
+                                            <div class="row col-6 ">
+
+                                                <span class="col-4">No :</span>
+                                                <input class="col-4" type="number" min="0" />
+                                            </div>
+                                            <div class="col-6"></div>
+                                            <div class="row col-6 mt-2 contentEnd">
+                                                <span class="col-4">Date :</span>
+                                                <input class="col-8" type="date" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="patientName">Patient Name:</label></td>
+                                    <td><input type="text" class="form-control" id="patientName"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="address">Address:</label></td>
+                                    <td><input type="text" class="form-control" id="address"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="patientAge">Patient Age:</label></td>
+                                    <td><input type="text" class="form-control" id="patientAge"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="patientCondition">Patient Condition:</label></td>
+                                    <td><input type="text" class="form-control" id="patientCondition"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="customerName">Customer Name:</label></td>
+                                    <td><input type="text" class="form-control" id="customerName"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="mobileNo">Mobile No:</label></td>
+                                    <td><input type="text" class="form-control" id="mobileNo"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="typesOfService">Types of Service:</label></td>
+                                    <td><input type="text" class="form-control" id="typesOfService"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="registrationCharges">Registration Charges:</label></td>
+                                    <td><input type="text" class="form-control" id="registrationCharges"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
+                                    <td><input type="text" class="form-control" id="monthlyPayment"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="periodFrom">Period From:</label></td>
+                                    <td><input type="text" class="form-control" id="periodFrom"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="periodTo">To:</label></td>
+                                    <td><input type="text" class="form-control" id="periodTo"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+<script>
+    document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+        const element = document.querySelector('.registrationFormContent');
+
+        // Temporarily set the element's overflow to visible
+        const originalOverflow = element.style.overflow;
+        element.style.overflow = 'visible';
+
+        // Use html2canvas to capture the entire element
+        html2canvas(element, {
+            scale: 6, // Increase scale for better quality
+            useCORS: true,
+            scrollY: -window.scrollY,
+            scrollX: -window.scrollX
+        }).then(canvas => {
+            // Restore the original overflow
+            element.style.overflow = originalOverflow;
+
+            const pdf = new jsPDF('p', 'pt', 'a4'); // 'p' for portrait
+
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 595.28; // A4 width in points
+            const pageHeight = pdf.internal.pageSize.height;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            // Add image and check for additional pages
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                if (heightLeft >= 0) {
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                }
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save('form.pdf'); // Save the PDF
+        });
+    });
+
+
+
+</script>

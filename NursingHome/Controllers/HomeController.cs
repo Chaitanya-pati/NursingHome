@@ -16,6 +16,10 @@ namespace NursingHome.Controllers
         public IActionResult Index()
         {
             return View();
+        } 
+        public IActionResult OldAge()
+        {
+            return View();
         }
 
         public IActionResult Privacy()

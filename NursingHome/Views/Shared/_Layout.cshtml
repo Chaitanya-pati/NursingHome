@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/NursingHome.styles.css" asp-append-version="true" />
-    <link href="https://unpkg.com/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
-
+    <link href="~/style/boxicons.min.css" rel="stylesheet" />
+    <link href="~/style/common.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <style>
-    ol, ul {
-        padding-left: 0.3rem !important;
-    }
+
     .sidebar {
         position: fixed;
         left: 0;
@@ -303,36 +302,25 @@
 
     <div class="sidebar">
         <div class="logo-details">
-            <i class='bx bxl-codepen icon'></i>
+            <i class="fa-solid fa-notes-medical icon"></i>
             <div class="logo_name">SideMenu</div>
-            <i class='bx bx-menu' id="btn"></i>
+            <i class="fa-solid fa-bars" id="btn"> </i>
         </div>
         <ul class="nav-list">
+           
             <li>
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search...">
-                <span class="tooltip">Search</span>
-            </li>
-            <li>
-                <a class="" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class='bx bx-grid-alt'></i>
+                <a class="" asp-area="" asp-controller="Home" asp-action="OldAge">
+                    <i class="fa-solid fa-house"></i>
                     <span class="links_name">Dashboard</span>
                 </a>
                 <span class="tooltip">Dashboard</span>
             </li>
             <li>
                 <a href="#">
-                    <i class='bx bx-user'></i>
+                    <i class="fa-solid fa-users"></i>
                     <span class="links_name">User</span>
                 </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-chat'></i>
-                    <span class="links_name">Messages</span>
-                </a>
-                <span class="tooltip">Messages</span>
+                <span class="tooltip">Users</span>
             </li>
             <li>
                 <a href="#">
@@ -380,11 +368,9 @@
             </li>
         </ul>
     </div>
-    <section class="home-section">
-        <div class="text">Dashboard</div>
-    </section>
+ 
 
-    <div class="container">
+    <div class="container" style="margin-left:78px">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -403,17 +389,13 @@
 <script>
     let sidebar = document.querySelector(".sidebar");
     let closeBtn = document.querySelector("#btn");
-    let searchBtn = document.querySelector(".bx-search");
+
 
     closeBtn.addEventListener("click", () => {
         sidebar.classList.toggle("open");
         menuBtnChange();
     });
 
-    searchBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-        menuBtnChange();
-    });
 
     function menuBtnChange() {
         if (sidebar.classList.contains("open")) {

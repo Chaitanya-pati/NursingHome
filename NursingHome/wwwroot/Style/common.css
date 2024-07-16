@@ -1,0 +1,21 @@
+﻿.table > :not(caption) > * > * {
+    padding: .1rem .3rem !important;
+}
+ol, ul {
+    padding-left: 0.3rem !important;
+}
+.table{
+    border:1px solid black !important;
+}
+    .table th, .table td {
+        border: 1px solid black !important;
+    }
+
+    .contentEnd{
+        display:flex;
+        justify-content:end;
+    }
+    .contentCenter{
+        display:flex;
+        justify-content:center;
+    }
