@@ -24,7 +24,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
+                    @*<h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>*@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -53,10 +53,10 @@
                                         </div>
                                         <div id="customAddress">
                                             <div class="contentCenter">
-                                            <span id="customAdreesLine1"  style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                             </div>
                                             <div class="contentCenter">
-                                            <span id="customAdreesLine2"  style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                                <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
                                             </div>
                                         </div>
                                     </td>
@@ -65,11 +65,11 @@
 
                                     <td colspan="2">
                                         <div class="row mt-2">
-                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:medium;font-weight:500">OLD AGE ADMISSION FORM:</label>
+                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Registration Form:</label>
                                             <div class="row col-5 ">
 
                                                 <span class="col-5">No :</span>
-                                                <input class="col-7 mt-1" type="number" style="height:25px" min="0" />
+                                                <input class="col-7" type="number" style="height:25px" min="0" />
                                             </div>
                                             <div class="col-7"></div>
                                             <div class="row col-5 mt-2 contentEnd">
@@ -80,97 +80,82 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><label for="patientName">Patient Name:</label></td>
-                                    <td><input type="text" class="form-control" id="patientName"></td>
+                                    <td><label for="candidateName">Name in full:</label></td>
+                                    <td><input type="text" class="form-control" id="candidateName"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="address">Address:</label></td>
-                                    <td><input type="text" class="form-control" id="address"></td>
+                                    <td><label for="parentName">Father's / Husband's Name:</label></td>
+                                    <td><input type="text" class="form-control" id="parentName"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="patientAge">Patient Age:</label></td>
-                                    <td><input type="text" class="form-control" id="patientAge"></td>
+                                    <td><label for="candidateDOB">Date of Birth:</label></td>
+                                    <td><input type="date" class="form-control" id="candidateDOB"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="patientCondition">Patient Condition:</label></td>
-                                    <td><input type="text" class="form-control" id="patientCondition"></td>
+                                    <td><label for="maritalStatus">Marital Status:</label></td>
+                                    <td><input type="text" class="form-control" id="maritalStatus"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="customerName">Customer Name:</label></td>
-                                    <td><input type="text" class="form-control" id="customerName"></td>
+                                    <td><label for="permanentAddress">Permanent address & Contact No.:</label></td>
+                                    <td><input type="text" class="form-control" id="permanentAddress"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="mobileNo">Mobile No:</label></td>
-                                    <td><input type="text" class="form-control" id="mobileNo"></td>
+                                    <td><label for="presentAddress">Present address & Contact No.:</label></td>
+                                    <td><input type="text" class="form-control" id="presentAddress"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="typesOfService">Types of Service:</label></td>
-                                    <td><input type="text" class="form-control" id="typesOfService"></td>
+                                    <td><label for="education">Educational Qualification:</label></td>
+                                    <td><input type="text" class="form-control" id="education"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="registrationCharges">Registration Charges:</label></td>
-                                    <td><input type="text" class="form-control" id="registrationCharges"></td>
+                                    <td><label for="languages">Languages Known:</label></td>
+                                    <td><input type="text" class="form-control" id="languages"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
-                                    <td><input type="text" class="form-control" id="monthlyPayment"></td>
+                                    <td><label for="experience">Experience (Give Full details):</label></td>
+                                    <td><input type="text" class="form-control" id="experience"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="periodFrom">Period From:</label></td>
-                                    <td><input type="text" class="form-control" id="periodFrom"></td>
+                                    <td><label for="idProof">Personal ID Proof:</label></td>
+                                    <td><input type="file" class="form-control" id="idProof"></td>
                                 </tr>
-                                <tr>
-                                    <td><label for="periodTo">To:</label></td>
-                                    <td><input type="text" class="form-control" id="periodTo"></td>
+                                <tr class="confidential">
+                                    <td><label for="salary">Salary expected:</label></td>
+                                    <td><input type="text" class="form-control" id="salary"></td>
+                                </tr>
+                                <tr class="">
+                                    <td><label for="referenceDetail">Reference (Give Name, Address & Contact No.):</label></td>
+                                    <td><input type="text" class="form-control" id="referenceDetail"></td>
+                                </tr>
+                                <tr class="">
+                                    <td><label for="famMembers">Family Particulars:</label></td>
+                                    <td><input type="text" class="form-control" id="famMembers"></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
                                         <div>
-                                            <b>Terms and Conditions for Client:</b>
+                                            <b class="contentCenter">Rules for patient:</b>
+                                            <b class="">There are few set of things that need to be followed before you take the nursing services.</b>
                                             <div style="display: flex; flex-direction: column;">
                                                 <div style="display: flex; margin-top: 10px;">
                                                     <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                    <div style="flex: 1; text-align: left;">We give with patients attender and nursing staff with emergency doctor visit.</div>
+                                                    <div style="flex: 1; text-align: left;">Create a personal contact list.</div>
                                                 </div>
 
                                                 <div style="display: flex; margin-top: 10px;">
                                                     <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                    <div style="flex: 1; text-align: left;">Three times food and tea, coffee (daily changes of food).</div>
+                                                    <div style="flex: 1; text-align: left;">Keep the prescription and other reports ready.</div>
                                                 </div>
 
                                                 <div style="display: flex; margin-top: 10px;">
                                                     <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                    <div style="flex: 1; text-align: left;">We don't allow outside food and we don't provide any event foods for patients.</div>
+                                                    <div style="flex: 1; text-align: left;">Contact list of your doctor.</div>
                                                 </div>
 
                                                 <div style="display: flex; margin-top: 10px;">
                                                     <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                    <div style="flex: 1; text-align: left;">We don't gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).</div>
+                                                    <div style="flex: 1; text-align: left;">Make a list of task expected from the nurse.</div>
                                                 </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                    <div style="flex: 1; text-align: left;">If the patient's discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
-                                                    <div style="flex: 1; text-align: left;">In case patient death non refund advance amount.</div>
-                                                </div>
-                                            </div>
-
-                                            <b> Declaration</b></br>
-                                            <div style="display: flex; margin-top: 5px;margin-bottom:20px">
-                                                <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
-                                                <div style="flex: 1; text-align: left;">
-                                                    I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                
-                                            <span class="col-4">Signature of the Client</span>
-                                            <span class="col-4"></span>
-                                            <span class="col-4 contentEnd">Authorised Signatory</span>
                                             </div>
                                         </div>
                                     </td>

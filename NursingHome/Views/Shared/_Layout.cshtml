@@ -278,28 +278,6 @@
 
 </style>
 <body>
-    @*  <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-    <div class="container-fluid">
-    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NursingHome</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-    aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-    <ul class="navbar-nav flex-grow-1">
-    <li class="nav-item">
-    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-    </li>
-    <li class="nav-item">
-    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </li>
-    </ul>
-    </div>
-    </div>
-    </nav>
-    </header>*@
-
     <div class="sidebar">
         <div class="logo-details">
             <i class="fa-solid fa-notes-medical icon"></i>
@@ -309,11 +287,37 @@
         <ul class="nav-list">
            
             <li>
-                <a class="" asp-area="" asp-controller="Home" asp-action="OldAge">
+               <a href="#">
                     <i class="fa-solid fa-house"></i>
-                    <span class="links_name">Dashboard</span>
+                    <span class="links_name">Home</span>
                 </a>
-                <span class="tooltip">Dashboard</span>
+                <span class="tooltip">Home</span>
+            </li>
+          
+            <li>
+                <a class="" asp-area="" asp-controller="Home" asp-action="OldAge">
+                    <i class="fa-solid fa-person-walking-with-cane"></i>
+                    <span class="links_name">Old Age</span>
+                </a>
+            </li>
+          
+            <li>
+                <a class="" asp-area="" asp-controller="Home" asp-action="HomeNursing">
+                    <i class="fa-solid fa-hand-holding-medical"></i>
+                    <span class="links_name">Home Nursing</span>
+                </a>
+            </li>
+            <li>
+                <a class="" asp-area="" asp-controller="Home" asp-action="Helpers">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span class="links_name">Helpers</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-money-check-dollar"></i>
+                    <span class="links_name">Cash Memo</span>
+                </a>
             </li>
             <li>
                 <a href="#">
@@ -322,49 +326,16 @@
                 </a>
                 <span class="tooltip">Users</span>
             </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-pie-chart-alt-2'></i>
-                    <span class="links_name">Analytics</span>
-                </a>
-                <span class="tooltip">Analytics</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-folder'></i>
-                    <span class="links_name">File Manager</span>
-                </a>
-                <span class="tooltip">Files</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-cart-alt'></i>
-                    <span class="links_name">Order</span>
-                </a>
-                <span class="tooltip">Order</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-heart'></i>
-                    <span class="links_name">Saved</span>
-                </a>
-                <span class="tooltip">Saved</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Setting</span>
-                </a>
-                <span class="tooltip">Setting</span>
-            </li>
+           
+            
             <li class="profile">
                 <div class="profile-details">
-                    <i class='bx bx-export'></i>
+                    <i class="fa-solid fa-right-from-bracket"></i>
                     <div class="name_job">
                         <div class="name">Logout</div>
                     </div>
                 </div>
-                <i class='bx bx-log-out' id="log_out"></i>
+                <i class="fa-solid fa-right-from-bracket" id="log_out"></i>
             </li>
         </ul>
     </div>

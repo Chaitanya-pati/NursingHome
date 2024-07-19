@@ -21,6 +21,14 @@ namespace NursingHome.Controllers
         {
             return View();
         }
+        public IActionResult HomeNursing()
+        {
+            return View();
+        }
+        public IActionResult Helpers()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {
