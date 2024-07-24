@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bootstrap Modal Form</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+    
 </head>
-<body>
+
 
     <!-- Button to trigger modal -->
     <div class="col-md-2">
@@ -44,8 +42,12 @@
 
                                             </div>
                                             <div class="col-3 contentEnd">
-                                                <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+                                                <label for="upload-btn">
+                                                    <img id="preview-image" style="height:80px;width:80px; cursor: pointer;border:1px solid;" onclick="chooseOption()" />
+                                                </label>
+                                                <input type="file" id="upload-btn" accept="image/*" style="display: none;" onchange="previewImage(event)">
                                             </div>
+
                                             <div class="col-2"></div>
                                             <div class="col-8 contentCenter" style="margin-top:-20px">
                                                 <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
@@ -65,7 +67,7 @@
 
                                     <td colspan="2">
                                         <div class="row mt-2">
-                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Registration Form:</label>
+                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Application Form:</label>
                                             <div class="row col-5 ">
 
                                                 <span class="col-5">No :</span>
@@ -173,11 +175,8 @@
         </div>
     </div>
 
-    <!-- jQuery and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-</body>
+
 <script>
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
         const element = document.querySelector('.registrationFormContent');
@@ -195,5 +194,80 @@
         // Generate PDF
         html2pdf().from(element).set(options).save();
     });
+    function chooseOption() {
+        $.alert({
+           // title: '',
+            content: 'Do you want to Upload an Image or Capture the face',
+            typeAnimated: true,
+            backgroundDismiss: false,
+            backgroundDismissAnimation: 'glow',
+            boxWidth: '30%',
+            useBootstrap: false,
+            buttons: {
+                Yes: {
+                    text: 'Upload from Device',
+                    btnClass: 'btn btn-info',
+                    action: function () {
+                        document.getElementById('upload-btn').click();
+                        
+                    },
+                },
+                No: {
+                    text: 'Capture Image',
+                    btnClass: 'btn btn-warning',
+                    action: function () {
+                        captureImage();
+                    },
+                },
+            },
+        });
+    }
 
+    function captureImage() {
+        var constraints = {
+            video: true
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function (stream) {
+                var video = document.createElement('video');
+                video.autoplay = true;
+                video.srcObject = stream;
+
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+
+                video.onloadedmetadata = function () {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    var imageDataURL = canvas.toDataURL('image/png');
+
+                    var output = document.getElementById('preview-image');
+                    output.src = imageDataURL;
+
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                };
+            })
+            .catch(function (error) {
+                console.log('Error accessing camera: ', error);
+            });
+    }
+
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+
+        if (input.files && input.files[0]) {
+            reader.onload = function (e) {
+                var output = document.getElementById('preview-image');
+                output.src = e.target.result;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            alert("Failed to load file");
+        }
+    }
 </script>
+

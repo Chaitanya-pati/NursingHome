@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NursingHome.Db.Models;
 
 namespace NursingHome.Db.Interface
 {
-    internal class IService
+    public interface IService
     {
     }
 }

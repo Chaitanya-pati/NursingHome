@@ -1,0 +1,40 @@
+﻿
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Date Range Picker Columns -->
+                        <div class="col-md-3 row">
+                            <label for="dateRangePicker">Date Range:</label>
+                            <input type="text" id="dateRangePicker" class="form-control" />
+                        </div>
+                        <!-- Multi-select Dropdown Columns -->
+                        <div class="col-md-3 row">
+                            <label for="multiSelect">Options:</label>
+                            <select id="multiSelect" multiple="multiple"></select>
+                        </div>
+                        <!-- Button Column -->
+                        <div class="col-md-3">
+                            <button id="btnSubmit" class="btn btn-primary mt-4">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#dateRangePicker').daterangepicker();
+    });
+
+    // Initialize Multi-select Dropdown
+    $(function () {
+        $('#multiSelect').multiselect({
+            includeSelectAllOption: true // Optional: Include a "Select All" option
+        });
+    });
+</script>
