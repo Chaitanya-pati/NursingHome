@@ -39,7 +39,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Attendan__3214EC071718A8AF");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Date).HasColumnType("date");
 
             entity.HasOne(d => d.fkHelper).WithMany(p => p.Attendance)
@@ -55,7 +54,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__City__3214EC0770B7DB06");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.MobileNumbers).HasMaxLength(100);
             entity.Property(e => e.Name)
@@ -67,7 +65,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Country__3214EC070530B627");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -77,7 +74,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Helpers__3214EC077D723D46");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.DateOfBirth).HasColumnType("date");
             entity.Property(e => e.LanguagesKnown).HasMaxLength(100);
             entity.Property(e => e.MaritalStatus).HasMaxLength(20);
@@ -90,7 +86,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__HomeNurs__3214EC0723E6127E");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.AdmissionDate).HasColumnType("date");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.CustomerName).HasMaxLength(100);
@@ -114,7 +109,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__HomeNurs__3214EC0771EF2C0D");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Date).HasColumnType("date");
 
@@ -127,7 +121,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__OldAge__3214EC07242C81C6");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.AdmissionDate).HasColumnType("date");
             entity.Property(e => e.Condition).HasMaxLength(100);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -148,7 +141,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__OldAgePa__3214EC07CAC0EEE6");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Date).HasColumnType("date");
 
@@ -161,7 +153,6 @@ public partial class TaskContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__State__3214EC0713183885");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -173,7 +164,6 @@ public partial class TaskContext : DbContext
 
             entity.HasIndex(e => e.UserName, "UQ__Users__C9F284564C103849").IsUnique();
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.FirstName).HasMaxLength(100);
             entity.Property(e => e.HighestQualification).HasMaxLength(100);
             entity.Property(e => e.LastName).HasMaxLength(100);

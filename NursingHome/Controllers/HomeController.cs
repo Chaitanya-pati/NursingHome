@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
+using NursingHome.Db.Implementation;
+using NursingHome.Db.Interface;
 
 namespace NursingHome.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IService _DbConn;
+        public HomeController(ILogger<HomeController> logger,IService Db)
         {
             _logger = logger;
+            _DbConn = Db;
         }
 
         public IActionResult Index()
@@ -19,6 +22,7 @@ namespace NursingHome.Controllers
         } 
         public IActionResult OldAge()
         {
+            _DbConn.AddData();
             return View();
         }
         public IActionResult HomeNursing()
@@ -29,7 +33,7 @@ namespace NursingHome.Controllers
         {
             return View();
         }
-
+        
         public IActionResult Privacy()
         {
             return View();

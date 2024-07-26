@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[State] (
+    [Id]   INT            IDENTITY (1, 1) NOT NULL,
+    [Name] NVARCHAR (100) NOT NULL,
+    CONSTRAINT [PK__State__3214EC0713183885] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

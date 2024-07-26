@@ -20,5 +20,13 @@ namespace NursingHome.Db.Implementation
             _dbConn= new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
 
+        public void AddData()
+        {
+            using var Db = new TaskContext(_dbConn);
+            State temp = new State();
+            temp.Name = "Goa";
+            Db.Add(temp);
+            Db.SaveChanges();
+        }
     }
 }

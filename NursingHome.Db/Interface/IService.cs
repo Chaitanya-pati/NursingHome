@@ -9,5 +9,6 @@ namespace NursingHome.Db.Interface
 {
     public interface IService
     {
+        void AddData();
     }
 }
