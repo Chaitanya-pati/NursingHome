@@ -9,6 +9,10 @@ builder.Services.AddTransient<IService,Service>(provider =>
 {
     return new Service(builder.Configuration.GetConnectionString("NursingHome"));
 });
+builder.Services.AddTransient<IConfig,Config>(provider =>
+{
+    return new Config(builder.Configuration.GetConnectionString("NursingHome"));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

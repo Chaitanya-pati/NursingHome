@@ -6,11 +6,11 @@ using NursingHome.Db.Interface;
 
 namespace NursingHome.Controllers
 {
-    public class HomeController : Controller
+    public class ConfigurationController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<ConfigurationController> _logger;
         private readonly IService _DbConn;
-        public HomeController(ILogger<HomeController> logger,IService Db)
+        public ConfigurationController(ILogger<ConfigurationController> logger,IService Db)
         {
             _logger = logger;
             _DbConn = Db;
@@ -20,12 +20,20 @@ namespace NursingHome.Controllers
         {
             return View();
         } 
-
-        public IActionResult Privacy()
+        public IActionResult OldAge()
+        {
+            _DbConn.AddData();
+            return View();
+        }
+        public IActionResult HomeNursing()
         {
             return View();
         }
-
+        public IActionResult Helpers()
+        {
+            return View();
+        }
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
