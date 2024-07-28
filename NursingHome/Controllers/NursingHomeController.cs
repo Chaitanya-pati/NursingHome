@@ -6,23 +6,29 @@ using NursingHome.Db.Interface;
 
 namespace NursingHome.Controllers
 {
-    public class ConfigurationController : Controller
+    public class NursingHomeController : Controller
     {
-        private readonly ILogger<ConfigurationController> _logger;
+        private readonly ILogger<NursingHomeController> _logger;
         private readonly IService _DbConn;
-        public ConfigurationController(ILogger<ConfigurationController> logger,IService Db)
+        public NursingHomeController(ILogger<NursingHomeController> logger,IService Db)
         {
             _logger = logger;
             _DbConn = Db;
         }
 
-        public IActionResult Configuration()
+        public IActionResult Index()
         {
             return View();
-        } 
-       
-       
-       
+        }
+        public IActionResult NursingHome()
+        {
+            return View();
+        }
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

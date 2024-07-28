@@ -13,6 +13,23 @@ builder.Services.AddTransient<IConfig,Config>(provider =>
 {
     return new Config(builder.Configuration.GetConnectionString("NursingHome"));
 });
+builder.Services.AddTransient<IOldAge,OldAge>(provider =>
+{
+    return new OldAge(builder.Configuration.GetConnectionString("NursingHome"));
+});
+builder.Services.AddTransient<INursingHome,HomeNursing>(provider =>
+{
+    return new HomeNursing(builder.Configuration.GetConnectionString("NursingHome"));
+});
+builder.Services.AddTransient<IHelpers,Helpers>(provider =>
+{
+    return new Helpers(builder.Configuration.GetConnectionString("NursingHome"));
+});
+builder.Services.AddTransient<ICashMemo,CashMemo>(provider =>
+{
+    return new CashMemo(builder.Configuration.GetConnectionString("NursingHome"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
