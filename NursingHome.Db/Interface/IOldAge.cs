@@ -9,6 +9,6 @@ namespace NursingHome.Db.Interface
 {
     public interface IOldAge
     {
-        void AddData();
+        bool AddData(OldAge oldAge);
     }
 }

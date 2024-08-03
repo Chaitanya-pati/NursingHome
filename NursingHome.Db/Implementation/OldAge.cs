@@ -8,25 +8,69 @@ using NursingHome.Db.Interface;
 using NursingHome.Db.Models;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using System.Diagnostics.SymbolStore;
 
 namespace NursingHome.Db.Implementation
 {
-    public class OldAge:IOldAge
+    public class OldAge : IOldAge
     {
         private readonly DbContextOptions<TaskContext> _dbConn;
 
         public OldAge(string DbConn)
         {
-            _dbConn= new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
+            _dbConn = new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
 
-        public void AddData()
+        public bool AddData(Models.OldAge oldAge)
+        {
+            try
+            {
+                using var Db = new TaskContext(_dbConn);
+                oldAge.SUser = "Admin";
+                oldAge.CreatedDate = DateTime.Now;
+                oldAge.UpdatedDate = DateTime.Now;
+
+                Db.Add(oldAge);
+                Db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateData(Models.OldAge oldAge)
         {
             using var Db = new TaskContext(_dbConn);
-            State temp = new State();
-            temp.Name = "Goa";
-            Db.Add(temp);
-            Db.SaveChanges();
+            var GetData = Db.OldAge.Where(x => x.Id == oldAge.Id).FirstOrDefault();
+            if (GetData != null)
+            {
+                GetData.PatientName = oldAge.PatientName;
+                GetData.UpdatedDate = DateTime.Now;
+                GetData.AdmissionDate = oldAge.AdmissionDate;
+                GetData.Age = oldAge.Age;
+                GetData.CustomerName = oldAge.CustomerName;
+                GetData.Address = oldAge.Address;
+                GetData.Condition = oldAge.Condition;
+                GetData.IdProof = oldAge.IdProof;
+                GetData.MonthlyPayment = oldAge.MonthlyPayment;
+                GetData.RegistrationCharges = oldAge.RegistrationCharges;
+                GetData.PeriodFrom = oldAge.PeriodFrom;
+                GetData.PeriodTo = oldAge.PeriodTo;
+                GetData.PaymentStatus = oldAge.PaymentStatus;
+                GetData.SUser = oldAge.SUser;
+                GetData.TypesofServices = oldAge.TypesofServices;
+                GetData.MobileNo = oldAge.MobileNo;
+                return true;
+            }
+            else { return false; }
+        }
+
+        public bool DeleteData(int id)
+        {
+
+            return true;
         }
     }
 }

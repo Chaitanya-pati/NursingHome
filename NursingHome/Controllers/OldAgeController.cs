@@ -3,14 +3,14 @@ using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
 using NursingHome.Db.Interface;
-
+using NursingHome.Db.Models;
 namespace NursingHome.Controllers
 {
     public class OldAgeController : Controller
     {
         private readonly ILogger<OldAgeController> _logger;
-        private readonly IService _DbConn;
-        public OldAgeController(ILogger<OldAgeController> logger,IService Db)
+        private readonly IOldAge _DbConn;
+        public OldAgeController(ILogger<OldAgeController> logger,IOldAge Db)
         {
             _logger = logger;
             _DbConn = Db;
@@ -29,7 +29,11 @@ namespace NursingHome.Controllers
         {
             return View();
         }
-
+        public IActionResult AddOldAge(Db.Models.OldAge oldAge)
+        {
+            var IsAdded = _DbConn.AddData(oldAge);
+            return Json(IsAdded);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
