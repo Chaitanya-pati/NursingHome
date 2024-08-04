@@ -1,28 +1,21 @@
 ﻿<!DOCTYPE html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Modal Form</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-</head>
 <body>
-    @*@Html.Partial("~/Partialviews/_SearchBar.cshtml")*@
+    <div class="col-md-12">
+        @Html.Partial("~/Partialviews/_SearchBar.cshtml")
+    </div>
+
     <!-- Button to trigger modal -->
-    <div class="col-md-2">
-        <div class="container">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    <div class="col-md-12">
+        <div class="container-fluid mt-2 mb-2 contentEnd">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#oldAgePopup">
                 Open Modal
             </button>
         </div>
     </div>
 
-   
+
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -33,6 +26,7 @@
                 </div>
                 <div class="modal-body registrationFormContent">
                     <form>
+                        <input type="hidden" id="oldAgePatientId"></input>
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
@@ -55,10 +49,10 @@
                                         </div>
                                         <div id="customAddress">
                                             <div class="contentCenter">
-                                            <span id="customAdreesLine1"  style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                             </div>
                                             <div class="contentCenter">
-                                            <span id="customAdreesLine2"  style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                                <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
                                             </div>
                                         </div>
                                     </td>
@@ -173,10 +167,10 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                
-                                            <span class="col-4">Signature of the Client</span>
-                                            <span class="col-4"></span>
-                                            <span class="col-4 contentEnd">Authorised Signatory</span>
+
+                                                <span class="col-4">Signature of the Client</span>
+                                                <span class="col-4"></span>
+                                                <span class="col-4 contentEnd">Authorised Signatory</span>
                                             </div>
                                         </div>
                                     </td>
@@ -193,11 +187,39 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    <div class="col-md-12 container-fluid">
+        <table id="tblOldAge" class="display table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Admission Date</th>
+                    <th>Payment Status</th>
+                    <th>Period From</th>
+                    <th>Period To</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </body>
+</html>
 <script>
+    var table = $('#tblOldAge').DataTable();
+    $(document).ready(function () {
+        GetData();
+        $('#tblOldAge').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindData(fullData);
+        });
+        $('#tblOldAge').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            confirmDelete(ID);
+        });
+       
+    })
+
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
         const element = document.querySelector('.registrationFormContent');
         element.style.transform = 'scale(0.8)';
@@ -215,10 +237,10 @@
         html2pdf().from(element).set(options).save();
     });
     var OldAgeIdProof;
-    $('#idProof').on('change',function (event){
-        ConvertToBase64(event.target).then(base64=>{
+    $('#idProof').on('change', function (event) {
+        ConvertToBase64(event.target).then(base64 => {
             OldAgeIdProof = base64;
-            });
+        });
     });
 
     function ConvertToBase64(input) {
@@ -226,10 +248,7 @@
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    //$("#profileImage").attr('src', e.target.result);
-                    //$("#profileImageLabel")[0].innerText = $('#txtFirstName').val() + ".jpg";
-
-                    var base64String = input.files[0].type + "~"+  e.target.result.replace(/^data:.+\/(.+);base64,/, "");
+                    var base64String = input.files[0].type + "~" + e.target.result.replace(/^data:.+\/(.+);base64,/, "");
 
                     resolve(base64String);
                 }
@@ -246,23 +265,24 @@
     document.getElementById('downloadIdProof').addEventListener('click', function () {
         if (OldAgeIdProof) {
             const mimeType = OldAgeIdProof.split("~")[0];
-            const fileName = 'downloadedFile.pdf'; 
+            const fileName = $('#patientName').val() + "_IdProof.";
 
-            downloadFile(OldAgeIdProof.split("~")[1], mimeType);
+            downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
         } else {
             alert('No file available to download');
         }
     });
-    function downloadFile(base64String, fileType) {
+    function downloadFile(base64String, fileType, fileName) {
         const link = document.createElement('a');
         link.href = `data:${fileType};base64,${base64String}`;
-        link.download = "test." + fileType.split("/")[1];
-        document.body.appendChild(link); 
+        link.download = fileName + fileType.split("/")[1];
+        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link); 
+        document.body.removeChild(link);
     }
-    function AddOldAge(){
+    function AddOldAge() {
         var data = {};
+        data.Id = $('#oldAgePatientId').val();
         data.PatientName = $('#patientName').val();
         data.Address = $('#address').val();
         data.Age = $('#patientAge').val();
@@ -279,7 +299,7 @@
         data.RegistrationCharges = $('#registrationCharges').val();
         $.ajax({
             type: "POST",
-            url: '@Url.Action("AddOldAge", "OldAge")',
+            url: '@Url.Action("AddorEditOldAge", "OldAge")',
             data: data,
             success: function (response) {
 
@@ -290,5 +310,93 @@
             }
         });
     }
-    
+
+    function GetData() {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetData", "OldAge")',
+            // data: data,
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    table.row.add([
+                        item.patientName,
+                        item.admissionDate.split("T")[0],
+                        item.paymentStatus,
+                        item.periodFrom.split("T")[0],
+                        item.periodTo.split("T")[0],
+                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+                    ]).draw();
+                });
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+
+    function BindData(data) {
+        $('#oldAgePatientId').val(data.id);
+        $('#patientName').val(data.patientName);
+        $('#address').val(data.address);
+        $('#patientAge').val(data.age);
+        $('#patientCondition').val(data.condition);
+        $('#customerName').val(data.customerName);
+        $('#mobileNo').val(data.mobileNo);
+        $('#typesOfService').val(data.typesofServices);
+        OldAgeIdProof = data.idProof;
+        //  data.PaymentStatus = "Pending";
+        $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
+        $('#periodTo').val(formatDate(new Date(data.periodTo)));
+        $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
+        $('#monthlyPayment').val(data.monthlyPayment);
+        $('#registrationCharges').val(data.registrationCharges);
+        $('#oldAgePopup').modal('toggle');
+    }
+
+    function confirmDelete(id){
+        $.alert({
+            title:'Alert',
+            content: 'Are you sure want to delete ?',
+            typeAnimated: true,
+            backgroundDismiss: false,
+            backgroundDismissAnimation: 'glow',
+            boxWidth: '30%',
+            useBootstrap: false,
+            buttons: {
+                Yes: {
+                    text: 'Yes',
+                    btnClass: 'btn btn-success',
+                    action: function () {
+                       deleteData(id);
+                    },
+                },
+                No: {
+                    text: 'No',
+                    btnClass: 'btn btn-warning',
+                    action: function () {
+                      return;
+                    },
+                },
+            },
+        });
+    }
+    function deleteData(id){
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteData", "OldAge")',
+            data: {id:id},
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
 </script>

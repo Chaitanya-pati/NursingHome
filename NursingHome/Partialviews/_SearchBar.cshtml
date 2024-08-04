@@ -1,24 +1,40 @@
 ﻿
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row p-2" style="display:flex;justify-content:space-evenly">
                         <!-- Date Range Picker Columns -->
-                        <div class="col-md-3 row">
-                            <label for="dateRangePicker">Date Range:</label>
-                            <input type="text" id="dateRangePicker" class="form-control" />
+                        <div class="col-3 row">
+                            <div class="col-4">
+                                <label class="mt-1">Start Date:</label>
+                            </div>
+                            <div class="col-8">
+                                <input type="datetime-local" id="startDate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-3 row">
+                            <div class="col-4">
+                                <label class="mt-1">End Date:</label>
+                            </div>
+                            <div class="col-8">
+                                <input type="datetime-local" id="endDate" class="form-control" />
+                            </div>
                         </div>
                         <!-- Multi-select Dropdown Columns -->
-                        <div class="col-md-3 row">
-                            <label for="multiSelect">Options:</label>
-                            <select id="multiSelect" multiple="multiple"></select>
+                        <div class="col-4 row">
+                            <div class="col-4">
+                                <label for="multiSelect" class="mt-1">Select User:</label>
+                            </div>
+                            <div class="col-8">
+                                <select id="multiSelect" multiple="multiple"></select>
+                            </div>
                         </div>
                         <!-- Button Column -->
-                        <div class="col-md-3">
-                            <button id="btnSubmit" class="btn btn-primary mt-4">Submit</button>
+                        <div class="col-2">
+                            <button id="btnSubmit" class="btn btn-info">Submit</button>
                         </div>
                     </div>
                 </div>
@@ -27,9 +43,7 @@
     </div>
 </div>
 <script>
-    $(function () {
-        $('#dateRangePicker').daterangepicker();
-    });
+
 
     // Initialize Multi-select Dropdown
     $(function () {

@@ -29,11 +29,30 @@ namespace NursingHome.Controllers
         {
             return View();
         }
-        public IActionResult AddOldAge(Db.Models.OldAge oldAge)
+        public IActionResult AddorEditOldAge(Db.Models.OldAge oldAge)
         {
-            var IsAdded = _DbConn.AddData(oldAge);
-            return Json(IsAdded);
+            if (oldAge.Id == null) {
+                var IsAdded = _DbConn.AddData(oldAge);
+                return Json(IsAdded);
+            }
+            else
+            {
+                var Isupdated = _DbConn.UpdateData(oldAge);
+                return Json(Isupdated);
+            }
         }
+
+        public IActionResult GetData()
+        {
+            var result = _DbConn.GetData(DateTime.Now.AddDays(-40), DateTime.Now);  
+            return Json(new { data = result });
+        }
+        public IActionResult DeleteData(int id)
+        {
+            var isDelete = _DbConn.DeleteData(id);
+            return Json(isDelete);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

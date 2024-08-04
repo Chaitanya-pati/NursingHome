@@ -9,6 +9,9 @@ using NursingHome.Db.Models;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System.Diagnostics.SymbolStore;
+using Microsoft.Data.SqlClient;
+using System.Data;
+
 
 namespace NursingHome.Db.Implementation
 {
@@ -39,6 +42,19 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
+        public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate)
+        {
+            using var Db = new TaskContext(_dbConn);
+
+            var query = @"
+        SELECT *
+        FROM OldAge
+        WHERE AdmissionDate BETWEEN @startDate AND @endDate";
+            List<Models.OldAge> result = new List<Models.OldAge>();
+            result = Db.OldAge.FromSqlRaw(query, new SqlParameter("@startDate", startDate), new SqlParameter("@endDate", endDate)).ToList();
+
+            return result;
+        }
 
         public bool UpdateData(Models.OldAge oldAge)
         {
@@ -62,6 +78,7 @@ namespace NursingHome.Db.Implementation
                 GetData.SUser = oldAge.SUser;
                 GetData.TypesofServices = oldAge.TypesofServices;
                 GetData.MobileNo = oldAge.MobileNo;
+                Db.SaveChanges();
                 return true;
             }
             else { return false; }
@@ -69,8 +86,18 @@ namespace NursingHome.Db.Implementation
 
         public bool DeleteData(int id)
         {
-
-            return true;
+            using var Db = new TaskContext(_dbConn);
+            var data = Db.OldAge.Where(x => x.Id == id).FirstOrDefault();
+            if (data != null)
+            {
+                Db.Remove(data);
+                Db.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
