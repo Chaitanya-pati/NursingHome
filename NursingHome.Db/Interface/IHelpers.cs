@@ -9,6 +9,10 @@ namespace NursingHome.Db.Interface
 {
     public interface IHelpers
     {
-        void AddData();
+        bool AddData(Helpers helpers);
+
+        bool UpdateData(Models.Helpers helperData);
+        List<Models.Helpers> GetData();
+        bool DeleteData(int id);
     }
 }

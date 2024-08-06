@@ -18,3 +18,22 @@ function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+function ConvertToBase64(input) {
+    return new Promise((resolve, reject) => {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var base64String = input.files[0].type + "~" + e.target.result.replace(/^data:.+\/(.+);base64,/, "");
+
+                resolve(base64String);
+            }
+            reader.onerror = function (error) {
+                reject(error);
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            reject("No file selected");
+        }
+    });
+}

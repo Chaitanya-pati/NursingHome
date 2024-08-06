@@ -4,183 +4,198 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Page</title>
- 
+
 </head>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Include jQuery Confirm library -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/css/jquery-confirm.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/js/jquery-confirm.min.js"></script>
-
-    <!-- Button to trigger modal -->
-    <div class="col-md-2">
-        <div class="container">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                Open Modal
-            </button>
-        </div>
+<div class="col-md-2">
+    <div class="container">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#helperModal" onclick="ClearInputFields();">
+            Open Modal
+        </button>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body registrationFormContent">
-                    <form>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <div class="col-3">
-                                                <img src="~/images/plus icon.png" style="height:70px;width:90px" />
-                                            </div>
-                                            <div class="col-6 contentCenter">
-                                                <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="helperModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body registrationFormContent">
+                <form>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <div class="col-3">
+                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                        </div>
+                                        <div class="col-6 contentCenter">
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
 
-                                            </div>
-                                            <div class="col-3 contentEnd">
-                                                <label for="upload-btn">
-                                                    <img id="preview-image" style="height:80px;width:80px; cursor: pointer;border:1px solid;" onclick="chooseOption()" />
-                                                </label>
-                                                <input type="file" id="upload-btn" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                                        </div>
+                                        <div class="col-3 contentEnd">
+                                            <label for="candidateImg">
+                                                <img id="preview-image" style="height:80px;width:80px; cursor: pointer;border:1px solid;" onclick="chooseOption()" />
+                                            </label>
+                                            <input type="file" id="candidateImg" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                                        </div>
+
+                                        <div class="col-2"></div>
+                                        <div class="col-8 contentCenter" style="margin-top:-20px">
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                                        </div>
+                                    </div>
+                                    <div id="customAddress">
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                        </div>
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Application Form:</label>
+                                        <div class="row col-5 ">
+
+                                            <span class="col-5">No :</span>
+                                            <input class="col-7" type="number" style="height:25px" min="0" />
+                                        </div>
+                                        <div class="col-7"></div>
+                                        <div class="row col-5 mt-2 contentEnd">
+                                            <span class="col-5">Date :</span>
+                                            <input class="col-7" type="date" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <input type="hidden" id="helperId" />
+                                <td><label for="candidateName">Name in full:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="candidateName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="parentName">Father's / Husband's Name:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="parentName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="candidateDOB">Date of Birth:</label></td>
+                                <td><input type="date" class="form-control inputFields" id="candidateDOB"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="maritalStatus">Marital Status:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="maritalStatus"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="permanentAddress">Permanent address & Contact No.:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="permanentAddress"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="presentAddress">Present address & Contact No.:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="presentAddress"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="education">Educational Qualification:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="education"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="languages">Languages Known:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="languages"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="experience">Experience (Give Full details):</label></td>
+                                <td><input type="text" class="form-control inputFields" id="experience"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="idProof">Personal ID Proof:</label></td>
+                                <td><input type="file" class="form-control inputFields" id="idProof"></td>
+                            </tr>
+                            <tr class="confidential">
+                                <td><label for="salary">Salary expected:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="salary"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="referenceDetail">Reference (Give Name, Address & Contact No.):</label></td>
+                                <td><input type="text" class="form-control inputFields" id="referenceDetail"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="famMembers">Family Particulars:</label></td>
+                                <td><input type="text" class="form-control inputFields" id="famMembers"></td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <div>
+                                        <b class="contentCenter">Rules for patient:</b>
+                                        <b class="">There are few set of things that need to be followed before you take the nursing services.</b>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
+                                                <div style="flex: 1; text-align: left;">Create a personal contact list.</div>
                                             </div>
 
-                                            <div class="col-2"></div>
-                                            <div class="col-8 contentCenter" style="margin-top:-20px">
-                                                <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
+                                                <div style="flex: 1; text-align: left;">Keep the prescription and other reports ready.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="flex: 1; text-align: left;">Contact list of your doctor.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="flex: 1; text-align: left;">Make a list of task expected from the nurse.</div>
                                             </div>
                                         </div>
-                                        <div id="customAddress">
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
-                                            </div>
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Application Form:</label>
-                                            <div class="row col-5 ">
-
-                                                <span class="col-5">No :</span>
-                                                <input class="col-7" type="number" style="height:25px" min="0" />
-                                            </div>
-                                            <div class="col-7"></div>
-                                            <div class="row col-5 mt-2 contentEnd">
-                                                <span class="col-5">Date :</span>
-                                                <input class="col-7" type="date" />
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="candidateName">Name in full:</label></td>
-                                    <td><input type="text" class="form-control" id="candidateName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="parentName">Father's / Husband's Name:</label></td>
-                                    <td><input type="text" class="form-control" id="parentName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="candidateDOB">Date of Birth:</label></td>
-                                    <td><input type="date" class="form-control" id="candidateDOB"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="maritalStatus">Marital Status:</label></td>
-                                    <td><input type="text" class="form-control" id="maritalStatus"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="permanentAddress">Permanent address & Contact No.:</label></td>
-                                    <td><input type="text" class="form-control" id="permanentAddress"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="presentAddress">Present address & Contact No.:</label></td>
-                                    <td><input type="text" class="form-control" id="presentAddress"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="education">Educational Qualification:</label></td>
-                                    <td><input type="text" class="form-control" id="education"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="languages">Languages Known:</label></td>
-                                    <td><input type="text" class="form-control" id="languages"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="experience">Experience (Give Full details):</label></td>
-                                    <td><input type="text" class="form-control" id="experience"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="idProof">Personal ID Proof:</label></td>
-                                    <td><input type="file" class="form-control" id="idProof"></td>
-                                </tr>
-                                <tr class="confidential">
-                                    <td><label for="salary">Salary expected:</label></td>
-                                    <td><input type="text" class="form-control" id="salary"></td>
-                                </tr>
-                                <tr class="">
-                                    <td><label for="referenceDetail">Reference (Give Name, Address & Contact No.):</label></td>
-                                    <td><input type="text" class="form-control" id="referenceDetail"></td>
-                                </tr>
-                                <tr class="">
-                                    <td><label for="famMembers">Family Particulars:</label></td>
-                                    <td><input type="text" class="form-control" id="famMembers"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <div>
-                                            <b class="contentCenter">Rules for patient:</b>
-                                            <b class="">There are few set of things that need to be followed before you take the nursing services.</b>
-                                            <div style="display: flex; flex-direction: column;">
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                    <div style="flex: 1; text-align: left;">Create a personal contact list.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                    <div style="flex: 1; text-align: left;">Keep the prescription and other reports ready.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                    <div style="flex: 1; text-align: left;">Contact list of your doctor.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                    <div style="flex: 1; text-align: left;">Make a list of task expected from the nurse.</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="AddHelper()">Save changes</button>
+                <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
             </div>
         </div>
     </div>
+</div>
 
-
+<div class="col-md-12 container-fluid">
+    <table id="tblHelpers" class="display table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Candidate Name</th>
+                <th>Permanent Address</th>
+                <th>LanguagesKnown</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 
 <script>
+    var candidateImage = "";
+    var helperIdProof = "";
+    var table = $('#tblHelpers').DataTable();
+    $(document).ready(function (){
+        GetData();
+    });
+
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
         const element = document.querySelector('.registrationFormContent');
         element.style.transform = 'scale(0.8)';
@@ -194,7 +209,6 @@
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        // Generate PDF
         html2pdf().from(element).set(options).save();
     });
     function chooseOption() {
@@ -210,8 +224,8 @@
                     text: 'Upload from Device',
                     btnClass: 'btn btn-info',
                     action: function () {
-                        document.getElementById('upload-btn').click();
-                        
+                        document.getElementById('candidateImg').click();
+
                     },
                 },
                 No: {
@@ -256,6 +270,27 @@
             });
     }
 
+    $('#idProof').on('change', function (event) {
+        ConvertToBase64(event.target).then(base64 => {
+            helperIdProof = base64;
+        });
+    });
+
+    $('#candidateImg').on('change', function (event) {
+        ConvertToBase64(event.target).then(base64 => {
+            candidateImage = base64;
+        });
+    });
+
+    $('#tblHelpers').on('click', '.btn-edit', function () {
+        var fullData = JSON.parse($(this).attr('data-full-data'));
+        BindData(fullData);
+    });
+    $('#tblHelpers').on('click', '.btn-delete', function () {
+        var ID = JSON.parse($(this).attr('dataId'));
+        confirmDelete(ID);
+    });
+
     function previewImage(event) {
         var input = event.target;
         var reader = new FileReader();
@@ -270,6 +305,128 @@
         } else {
             alert("Failed to load file");
         }
+    }
+    // CRUD Operation
+    function AddHelper() {
+        var data = {};
+        data.Id = $('#helperId').val();
+        data.Name = $('#candidateName').val();
+        data.ParentName = $('#parentName').val();
+        data.Image = candidateImage;
+        data.DateOfBirth = $('#candidateDOB').val();
+        data.MaritalStatus = $('#maritalStatus').val();
+        data.PermanentAddress = $('#permanentAddress').val();
+        data.PresentAddress = $('#presentAddress').val();
+        data.IdProof = helperIdProof;
+        data.Education = $('#education').val();
+        data.LanguagesKnown = $('#languages').val();
+        data.Experience = $('#experience').val();
+        data.Salary = $('#salary').val();
+        data.Reference = $('#referenceDetail').val();
+        data.FamilyMembers = $('#famMembers').val();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddorEditHelper", "Helpers")',
+            data: data,
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+    function BindData(data) {
+        $('#helperId').val(data.id);
+        $('#candidateName').val(data.name);
+        $('#parentName').val(data.parentName);
+        $('#candidateImage').val(data.image);
+        $('#candidateDOB').val(formatDate(new Date(data.dateOfBirth)));
+        $('#maritalStatus').val(data.maritalStatus);
+        $('#permanentAddress').val(data.permanentAddress);
+        $('#presentAddress').val(data.presentAddress);
+        $('#helperIdProof').val(data.idProof);
+        $('#education').val(data.education);
+        $('#languages').val(data.languagesKnown);
+        $('#experience').val(data.experience);
+        $('#salary').val(data.salary);
+        $('#referenceDetail').val(data.reference);
+        $('#famMembers').val(data.familyMembers);
+        $('#helperModal').modal('toggle');
+    }
+
+    function GetData(){
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetData", "Helpers")',
+            // data: data,
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    table.row.add([
+                        item.name,
+                        item.permanentAddress,
+                        item.languagesKnown,
+                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+                    ]).draw();
+                });
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+    function ClearInputFields(){
+        $('.inputFields').val('');
+        candidateImage = "";
+        helperIdProof = "";
+    }
+
+    function confirmDelete(id) {
+        $.alert({
+            title: 'Alert',
+            content: 'Are you sure want to delete ?',
+            typeAnimated: true,
+            backgroundDismiss: false,
+            backgroundDismissAnimation: 'glow',
+            boxWidth: '30%',
+            useBootstrap: false,
+            buttons: {
+                Yes: {
+                    text: 'Yes',
+                    btnClass: 'btn btn-success',
+                    action: function () {
+                        deleteData(id);
+                    },
+                },
+                No: {
+                    text: 'No',
+                    btnClass: 'btn btn-warning',
+                    action: function () {
+                        return;
+                    },
+                },
+            },
+        });
+    }
+
+    function deleteData(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteData", "Helpers")',
+            data: { id: id },
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
     }
 </script>
 

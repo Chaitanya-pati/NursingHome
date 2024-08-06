@@ -9,8 +9,8 @@ namespace NursingHome.Controllers
     public class NursingHomeController : Controller
     {
         private readonly ILogger<NursingHomeController> _logger;
-        private readonly IService _DbConn;
-        public NursingHomeController(ILogger<NursingHomeController> logger,IService Db)
+        private readonly INursingHome _DbConn;
+        public NursingHomeController(ILogger<NursingHomeController> logger,INursingHome Db)
         {
             _logger = logger;
             _DbConn = Db;
@@ -24,6 +24,26 @@ namespace NursingHome.Controllers
         {
             return View();
         }
+
+        public IActionResult AddorEditHomeNursing(Db.Models.HomeNursing homeNursing)
+        {
+            if (homeNursing.Id == 0)
+            {
+                var isAdded = _DbConn.AddData(homeNursing);
+                return Json(isAdded);
+            }
+            else
+            {
+                var isUpdated = _DbConn.UpdateData(homeNursing);
+                return Json(isUpdated);
+            }
+        }
+        public IActionResult GetData()
+        {
+            var result = _DbConn.GetData(DateTime.Now.AddDays(-40), DateTime.Now);
+            return Json(new { data = result });
+        }
+
         public IActionResult Privacy()
         {
             return View();
