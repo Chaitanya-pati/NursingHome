@@ -17,11 +17,15 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-<!-- Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
 
+<!-- Bootstrap Bundle JS (includes Popper.js) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
 <script src="~/js/site.js" asp-append-version="true"></script>
+
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 
@@ -31,12 +35,13 @@
 <!-- Moment.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-
 <!-- Bootstrap Multiselect JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 
 <!-- HTML2PDF JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Additional Custom JS -->
 <script src="~/js/common.js"></script>
 <style>
 
@@ -304,7 +309,10 @@
     }
 
 </style>
-<body>
+<body style="background-color:#f7f7fa">
+    <header style="height:45px;background-color:#f7f6fa;border-bottom:0.5px solid #c5bddb">
+        
+    </header>
     <div class="sidebar">
         <div class="logo-details">
             <i class="fa-solid fa-notes-medical icon"></i>
@@ -359,7 +367,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a class="" asp-area="" asp-controller="Users" asp-action="Users">
                     <i class="fa-solid fa-user-group"></i>
                     <span class="links_name">User</span>
                 </a>
@@ -378,8 +386,8 @@
     </div>
  
 
-    <div class="" style="margin-left:78px">
-        <main role="main" class="pb-3">
+    <div class="" style="margin-left:78px" style="background-color:#f7f7fa;">
+        <main role="main" class="pb-3" >
             @RenderBody()
         </main>
     </div>

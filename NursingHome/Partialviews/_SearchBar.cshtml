@@ -1,9 +1,8 @@
 ﻿
-
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card" style="background-color:#f7f6fa">
                 <div class="card-body">
                     <div class="row p-2" style="display:flex;justify-content:space-evenly">
                         <!-- Date Range Picker Columns -->
@@ -29,12 +28,24 @@
                                 <label for="multiSelect" class="mt-1">Select User:</label>
                             </div>
                             <div class="col-8">
-                                <select id="multiSelect" multiple="multiple"></select>
+                                <select id="multiSelect" class="form-control" multiple="multiple">
+                                    <option value="php">PHP</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="java">Java</option>
+                                    <option value="sql">SQL</option>
+                                    <option value="jquery">Jquery</option>
+                                    <option value=".net">.Net</option> 
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="java">Java</option>
+                                    <option value="sql">SQL</option>
+                                    <option value="jquery">Jquery</option>
+                                    <option value=".net">.Net</option>
+                                </select>
                             </div>
                         </div>
                         <!-- Button Column -->
                         <div class="col-2">
-                            <button id="btnSubmit" class="btn btn-info">Submit</button>
+                            <button id="btnSubmit" class="customBtn">Search</button>
                         </div>
                     </div>
                 </div>
@@ -43,12 +54,14 @@
     </div>
 </div>
 <script>
-
-
-    // Initialize Multi-select Dropdown
-    $(function () {
+    $(document).ready(function () {
         $('#multiSelect').multiselect({
-            includeSelectAllOption: true // Optional: Include a "Select All" option
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            buttonWidth: '100%'
         });
     });
+
+    //$('#multiSelect').val(['php']);
+    //$('#multiSelect').multiselect('rebuild')
 </script>

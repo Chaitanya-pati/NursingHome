@@ -35,6 +35,10 @@ public partial class Users
 
     public string HighestQualification { get; set; }
 
+    public string faceDescriptor { get; set; }
+
+    public bool IsFaceAdded { get; set; }
+
     public virtual City fkCityNavigation { get; set; }
 
     public virtual Country fkCountryNavigation { get; set; }

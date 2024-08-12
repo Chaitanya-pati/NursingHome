@@ -1,23 +1,14 @@
-﻿<!DOCTYPE html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap Modal Form</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-</head>
-<body>
-
+﻿
+<div class="col-md-12">
+    @Html.Partial("~/Partialviews/_SearchBar.cshtml")
+</div>
     <!-- Button to trigger modal -->
     <div class="col-md-2">
-        <div class="container">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#homeNursingModal">
-                Open Modal
+        <div class="container-fluid mt-2 mb-2">
+            <button type="button" class="customBtn" data-toggle="modal" data-target="#homeNursingModal">
+            <i class="fa fa-add me-1"></i> Add
             </button>
-        </div>
+        </div>  
     </div>
     <!-- Modal -->
     <div class="modal fade" id="homeNursingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -225,7 +216,6 @@
         </table>
     </div>
 
-</body>
 <script>
     var HomeNursingIdproof = "";
     $(document).ready(function (){
@@ -352,8 +342,8 @@
                         item.paymentStatus,
                         item.periodFrom.split("T")[0],
                         item.periodTo.split("T")[0],
-                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
                     ]).draw();
                 });
             },

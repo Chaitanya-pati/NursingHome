@@ -5,9 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IService,Service>(provider =>
+builder.Services.AddTransient<IUserService,UserService>(provider =>
 {
-    return new Service(builder.Configuration.GetConnectionString("NursingHome"));
+    return new UserService(builder.Configuration.GetConnectionString("NursingHome"));
 });
 builder.Services.AddTransient<IConfig,Config>(provider =>
 {

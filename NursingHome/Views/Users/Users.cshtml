@@ -1,0 +1,362 @@
+﻿<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
+    Open Form
+</button>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Information Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row mb-3">
+                        <!-- First Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="firstName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="lastName">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Second Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="userName" class="form-label">User Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="userName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label">Password</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="password" class="form-control" id="password">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Third Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="roles" class="form-label">Roles</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="roles">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="mobileNo" class="form-label">Mobile No</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="mobileNo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Fourth Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="imageString" class="form-label">Image String</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="imageString">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="idProof" class="form-label">ID Proof</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" class="form-control" id="idProof">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Fifth Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="fkCountry" class="form-label">Country</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control" id="fkCountry">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="fkState" class="form-label">State</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control" id="fkState">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Sixth Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="fkCity" class="form-label">City</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control" id="fkCity">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="pinCode" class="form-label">Pin Code</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="pinCode">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Seventh Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="highestQualification" class="form-label">Highest Qualification</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="highestQualification">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="faceDescriptor" class="form-label">Face Descriptor</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="faceDescriptor">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="col-md-12 container-fluid">
+        <table id="tblUsers" class="display table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Admission Date</th>
+                    <th>Payment Status</th>
+                    <th>Period From</th>
+                    <th>Period To</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+<script>
+   
+    var OldAgeIdProof;
+    $(document).ready(function () {
+        GetData();
+        $('#tblUsers').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindData(fullData);
+        });
+        $('#tblUsers').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            confirmDelete(ID);
+        });
+
+    })
+
+
+    $('#idProof').on('change', function (event) {
+        ConvertToBase64(event.target).then(base64 => {
+            OldAgeIdProof = base64;
+        });
+    });
+
+    document.getElementById('downloadIdProof').addEventListener('click', function () {
+        if (OldAgeIdProof) {
+            const mimeType = OldAgeIdProof.split("~")[0];
+            const fileName = $('#patientName').val() + "_IdProof.";
+
+            downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
+        } else {
+            alert('No file available to download');
+        }
+    });
+    function downloadFile(base64String, fileType, fileName) {
+        const link = document.createElement('a');
+        link.href = `data:${fileType};base64,${base64String}`;
+        link.download = fileName + fileType.split("/")[1];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    function AddOldAge() {
+        var data = {};
+        data.Id = $('#oldAgePatientId').val();
+        data.PatientName = $('#patientName').val();
+        data.Address = $('#address').val();
+        data.Age = $('#patientAge').val();
+        data.Condition = $('#patientCondition').val();
+        data.CustomerName = $('#customerName').val();
+        data.MobileNo = $('#mobileNo').val();
+        data.TypesofServices = $('#typesOfService').val();
+        data.IdProof = OldAgeIdProof;
+        data.PaymentStatus = "Pending";
+        data.PeriodFrom = $('#periodFrom').val();
+        data.PeriodTo = $('#periodTo').val();
+        data.AdmissionDate = $('#adminssionDate').val();
+        data.MonthlyPayment = $('#monthlyPayment').val();
+        data.RegistrationCharges = $('#registrationCharges').val();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddorEditOldAge", "OldAge")',
+            data: data,
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+    function GetData() {
+        var table = $('#tblUsers').DataTable();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetData", "OldAge")',
+            // data: data,
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    table.row.add([
+                        item.patientName,
+                        item.admissionDate.split("T")[0],
+                        item.paymentStatus,
+                        item.periodFrom.split("T")[0],
+                        item.periodTo.split("T")[0],
+                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+                    ]).draw();
+                });
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+
+    function BindData(data) {
+        $('#oldAgePatientId').val(data.id);
+        $('#patientName').val(data.patientName);
+        $('#address').val(data.address);
+        $('#patientAge').val(data.age);
+        $('#patientCondition').val(data.condition);
+        $('#customerName').val(data.customerName);
+        $('#mobileNo').val(data.mobileNo);
+        $('#typesOfService').val(data.typesofServices);
+        OldAgeIdProof = data.idProof;
+        //  data.PaymentStatus = "Pending";
+        $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
+        $('#periodTo').val(formatDate(new Date(data.periodTo)));
+        $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
+        $('#monthlyPayment').val(data.monthlyPayment);
+        $('#registrationCharges').val(data.registrationCharges);
+        $('#oldAgePopup').modal('toggle');
+    }
+
+    function confirmDelete(id){
+        $.alert({
+            title:'Alert',
+            content: 'Are you sure want to delete ?',
+            typeAnimated: true,
+            backgroundDismiss: false,
+            backgroundDismissAnimation: 'glow',
+            boxWidth: '30%',
+            useBootstrap: false,
+            buttons: {
+                Yes: {
+                    text: 'Yes',
+                    btnClass: 'btn btn-success',
+                    action: function () {
+                       deleteData(id);
+                    },
+                },
+                No: {
+                    text: 'No',
+                    btnClass: 'btn btn-warning',
+                    action: function () {
+                      return;
+                    },
+                },
+            },
+        });
+    }
+    function deleteData(id){
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteData", "OldAge")',
+            data: {id:id},
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+</script>

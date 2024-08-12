@@ -1,14 +1,53 @@
-﻿<!DOCTYPE html>
-<body>
+﻿<style>
+    /* Custom styling for the tabs */
+    .nav-tabs {
+        border-bottom: 2px solid #ddd;
+    }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
+        }
+
+        .nav-tabs .nav-link {
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            color: #495057;
+        }
+
+            .nav-tabs .nav-link.active {
+                color: #fff;
+                background-color: #007bff;
+                border-color: #007bff;
+            }
+
+            .nav-tabs .nav-link:hover {
+                color: #0056b3;
+                background-color: #e9ecef;
+                border-color: #dee2e6 #dee2e6 #fff;
+            }
+
+    .tab-content {
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 0.25rem 0.25rem;
+        background-color: #fff;
+    }
+
+    .tab-pane {
+        font-size: 1rem;
+    }
+</style>
     <div class="col-md-12">
         @Html.Partial("~/Partialviews/_SearchBar.cshtml")
     </div>
 
     <!-- Button to trigger modal -->
     <div class="col-md-12">
-        <div class="container-fluid mt-2 mb-2 contentEnd">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#oldAgePopup">
-                Open Modal
+        <div class="container-fluid mt-2 mb-2 ">
+            <button type="button" class="customBtn" data-toggle="modal" data-target="#oldAgePopup">
+                <i class="fa fa-add me-1"></i> Add
             </button>
         </div>
     </div>
@@ -26,7 +65,7 @@
                 </div>
                 <div class="modal-body registrationFormContent">
                     <form>
-                        <input type="hidden" id="oldAgePatientId"></input>
+                        <input type="hidden" id="oldAgePatientId"/>
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
@@ -187,6 +226,33 @@
             </div>
         </div>
     </div>
+<div class="container mt-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+        </li>
+    </ul>
+    <div class="tab-content mt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <h5>Home</h5>
+            <p>This is the home tab content.</p>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <h5>Profile</h5>
+            <p>This is the profile tab content.</p>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <h5>Contact</h5>
+            <p>This is the contact tab content.</p>
+        </div>
+    </div>
+</div>
     <div class="col-md-12 container-fluid">
         <table id="tblOldAge" class="display table-bordered" style="width:100%">
             <thead>
@@ -203,8 +269,7 @@
             </tbody>
         </table>
     </div>
-</body>
-</html>
+
 <script>
     var table = $('#tblOldAge').DataTable();
     var OldAgeIdProof;
@@ -308,8 +373,8 @@
                         item.paymentStatus,
                         item.periodFrom.split("T")[0],
                         item.periodTo.split("T")[0],
-                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
                     ]).draw();
                 });
             },

@@ -164,13 +164,19 @@ public partial class TaskContext : DbContext
 
             entity.HasIndex(e => e.UserName, "UQ__Users__C9F284564C103849").IsUnique();
 
-            entity.Property(e => e.FirstName).HasMaxLength(100);
+            entity.Property(e => e.FirstName)
+                .IsRequired()
+                .HasMaxLength(100);
             entity.Property(e => e.HighestQualification).HasMaxLength(100);
             entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.MobileNo).HasMaxLength(20);
-            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(100);
             entity.Property(e => e.PinCode).HasMaxLength(20);
-            entity.Property(e => e.UserName).HasMaxLength(50);
+            entity.Property(e => e.UserName)
+                .IsRequired()
+                .HasMaxLength(50);
 
             entity.HasOne(d => d.fkCityNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.fkCity)

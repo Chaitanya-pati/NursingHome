@@ -6,21 +6,25 @@ using NursingHome.Db.Interface;
 
 namespace NursingHome.Controllers
 {
-    public class CashMemoController : Controller
+    public class UsersController : Controller
     {
-        private readonly ILogger<CashMemoController> _logger;
-        private readonly IConfig _DbConn;
-        public CashMemoController(ILogger<CashMemoController> logger,IConfig Db)
+        private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _DbConn;
+        public UsersController(ILogger<HomeController> logger, IUserService dbConn)
         {
             _logger = logger;
-            _DbConn = Db;
+            _DbConn = dbConn;
         }
 
-        public IActionResult CashMemo()
+        public IActionResult Privacy()
         {
             return View();
-        } 
+        }
 
+        public IActionResult Users()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

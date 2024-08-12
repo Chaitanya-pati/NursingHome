@@ -7,7 +7,7 @@ using NursingHome.Db.Models;
 
 namespace NursingHome.Db.Interface
 {
-    public interface IService
+    public interface IUserService
     {
         void AddData();
     }

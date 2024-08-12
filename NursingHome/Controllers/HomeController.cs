@@ -9,11 +9,11 @@ namespace NursingHome.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IService _DbConn;
-        public HomeController(ILogger<HomeController> logger,IService Db)
+     //   private readonly IService _DbConn;
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _DbConn = Db;
+            //_DbConn = Db;
         }
 
         public IActionResult Index()

@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace NursingHome.Db.Implementation
 {
-    public class Service:IService
+    public class UserService:IUserService
     {
         private readonly DbContextOptions<TaskContext> _dbConn;
 
-        public Service(string DbConn)
+        public UserService(string DbConn)
         {
             _dbConn= new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
