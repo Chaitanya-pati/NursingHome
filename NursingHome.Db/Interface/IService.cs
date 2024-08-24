@@ -9,6 +9,9 @@ namespace NursingHome.Db.Interface
 {
     public interface IUserService
     {
-        void AddData();
+        bool AddData(Users users);
+        bool UpdateData(Users user);
+        List<Users> GetData();
+        bool DeleteUser(int id);
     }
 }

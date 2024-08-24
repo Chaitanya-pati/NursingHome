@@ -31,7 +31,7 @@ namespace NursingHome.Controllers
         }
         public IActionResult AddorEditOldAge(Db.Models.OldAge oldAge)
         {
-            if (oldAge.Id == null) {
+            if (oldAge.Id == 0) {
                 var IsAdded = _DbConn.AddData(oldAge);
                 return Json(IsAdded);
             }

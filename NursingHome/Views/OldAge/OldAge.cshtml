@@ -39,200 +39,253 @@
         font-size: 1rem;
     }
 </style>
-    <div class="col-md-12">
-        @Html.Partial("~/Partialviews/_SearchBar.cshtml")
-    </div>
-
-    <!-- Button to trigger modal -->
-    <div class="col-md-12">
-        <div class="container-fluid mt-2 mb-2 ">
-            <button type="button" class="customBtn" data-toggle="modal" data-target="#oldAgePopup">
-                <i class="fa fa-add me-1"></i> Add
-            </button>
-        </div>
-    </div>
+<div class="col-md-12">
+    @Html.Partial("~/Partialviews/_SearchBar.cshtml")
+</div>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body registrationFormContent">
-                    <form>
-                        <input type="hidden" id="oldAgePatientId"/>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <div class="col-3">
-                                                <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+
+
+<!-- Modal -->
+<div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body registrationFormContent">
+                <form>
+                    <input type="hidden" id="oldAgePatientId" />
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <div class="col-3">
+                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                        </div>
+                                        <div class="col-6 contentCenter">
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
+
+                                        </div>
+                                        <div class="col-3 contentEnd">
+                                            <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+                                        </div>
+                                        <div class="col-2"></div>
+                                        <div class="col-8 contentCenter" style="margin-top:-20px">
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                                        </div>
+                                    </div>
+                                    <div id="customAddress">
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                        </div>
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:medium;font-weight:500">OLD AGE ADMISSION FORM:</label>
+                                        <div class="row col-5 ">
+
+                                            <span class="col-5">No :</span>
+                                            <input class="col-7 mt-1" type="number" style="height:25px" min="0" />
+                                        </div>
+                                        <div class="col-7"></div>
+                                        <div class="row col-5 mt-2 contentEnd">
+                                            <span class="col-5">Date :</span>
+                                            <input class="col-7" id="adminssionDate" type="date" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="patientName">Patient Name:</label></td>
+                                <td><input type="text" class="form-control" id="patientName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="address">Address:</label></td>
+                                <td><input type="text" class="form-control" id="address"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="patientAge">Patient Age:</label></td>
+                                <td><input type="text" class="form-control" id="patientAge"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="patientCondition">Patient Condition:</label></td>
+                                <td><input type="text" class="form-control" id="patientCondition"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="customerName">Customer Name:</label></td>
+                                <td><input type="text" class="form-control" id="customerName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="mobileNo">Mobile No:</label></td>
+                                <td><input type="text" class="form-control" id="mobileNo"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="typesOfService">Types of Service:</label></td>
+                                <td><input type="text" class="form-control" id="typesOfService"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="idProof">ID Proof:</label></td>
+                                <td><div class="row col-12"><input type="file" class="form-control col-10" id="idProof" onchange=""><i id="downloadIdProof" class="fa-solid fa-download fa-lg contentEnd col-2 mt-3 "></i></div></td>
+                            </tr>
+                            <tr>
+                                <td><label for="registrationCharges">Registration Charges:</label></td>
+                                <td><input type="text" class="form-control" id="registrationCharges"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
+                                <td><input type="text" class="form-control" id="monthlyPayment"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="periodFrom">Period From:</label></td>
+                                <td><input type="date" class="form-control" id="periodFrom"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="periodTo">To:</label></td>
+                                <td><input type="date" class="form-control" id="periodTo"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div>
+                                        <b>Terms and Conditions for Client:</b>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
+                                                <div style="flex: 1; text-align: left;">We give with patients attender and nursing staff with emergency doctor visit.</div>
                                             </div>
-                                            <div class="col-6 contentCenter">
-                                                <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
 
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
+                                                <div style="flex: 1; text-align: left;">Three times food and tea, coffee (daily changes of food).</div>
                                             </div>
-                                            <div class="col-3 contentEnd">
-                                                <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="flex: 1; text-align: left;">We don't allow outside food and we don't provide any event foods for patients.</div>
                                             </div>
-                                            <div class="col-2"></div>
-                                            <div class="col-8 contentCenter" style="margin-top:-20px">
-                                                <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="flex: 1; text-align: left;">We don't gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
+                                                <div style="flex: 1; text-align: left;">If the patient's discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
+                                                <div style="flex: 1; text-align: left;">In case patient death non refund advance amount.</div>
                                             </div>
                                         </div>
-                                        <div id="customAddress">
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
-                                            </div>
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
 
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:medium;font-weight:500">OLD AGE ADMISSION FORM:</label>
-                                            <div class="row col-5 ">
-
-                                                <span class="col-5">No :</span>
-                                                <input class="col-7 mt-1" type="number" style="height:25px" min="0" />
-                                            </div>
-                                            <div class="col-7"></div>
-                                            <div class="row col-5 mt-2 contentEnd">
-                                                <span class="col-5">Date :</span>
-                                                <input class="col-7" id="adminssionDate" type="date" />
+                                        <b> Declaration</b></br>
+                                        <div style="display: flex; margin-top: 5px;margin-bottom:20px">
+                                            <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
+                                            <div style="flex: 1; text-align: left;">
+                                                I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="patientName">Patient Name:</label></td>
-                                    <td><input type="text" class="form-control" id="patientName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="address">Address:</label></td>
-                                    <td><input type="text" class="form-control" id="address"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="patientAge">Patient Age:</label></td>
-                                    <td><input type="text" class="form-control" id="patientAge"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="patientCondition">Patient Condition:</label></td>
-                                    <td><input type="text" class="form-control" id="patientCondition"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="customerName">Customer Name:</label></td>
-                                    <td><input type="text" class="form-control" id="customerName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="mobileNo">Mobile No:</label></td>
-                                    <td><input type="text" class="form-control" id="mobileNo"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="typesOfService">Types of Service:</label></td>
-                                    <td><input type="text" class="form-control" id="typesOfService"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="idProof">ID Proof:</label></td>
-                                    <td><div class="row col-12"><input type="file" class="form-control col-10" id="idProof" onchange=""><i id="downloadIdProof" class="fa-solid fa-download fa-lg contentEnd col-2 mt-3 "></i></div></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="registrationCharges">Registration Charges:</label></td>
-                                    <td><input type="text" class="form-control" id="registrationCharges"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
-                                    <td><input type="text" class="form-control" id="monthlyPayment"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="periodFrom">Period From:</label></td>
-                                    <td><input type="date" class="form-control" id="periodFrom"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="periodTo">To:</label></td>
-                                    <td><input type="date" class="form-control" id="periodTo"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <div>
-                                            <b>Terms and Conditions for Client:</b>
-                                            <div style="display: flex; flex-direction: column;">
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                    <div style="flex: 1; text-align: left;">We give with patients attender and nursing staff with emergency doctor visit.</div>
-                                                </div>
+                                        <div class="row">
 
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                    <div style="flex: 1; text-align: left;">Three times food and tea, coffee (daily changes of food).</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                    <div style="flex: 1; text-align: left;">We don't allow outside food and we don't provide any event foods for patients.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                    <div style="flex: 1; text-align: left;">We don't gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                    <div style="flex: 1; text-align: left;">If the patient's discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
-                                                    <div style="flex: 1; text-align: left;">In case patient death non refund advance amount.</div>
-                                                </div>
-                                            </div>
-
-                                            <b> Declaration</b></br>
-                                            <div style="display: flex; margin-top: 5px;margin-bottom:20px">
-                                                <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
-                                                <div style="flex: 1; text-align: left;">
-                                                    I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
-                                                </div>
-                                            </div>
-                                            <div class="row">
-
-                                                <span class="col-4">Signature of the Client</span>
-                                                <span class="col-4"></span>
-                                                <span class="col-4 contentEnd">Authorised Signatory</span>
-                                            </div>
+                                            <span class="col-4">Signature of the Client</span>
+                                            <span class="col-4"></span>
+                                            <span class="col-4 contentEnd">Authorised Signatory</span>
                                         </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="AddOldAge()">Save changes</button>
-                    <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="AddOldAge()">Save changes</button>
+                <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
             </div>
         </div>
     </div>
-<div class="container mt-5">
+</div>
+
+<div class="modal fade" id="oldAgePaymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Old Age Payment Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row mb-3">
+                        <!-- First Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="hidden" id="paymentPatientId" />
+                                    <label for="firstName" class="form-label">Patient Name</label>
+                                </div>
+                                <div class="col-md-6">
+
+                                    <select class="form-select" id="patientPayment"> </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Amount</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="paymentAmt">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Second Field Pair -->
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="userName" class="form-label">Date</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="date" class="form-control" id="paymentDate">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt-3">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Payment</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
@@ -240,12 +293,47 @@
     </ul>
     <div class="tab-content mt-2" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <h5>Home</h5>
-            <p>This is the home tab content.</p>
+            <div class="container-fluid mb-2 contentEnd">
+                <button type="button" class="customBtn" data-toggle="modal" data-target="#oldAgePopup">
+                    <i class="fa fa-add me-1"></i> Add
+                </button>
+            </div>
+            <div class="col-md-12">
+                <table id="tblOldAge" class="display table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Admission Date</th>
+                            <th>Payment Status</th>
+                            <th>Period From</th>
+                            <th>Period To</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <h5>Profile</h5>
-            <p>This is the profile tab content.</p>
+            <div class="container-fluid mb-2 contentEnd">
+                <button type="button" class="customBtn" data-toggle="modal" data-target="#oldAgePaymentModal">
+                    <i class="fa fa-add me-1"></i> Add
+                </button>
+            </div>
+            <div class="col-md-12">
+                <table id="tblOldAgePayment" class="display table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Payment Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
             <h5>Contact</h5>
@@ -253,22 +341,7 @@
         </div>
     </div>
 </div>
-    <div class="col-md-12 container-fluid">
-        <table id="tblOldAge" class="display table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Patient Name</th>
-                    <th>Admission Date</th>
-                    <th>Payment Status</th>
-                    <th>Period From</th>
-                    <th>Period To</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+
 
 <script>
     var table = $('#tblOldAge').DataTable();
@@ -283,7 +356,15 @@
             var ID = JSON.parse($(this).attr('dataId'));
             confirmDelete(ID);
         });
-       
+        $('#tblOldAgePayment').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindPaymentData(fullData);
+        });
+        $('#tblOldAgePayment').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            confirmDelete(ID);
+        });
+
     })
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
@@ -302,7 +383,7 @@
         // Generate PDF
         html2pdf().from(element).set(options).save();
     });
-    
+
     $('#idProof').on('change', function (event) {
         ConvertToBase64(event.target).then(base64 => {
             OldAgeIdProof = base64;
@@ -360,8 +441,8 @@
 
     function GetData() {
 
-        $.ajax({
-            type: "POST",
+        $.get({
+            //type: "POST",
             url: '@Url.Action("GetData", "OldAge")',
             // data: data,
             success: function (response) {
@@ -405,9 +486,9 @@
         $('#oldAgePopup').modal('toggle');
     }
 
-    function confirmDelete(id){
+    function confirmDelete(id) {
         $.alert({
-            title:'Alert',
+            title: 'Alert',
             content: 'Are you sure want to delete ?',
             typeAnimated: true,
             backgroundDismiss: false,
@@ -419,24 +500,24 @@
                     text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                       deleteData(id);
+                        deleteData(id);
                     },
                 },
                 No: {
                     text: 'No',
                     btnClass: 'btn btn-warning',
                     action: function () {
-                      return;
+                        return;
                     },
                 },
             },
         });
     }
-    function deleteData(id){
+    function deleteData(id) {
         $.ajax({
             type: "POST",
             url: '@Url.Action("DeleteData", "OldAge")',
-            data: {id:id},
+            data: { id: id },
             success: function (response) {
 
             },
@@ -446,4 +527,102 @@
             }
         });
     }
+
+
+    // Old Age Payment Section
+    function GetPaymentData() {
+
+        $.get({
+            //type: "POST",
+            url: '@Url.Action("GetPaymentData", "OldAge")',
+            // data: data,
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    table.row.add([
+                        item.patientName,
+                        item.amount,
+                        item.date,
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                    ]).draw();
+                });
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+
+    function AddOldAgePayment() {
+        var data = {};
+        data.Id = $('#paymentPatientId').val();
+        data.fkOldAgeId = $('#patientPayment').val();
+        data.Date = $('#paymentDate').val();
+        data.Amount = $('#paymentAmt').val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddorEditOldAgePayment", "OldAge")',
+            data: data,
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+
+    function BindPaymentData(data) {
+        $('#paymentPatientId').val(data.id);
+        $('#paymentAmt').val(data.amount);
+        $('#patientPayment').val();//Dropdown Binding required
+        $('#paymentDate').val(formatDate(new Date(data.date)));
+        $('#oldAgePaymentModal').modal('toggle');
+    }
+
+    function confirmDeletePayment(id) {
+        $.alert({
+            title: 'Alert',
+            content: 'Are you sure want to delete ?',
+            typeAnimated: true,
+            backgroundDismiss: false,
+            backgroundDismissAnimation: 'glow',
+            boxWidth: '30%',
+            useBootstrap: false,
+            buttons: {
+                Yes: {
+                    text: 'Yes',
+                    btnClass: 'btn btn-success',
+                    action: function () {
+                        deletePayment(id);
+                    },
+                },
+                No: {
+                    text: 'No',
+                    btnClass: 'btn btn-warning',
+                    action: function () {
+                        return;
+                    },
+                },
+            },
+        });
+    }
+
+    function deletePayment(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeletePaymentData", "OldAge")',
+            data: { id: id },
+            success: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+
 </script>

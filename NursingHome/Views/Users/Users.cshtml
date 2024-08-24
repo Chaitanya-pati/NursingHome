@@ -1,10 +1,10 @@
-﻿<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
-    Open Form
+﻿<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal" onclick="OpenPopup()">
+    ADD USER
 </button>
 
 <!-- Modal Structure -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">User Information Form</h5>
@@ -20,6 +20,7 @@
                                     <label for="firstName" class="form-label">First Name</label>
                                 </div>
                                 <div class="col-md-6">
+                                    <input type="text" id="userId" hidden>
                                     <input type="text" class="form-control" id="firstName">
                                 </div>
                             </div>
@@ -66,7 +67,7 @@
                                     <label for="roles" class="form-label">Roles</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="roles">
+                                    <select  class="form-select" id="roles"></select>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +90,7 @@
                                     <label for="imageString" class="form-label">Image String</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="imageString">
+                                    <input type="file" class="form-control" id="imageString">
                                 </div>
                             </div>
                         </div>
@@ -111,8 +112,10 @@
                                 <div class="col-md-6">
                                     <label for="fkCountry" class="form-label">Country</label>
                                 </div>
-                                <div class="col-md-6">
-                                    <input type="number" class="form-control" id="fkCountry">
+                                <div class="col-md-6"> 
+                                    <select id="fkCountry" class="form-select">
+                                        @*<option></option>*@
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +125,7 @@
                                     <label for="fkState" class="form-label">State</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="number" class="form-control" id="fkState">
+                                    <select  class="form-select" id="fkState"></select>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +138,7 @@
                                     <label for="fkCity" class="form-label">City</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="number" class="form-control" id="fkCity">
+                                    <select  class="form-select" id="fkCity"></select>
                                 </div>
                             </div>
                         </div>
@@ -187,11 +190,11 @@
         <table id="tblUsers" class="display table-bordered" style="width:100%">
             <thead>
                 <tr>
-                    <th>Patient Name</th>
-                    <th>Admission Date</th>
-                    <th>Payment Status</th>
-                    <th>Period From</th>
-                    <th>Period To</th>
+                    <th>Name</th>
+                    <th>UserName</th>
+                    <th>Qualification</th>
+                    <th>Roles</th>
+                    <th>Mobile No</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -201,7 +204,8 @@
     </div>
 <script>
    
-    var OldAgeIdProof;
+    var userIdPrrof;
+    var userImageString;
     $(document).ready(function () {
         GetData();
         $('#tblUsers').on('click', '.btn-edit', function () {
@@ -218,20 +222,27 @@
 
     $('#idProof').on('change', function (event) {
         ConvertToBase64(event.target).then(base64 => {
-            OldAgeIdProof = base64;
+            userIdPrrof = base64;
         });
     });
-
-    document.getElementById('downloadIdProof').addEventListener('click', function () {
-        if (OldAgeIdProof) {
-            const mimeType = OldAgeIdProof.split("~")[0];
-            const fileName = $('#patientName').val() + "_IdProof.";
-
-            downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
-        } else {
-            alert('No file available to download');
-        }
+    $('#imageString').on('change', function (event) {
+        ConvertToBase64(event.target).then(base64 => {
+            userImageString = base64;
+        });
     });
+    function OpenPopup(){
+        $('#userModal').modal('toggle');
+    }
+    //document.getElementById('downloadIdProof').addEventListener('click', function () {
+    //    if (userIdPrrof) {
+    //        const mimeType = userIdPrrof.split("~")[0];
+    //        const fileName = $('#patientName').val() + "_IdProof.";
+
+    //        downloadFile(userIdPrrof.split("~")[1], mimeType, fileName);
+    //    } else {
+    //        alert('No file available to download');
+    //    }
+    //});
     function downloadFile(base64String, fileType, fileName) {
         const link = document.createElement('a');
         link.href = `data:${fileType};base64,${base64String}`;
@@ -240,26 +251,26 @@
         link.click();
         document.body.removeChild(link);
     }
-    function AddOldAge() {
+    function AddUser() {
         var data = {};
-        data.Id = $('#oldAgePatientId').val();
-        data.PatientName = $('#patientName').val();
-        data.Address = $('#address').val();
-        data.Age = $('#patientAge').val();
-        data.Condition = $('#patientCondition').val();
-        data.CustomerName = $('#customerName').val();
+        data.Id = $('#userId').val();
+        data.FirstName = $('#firstName').val();
+        data.LastName = $('#lastName').val();
+        data.UserName = $('#userName').val();
+        data.Password = $('#password').val();
+        data.Roles = $('#roles').val();
         data.MobileNo = $('#mobileNo').val();
-        data.TypesofServices = $('#typesOfService').val();
-        data.IdProof = OldAgeIdProof;
-        data.PaymentStatus = "Pending";
-        data.PeriodFrom = $('#periodFrom').val();
-        data.PeriodTo = $('#periodTo').val();
-        data.AdmissionDate = $('#adminssionDate').val();
-        data.MonthlyPayment = $('#monthlyPayment').val();
-        data.RegistrationCharges = $('#registrationCharges').val();
+        data.fkCountry = $('#fkCountry').val();
+        data.IdProof = userIdPrrof;
+        data.ImageString = userImageString;
+        data.fkState = $('#fkState').val();
+        data.fkCity = $('#fkCity').val();
+        data.PinCode = $('#pinCode').val();
+        data.HighestQualification = $('#highestQualification').val();
+        data.faceDescriptor = $('#faceDescriptor').val();
         $.ajax({
             type: "POST",
-            url: '@Url.Action("AddorEditOldAge", "OldAge")',
+            url: '@Url.Action("AddorEditUser", "Users")',
             data: data,
             success: function (response) {
 
@@ -275,17 +286,17 @@
         var table = $('#tblUsers').DataTable();
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetData", "OldAge")',
+            url: '@Url.Action("GetData", "Users")',
             // data: data,
             success: function (response) {
                 table.clear();
                 response.data.forEach(function (item) {
                     table.row.add([
-                        item.patientName,
-                        item.admissionDate.split("T")[0],
-                        item.paymentStatus,
-                        item.periodFrom.split("T")[0],
-                        item.periodTo.split("T")[0],
+                        item.firstName + " " item.lastName,
+                        item.userName,
+                        item.highestQualification,
+                        item.roles,
+                        item.mobileNo,
                         '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
                     ]).draw();
@@ -301,21 +312,22 @@
 
     function BindData(data) {
         $('#oldAgePatientId').val(data.id);
-        $('#patientName').val(data.patientName);
-        $('#address').val(data.address);
-        $('#patientAge').val(data.age);
-        $('#patientCondition').val(data.condition);
-        $('#customerName').val(data.customerName);
+        $('#firstName').val(data.firstName);
+        $('#lastName').val(data.lastName);
+        $('#userName').val(data.userName);
+        $('#password').val(data.password);
+        $('#roles').val(data.roles);
         $('#mobileNo').val(data.mobileNo);
-        $('#typesOfService').val(data.typesofServices);
-        OldAgeIdProof = data.idProof;
+        $('#fkCountry').val(data.fkCountry);
+        $('#fkState').val(data.fkState);
+        $('#fkCity').val(data.fkCity);
+        $('#pinCode').val(data.pinCode);
+        $('#highestQualification').val(data.highestQualification);
+        $('#faceDescriptor').val(data.faceDescriptor);
+        userIdPrrof = data.idProof;
+        userImageString = data.imageString;
         //  data.PaymentStatus = "Pending";
-        $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
-        $('#periodTo').val(formatDate(new Date(data.periodTo)));
-        $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
-        $('#monthlyPayment').val(data.monthlyPayment);
-        $('#registrationCharges').val(data.registrationCharges);
-        $('#oldAgePopup').modal('toggle');
+        $('#userModal').modal('toggle');
     }
 
     function confirmDelete(id){
@@ -332,7 +344,7 @@
                     text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                       deleteData(id);
+                     //  deleteData(id);
                     },
                 },
                 No: {
@@ -348,7 +360,7 @@
     function deleteData(id){
         $.ajax({
             type: "POST",
-            url: '@Url.Action("DeleteData", "OldAge")',
+            url: '@Url.Action("DeleteUser", "Users")',
             data: {id:id},
             success: function (response) {
 

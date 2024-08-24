@@ -99,5 +99,77 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
+
+        public bool AddOldAgePayment(OldAgePayment data)
+        {
+            using var Db = new TaskContext(_dbConn);
+            try
+            {
+                Db.Add(data);
+                Db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdatePaymentData(OldAgePayment oldAge)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var GetData = Db.OldAgePayment.Where(x => x.Id == oldAge.Id).FirstOrDefault();
+            if (GetData != null)
+            {
+                GetData.fkOldAgeId = oldAge.fkOldAgeId;
+                GetData.Date = oldAge.Date;
+                GetData.Amount = oldAge.Amount;
+                Db.SaveChanges();
+                return true;
+            }
+            else { return false; }
+        }
+
+        public bool DeleteOldAgePayment(int id)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var data = Db.OldAgePayment.Where(x => x.Id == id).FirstOrDefault();
+            if (data != null)
+            {
+                Db.Remove(data);
+                Db.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public List<OldAgePaymentData> GetPaymentData(DateTime startDate, DateTime endDate)
+        {
+            using var Db = new TaskContext(_dbConn);
+
+            var query = @"
+        SELECT *
+        FROM OldAge
+        WHERE date BETWEEN @startDate AND @endDate";
+            List<OldAgePayment> result = new List<OldAgePayment>();
+            result = Db.OldAgePayment.FromSqlRaw(query, new SqlParameter("@startDate", startDate), new SqlParameter("@endDate", endDate)).ToList();
+            List<OldAgePaymentData> data = new List<OldAgePaymentData>();
+            foreach (var item in result)
+            {
+                var dt = new OldAgePaymentData()
+                {
+                    Id = item.Id,
+                    PatientName = Db.OldAge.Where(x=>x.Id == item.Id).Select(x=>x.PatientName).FirstOrDefault(),
+                    Date = item.Date,
+                    Amount = item.Amount,
+                };
+                data.Add(dt);
+            }
+            return data;
+        }
     }
 }
