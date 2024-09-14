@@ -54,3 +54,23 @@ table.dataTable{
     max-height:200px;
     overflow-y:scroll;
 }
+
+.nav-tabs {
+    --bs-nav-tabs-border-width: none !important;
+    --bs-nav-tabs-border-color: none !important;
+    --bs-nav-tabs-border-radius: none !important;
+    --bs-nav-tabs-link-hover-border-color: none !important;
+    --bs-nav-tabs-link-active-color: #6750a4 !important;
+    --bs-nav-tabs-link-active-bg: none !important;
+    --bs-nav-tabs-link-active-border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg);
+    border-bottom: var(--bs-nav-tabs-border-width) solid var(--bs-nav-tabs-border-color);
+}
+
+.nav {
+    --bs-nav-link-font-weight: 600 !important;
+     --bs-nav-link-color: none !important; 
+    
+}
+.nav-tabs .nav-link.active { 
+    border-bottom: 3px solid #6750a4 !important; 
+}

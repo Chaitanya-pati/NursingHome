@@ -37,6 +37,8 @@ public partial class Helpers
 
     public string FamilyMembers { get; set; }
 
+    public string suser { get; set; }
+
     public virtual ICollection<Attendance> Attendance { get; set; } = new List<Attendance>();
 
     public virtual ICollection<HomeNursing> HomeNursing { get; set; } = new List<HomeNursing>();

@@ -82,6 +82,7 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.ParentName).HasMaxLength(100);
             entity.Property(e => e.Salary).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.suser).HasMaxLength(110);
         });
 
         modelBuilder.Entity<HomeNursing>(entity =>
