@@ -28,6 +28,9 @@ builder.Services.AddTransient<IHelpers,Helpers>(provider =>
 builder.Services.AddTransient<ICashMemo,CashMemo>(provider =>
 {
     return new CashMemo(builder.Configuration.GetConnectionString("NursingHome"));
+});builder.Services.AddTransient<IAttedanceService,AttedanceService>(provider =>
+{
+    return new AttedanceService(builder.Configuration.GetConnectionString("NursingHome"));
 });
 
 var app = builder.Build();
