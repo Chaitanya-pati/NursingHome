@@ -171,5 +171,13 @@ namespace NursingHome.Db.Implementation
             }
             return data;
         }
+        public int getLatestID()
+        {
+             var Db = new TaskContext(_dbConn);
+            return Db.OldAge.Max(o => o.Id);
+
+        }
     }
+
+  
 }

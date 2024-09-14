@@ -1,9 +1,9 @@
-﻿<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal" onclick="OpenPopup()">
+﻿<button type="button" class="customBtn" data-bs-toggle="modal" data-target="#userModal" onclick="OpenPopup();">
     ADD USER
 </button>
 
 <!-- Modal Structure -->
-<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="userModal" role="dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -67,7 +67,10 @@
                                     <label for="roles" class="form-label">Roles</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <select  class="form-select" id="roles"></select>
+                                    <select  class="form-select" id="roles">
+                                        <option value="admin">Admin</option>
+                                        <option value="supervisor">Supervisor</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -105,8 +108,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <!-- Fifth Field Pair -->
+                  @*  <div class="row mb-3">
+                      
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
@@ -114,7 +117,7 @@
                                 </div>
                                 <div class="col-md-6"> 
                                     <select id="fkCountry" class="form-select">
-                                        @*<option></option>*@
+                                      
                                     </select>
                                 </div>
                             </div>
@@ -129,7 +132,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="row mb-3">
                         <!-- Sixth Field Pair -->
                         <div class="col-md-6">
@@ -178,7 +181,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary" onclick="AddUser()">Save</button>
                     </div>
                 </form>
             </div>
@@ -207,7 +210,7 @@
     var userIdPrrof;
     var userImageString;
     $(document).ready(function () {
-        GetData();
+       // GetData();
         $('#tblUsers').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindData(fullData);
@@ -260,10 +263,10 @@
         data.Password = $('#password').val();
         data.Roles = $('#roles').val();
         data.MobileNo = $('#mobileNo').val();
-        data.fkCountry = $('#fkCountry').val();
-        data.IdProof = userIdPrrof;
+      //  data.fkCountry = $('#fkCountry').val();
+        data.IdProof = userIdPrrof; 
         data.ImageString = userImageString;
-        data.fkState = $('#fkState').val();
+       // data.fkState = $('#fkState').val();
         data.fkCity = $('#fkCity').val();
         data.PinCode = $('#pinCode').val();
         data.HighestQualification = $('#highestQualification').val();
@@ -282,32 +285,32 @@
         });
     }
 
-    function GetData() {
-        var table = $('#tblUsers').DataTable();
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("GetData", "Users")',
-            // data: data,
-            success: function (response) {
-                table.clear();
-                response.data.forEach(function (item) {
-                    table.row.add([
-                        item.firstName + " " item.lastName,
-                        item.userName,
-                        item.highestQualification,
-                        item.roles,
-                        item.mobileNo,
-                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
-                    ]).draw();
-                });
-            },
-            error: function (response) {
+    //function GetData() {
+    //    var table = $('#tblUsers').DataTable();
+    //    $.ajax({
+    //        type: "POST",
+    //        url: '@Url.Action("GetData", "Users")',
+    //        // data: data,
+    //        success: function (response) {
+    //            table.clear();
+    //            response.data.forEach(function (item) {
+    //                table.row.add([
+    //                    item.firstName + " " item.lastName,
+    //                    item.userName,
+    //                    item.highestQualification,
+    //                    item.roles,
+    //                    item.mobileNo,
+    //                    '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+    //                    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+    //                ]).draw();
+    //            });
+    //        },
+    //        error: function (response) {
 
-                console.error(response);
-            }
-        });
-    }
+    //            console.error(response);
+    //        }
+    //    });
+    //}
 
 
     function BindData(data) {

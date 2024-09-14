@@ -52,7 +52,10 @@ namespace NursingHome.Controllers
             var isDelete = _DbConn.DeleteData(id);
             return Json(isDelete);
         }
-
+        public IActionResult GetLatestID()
+        {
+            return Json(_DbConn.getLatestID());
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

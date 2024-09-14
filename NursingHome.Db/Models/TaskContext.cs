@@ -35,6 +35,8 @@ public partial class TaskContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
         modelBuilder.Entity<Attendance>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Attendan__3214EC071718A8AF");

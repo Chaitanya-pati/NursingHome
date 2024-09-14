@@ -24,5 +24,7 @@ namespace NursingHome.Db.Interface
 
         List<OldAgePaymentData> GetPaymentData(DateTime startDate, DateTime endDate);
 
+        int getLatestID();
+
     }
 }
