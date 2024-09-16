@@ -1,7 +1,7 @@
 ﻿<div class="container-fluid">
     <div class="row">
         <div class="col-md-12 text-right mb-3">
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AddAttendanceModal">
+            <button type="button" class="btn btn-success" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
                 Add Attendance
             </button>
         </div>
@@ -20,39 +20,39 @@
                 <div class="modal-body">
                     <form id="attendanceForm" novalidate>
                         <div class="form-group">
-                            <label for="HelperName">Select Helper</label>
-                            <select class="form-select" id="HelperNameDDL" required></select>
-                            <div class="invalid-feedback">Please select the Helper</div>
+                            <label ClearAttendenceClass for="HelperName">Select Helper</label>
+                            <select class="form-select ClearAttendenceClass" id="HelperNameDDL" required></select>
+                            <div class="invalid-feedback ClearAttendenceClass">Please select the Helper</div>
                         </div>
 
                         <div class="form-group">
                             <label for="PatientName">Select Patient</label>
-                            <select class="form-select" id="PatientNameDDL" required></select>
-                            <div class="invalid-feedback">Please select the Patient</div>
+                            <select class="form-select ClearAttendenceClass " id="PatientNameDDL" required></select>
+                            <div class="invalid-feedback ClearAttendenceClass">Please select the Patient</div>
                         </div>
 
                         <div class="form-group">
                             <label for="AttendanceDate">Select Date</label>
-                            <input type="datetime-local" class="form-control" id="AttendanceDate" required>
-                            <div class="invalid-feedback">Please select the date</div>
+                            <input type="datetime-local" class="form-control ClearAttendenceClass" id="AttendanceDate" required>
+                            <div class="invalid-feedback ClearAttendenceClass">Please select the date</div>
                         </div>
 
                         <div class="form-group">
                             <label for="TotalHours">Total Work Hours</label>
-                            <input type="text" class="form-control" id="TotalHours">
+                            <input type="text" class="form-control ClearAttendenceClass" id="TotalHours">
                         </div>
 
                         <div class="form-group">
                             <label for="Description">Enter Description</label>
-                            <textarea class="form-control" id="Description" rows="4"></textarea>
+                            <textarea class="form-control ClearAttendenceClass" id="Description" rows="4"></textarea>
                         </div>
 
-                        <input type="hidden" id="AttendanceId">
+                        <input type="hidden" class="ClearAttendenceClass" id="AttendanceId">
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="SaveAttendanceData">Save</button>
+                    <button type="button" class="btn btn-primary" onclick="AddandEditAttendence()" id="SaveAttendanceData">Save</button>
                 </div>
             </div>
         </div>
@@ -82,45 +82,13 @@
     $(document).ready(function () {
         var table = $('#tableAttendance').DataTable();
         GetAttendanceData();
+        HelpersDropDownList();
+        PatientDropDownList();
 
-        $('#SaveAttendanceData').on('click', function () {
-            var helperName = $('#HelperNameDDL').val();
-            var patientName = $('#PatientNameDDL').val();
-            var attendanceDate = $('#AttendanceDate').val();
-            var totalHours = $('#TotalHours').val();
-            var description = $('#Description').val();
-            var attendanceId = $('#AttendanceId').val();
+        
 
-            if ($('#attendanceForm')[0].checkValidity()) {
-                submitAttendanceData();
-            } else {
-                $('#attendanceForm').addClass('was-validated');
-            }
-
-            function submitAttendanceData() {
-                $.ajax({
-                    url: '/Attendance/AddOrEditAttendance',
-                    type: 'POST',
-                    data: {
-                        HelperName: helperName,
-                        PatientName: patientName,
-                        AttendanceDate: attendanceDate,
-                        TotalHours: totalHours,
-                        Description: description,
-                        ID: attendanceId
-                    },
-                    success: function (response) {
-                        if (response) {
-                            GetAttendanceData();
-                            $('#AddAttendanceModal').modal('hide');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        alert('An error occurred: ' + error);
-                    }
-                });
-            }
-        });
+          
+        
 
         $('#tableAttendance').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
@@ -129,9 +97,52 @@
 
         $('#tableAttendance').on('click', '.btn-delete', function () {
             var ID = $(this).attr('data-id');
+            debugger
             confirmDelete(ID);
         });
+       
     });
+    function AddandEditAttendence() {
+        var helperName = $('#HelperNameDDL').val();
+        var patientName = $('#PatientNameDDL').val();
+        var attendanceDate = $('#AttendanceDate').val();
+        var totalHours = $('#TotalHours').val();
+        var description = $('#Description').val();
+        var attendanceId = $('#AttendanceId').val();
+        debugger
+        
+        $.ajax({
+            url: '/Attendance/AddandUpdateAttendance',
+            type: 'POST',
+            data: {
+                fkHelperId: helperName,
+                fkNursingId: patientName,
+                Date: attendanceDate,
+                Time: totalHours,
+                Description: description,
+                Id: attendanceId
+            },
+            success: function (response) {
+                if (response) {
+                    GetAttendanceData();
+
+                    if (attendanceId == null || attendanceId == 0) {
+                            alert('Successdata added succesfully');
+                        }
+                        else
+                        {
+                           alert('Successdata Updated succesfully');
+                        }
+
+                    
+                    $('#AddAttendanceModal').modal('hide');
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred: ' + error);
+            }
+        });
+    }
 
     function confirmDelete(id) {
         $.confirm({
@@ -153,48 +164,56 @@
     }
 
     function BindAttendanceData(data) {
-        $('#HelperNameDDL').val(data.helperName);
-        $('#PatientNameDDL').val(data.patientName);
+        debugger
+        $('#HelperNameDDL').val(data.fkHelperId);
+        $('#PatientNameDDL').val(data.fknursing);
         $('#AttendanceDate').val(data.attendanceDate);
-        $('#TotalHours').val(data.totalHours);
+        $('#TotalHours').val(data.time);
         $('#Description').val(data.description);
-        $('#AttendanceId').val(data.id);
+        $('#AttendanceId').val(data.attendanceId);
         $('#AddAttendanceModal').modal('show');
     }
 
     function deleteAttendance(id) {
         $.ajax({
             type: 'POST',
-            url: '/Attendance/DeleteAttendance',
+            url: '/Attendance/DeleteAttendence',
             data: { id: id },
             success: function (response) {
                 GetAttendanceData();
+                alert('data deleted Successfully');
             },
             error: function (response) {
                 console.error(response);
+                alert(' error occured  deleting Data');
             }
         });
     }
 
     function GetAttendanceData() {
         var table = $('#tableAttendance').DataTable();
+
         $.ajax({
             type: 'POST',
             url: '/Attendance/GetAttendanceData',
             success: function (response) {
-                table.clear();
+                table.clear(); // Clear the table before adding new data
+                debugger
                 response.data.forEach(function (item) {
                     table.row.add([
                         item.helperName,
                         item.patientName,
                         item.attendanceDate,
-                        item.totalHours,
+                        item.time,
+                        
                         item.description,
+
+                        // HTML for edit and delete icons
                         `<div class="text-center">
-                                <i class="fa fa-edit me-4 btn-edit" style="color:green" data-full-data='${JSON.stringify(item).replace(/'/g, "&#39;")}'></i>
-                                <i class="fa fa-trash btn-delete" style="color:red" data-id="${item.id}"></i>
+                            <i class="fa fa-edit me-4 btn-edit" style="color:green" data-full-data='${JSON.stringify(item).replace(/'/g, "&#39;")}'></i>
+                                <i class="fa fa-trash btn-delete" style="color:red" data-id="${item.attendanceId}"></i>
                             </div>`
-                    ]).draw();
+                    ]).draw(); // Redraw the table with new data
                 });
             },
             error: function (xhr, status, error) {
@@ -202,4 +221,73 @@
             }
         });
     }
+   
+
+
+
+    function PatientDropDownList() {
+        $.ajax({
+            url: '/Attendance/GetPatientDetails',
+            type: 'GET',
+            success: function (response) {
+                const PatientDropDownDDl = $('#PatientNameDDL');
+                PatientDropDownDDl.empty();
+
+                const $defaultOption = $('<option>', {
+                    value: '',
+                    text: 'Select Patient',
+                    selected: true
+                });
+                PatientDropDownDDl.append($defaultOption);
+
+                // Adjusting to match the actual property names from the response (id and patientName)
+                $.each(response.data, function (index, item) {
+                    const $option = $('<option>', {
+                        value: item.id,            // Changed to lowercase 'id'
+                        text: item.patientName     // Changed to lowercase 'patientName'
+                    });
+                    PatientDropDownDDl.append($option);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching Patient Details:", error);
+            }
+        });
+    }
+
+
+    function HelpersDropDownList() {
+        $.ajax({
+            url: '/Attendance/GetHelpers',
+            type: 'GET',
+            success: function (response) {
+                const HelpersDropDownDDL = $('#HelperNameDDL');
+                HelpersDropDownDDL.empty();
+
+                const $defaultOption = $('<option>', {
+                    value: '',
+                    text: 'Select Helper',
+                    selected: true
+                });
+                HelpersDropDownDDL.append($defaultOption);
+
+                // Assuming the properties for helpers follow the same structure
+                $.each(response.data, function (index, item) {
+                    const $option = $('<option>', {
+                        value: item.id,            // Changed to lowercase 'id'
+                        text: item.name            // Assuming the property is 'name' for helpers
+                    });
+                    HelpersDropDownDDL.append($option);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching Helpers Details:", error);
+            }
+        });
+    }
+    function ClearAttendenceModalData()
+    {
+        $('.ClearAttendenceClass').val('')
+    }
+
 </script>

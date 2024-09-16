@@ -1,74 +1,75 @@
 ﻿<div class="container-fluid">
     <div class="row">
         <div class="col-md-12 text-right mb-3">
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AddAttendanceModal">
-                Add Attendance
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#userInfoModal">
+                Add New City
             </button>
         </div>
     </div>
 
-    <!-- Modal for Creating and Editing Attendance -->
-    <div class="modal fade" id="AddAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="AttendanceModalLabel" aria-hidden="true">
+    <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="AttendanceModalLabel">Attendance Form</h5>
+                    <h5 class="modal-title" id="userInfoModalLabel">User Information Form</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="attendanceForm" novalidate>
+                    <form id="userForm" novalidate>
                         <div class="form-group">
-                            <label for="HelperName">Select Helper</label>
-                            <select class="form-select" id="HelperNameDDL" required></select>
-                            <div class="invalid-feedback">Please select the Helper</div>
+                            <label for="Name">City Name</label>
+                            <input type="text" class="form-control" id="Name" required />
+                            <div class="invalid-feedback">Please enter the city name.</div>
                         </div>
-
                         <div class="form-group">
-                            <label for="PatientName">Select Patient</label>
-                            <select class="form-select" id="PatientNameDDL" required></select>
-                            <div class="invalid-feedback">Please select the Patient</div>
+                            <label for="Email">Email</label>
+                            <input type="email" class="form-control" id="Email" required />
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
-
                         <div class="form-group">
-                            <label for="AttendanceDate">Select Date</label>
-                            <input type="datetime-local" class="form-control" id="AttendanceDate" required>
-                            <div class="invalid-feedback">Please select the date</div>
+                            <label for="MobileNumber1">Mobile Number 1</label>
+                            <input type="tel" class="form-control" id="MobileNumber1" required />
+                            <div class="invalid-feedback">Please enter a valid mobile number.</div>
                         </div>
-
                         <div class="form-group">
-                            <label for="TotalHours">Total Work Hours</label>
-                            <input type="text" class="form-control" id="TotalHours">
+                            <label for="MobileNumber2">Mobile Number 2 (Optional)</label>
+                            <input type="tel" class="form-control" id="MobileNumber2" />
                         </div>
-
                         <div class="form-group">
-                            <label for="Description">Enter Description</label>
-                            <textarea class="form-control" id="Description" rows="4"></textarea>
+                            <label for="OfficeAddress">Office Address (Optional)</label>
+                            <input type="text" class="form-control" id="OfficeAddress" />
                         </div>
-
-                        <input type="hidden" id="AttendanceId">
+                        <div class="form-group">
+                            <label for="ImageUpload">Upload Image (Optional)</label>
+                            <input type="file" class="form-control-file" id="ImageUpload" accept="image/*" />
+                        </div>
+                        <input type="hidden" id="ImageBase64" />
+                        <div class="alert alert-success mt-2" id="successMessage">
+                            City added successfully!
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="SaveAttendanceData">Save</button>
+                    <button type="button" class="btn btn-primary" id="SaveCityData">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Attendance Table -->
     <div class="row mt-4">
         <div class="col-md-12">
-            <table id="tableAttendance" class="table table-bordered table-hover">
+            <table id="tablecity" class="table table-bordered table-hover">
                 <thead class="thead-light">
                     <tr>
-                        <th>Helper Name</th>
-                        <th>Patient Name</th>
-                        <th>Date</th>
-                        <th>Total Hours</th>
-                        <th>Description</th>
+                        <th>Name</th>
+                        <th>Office Address</th>
+                        <th>Mobile Number 1</th>
+                        <th>Mobile Number 2</th>
+                        <th>Email</th>
+                        <th>Image</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -80,39 +81,54 @@
 
 <script>
     $(document).ready(function () {
-        var table = $('#tableAttendance').DataTable();
-        GetAttendanceData();
+        var table = $('#tablecity').DataTable();
+        GetData();
 
-        $('#SaveAttendanceData').on('click', function () {
-            var helperName = $('#HelperNameDDL').val();
-            var patientName = $('#PatientNameDDL').val();
-            var attendanceDate = $('#AttendanceDate').val();
-            var totalHours = $('#TotalHours').val();
-            var description = $('#Description').val();
-            var attendanceId = $('#AttendanceId').val();
+        $('#successMessage').hide();
 
-            if ($('#attendanceForm')[0].checkValidity()) {
-                submitAttendanceData();
+        $('#SaveCityData').on('click', function () {
+            var name = $('#Name').val();
+            var email = $('#Email').val();
+            var mobileNumber1 = $('#MobileNumber1').val();
+            var mobileNumber2 = $('#MobileNumber2').val();
+            var officeAddress = $('#OfficeAddress').val();
+            var imageInput = $('#ImageUpload')[0];
+            var imageBase64 = '';
+            var CityId = $('#CityId').val();
+
+            if ($('#userForm')[0].checkValidity()) {
+                if (imageInput.files.length > 0) {
+                    var file = imageInput.files[0];
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        imageBase64 = reader.result;
+                        $('#ImageBase64').val(imageBase64);
+                        submitData();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    submitData();
+                }
             } else {
-                $('#attendanceForm').addClass('was-validated');
+                $('#userForm').addClass('was-validated');
             }
 
-            function submitAttendanceData() {
+            function submitData() {
                 $.ajax({
-                    url: '/Attendance/AddOrEditAttendance',
+                    url: '/Configuration/AddOrEditCity',
                     type: 'POST',
                     data: {
-                        HelperName: helperName,
-                        PatientName: patientName,
-                        AttendanceDate: attendanceDate,
-                        TotalHours: totalHours,
-                        Description: description,
-                        ID: attendanceId
+                        Name: name,
+                        Email: email,
+                        MobileNumbers: mobileNumber1 + (mobileNumber2 ? ',' + mobileNumber2 : ''),
+                        OfficeAddress: officeAddress,
+                        ImageBase64: imageBase64,
+                        ID: CityId
                     },
                     success: function (response) {
                         if (response) {
-                            GetAttendanceData();
-                            $('#AddAttendanceModal').modal('hide');
+                            GetData();
+                            $('#userInfoModal').modal('hide');
                         }
                     },
                     error: function (xhr, status, error) {
@@ -122,53 +138,54 @@
             }
         });
 
-        $('#tableAttendance').on('click', '.btn-edit', function () {
+        $('#tablecity').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
-            BindAttendanceData(fullData);
+            BindData(fullData);
         });
 
-        $('#tableAttendance').on('click', '.btn-delete', function () {
-            var ID = $(this).attr('data-id');
+        $('#tablecity').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('data-id'));
             confirmDelete(ID);
         });
     });
 
     function confirmDelete(id) {
-        $.confirm({
-            title: 'Confirm',
-            content: 'Are you sure you want to delete this record?',
+        $.alert({
+            title: 'Alert',
+            content: 'Are you sure you want to delete?',
             buttons: {
                 Yes: {
+                    text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                        deleteAttendance(id);
-                    }
+                        deleteData(id);
+                    },
                 },
                 No: {
-                    btnClass: 'btn btn-warning',
-                    action: function () { }
+                    text: 'No',
+                    btnClass: 'btn btn-warning'
                 }
             }
         });
     }
 
-    function BindAttendanceData(data) {
-        $('#HelperNameDDL').val(data.helperName);
-        $('#PatientNameDDL').val(data.patientName);
-        $('#AttendanceDate').val(data.attendanceDate);
-        $('#TotalHours').val(data.totalHours);
-        $('#Description').val(data.description);
-        $('#AttendanceId').val(data.id);
-        $('#AddAttendanceModal').modal('show');
+    function BindData(data) {
+        $('#Name').val(data.name);
+        $('#Email').val(data.email);
+        $('#OfficeAddress').val(data.officeAddress);
+        $('#MobileNumber1').val(data.mobileNumbers.split(',')[0]);
+        $('#MobileNumber2').val(data.mobileNumbers.split(',')[1]);
+        $('#CityId').val(data.id);
+        $('#userInfoModal').modal('show');
     }
 
-    function deleteAttendance(id) {
+    function deleteData(id) {
         $.ajax({
-            type: 'POST',
-            url: '/Attendance/DeleteAttendance',
+            type: "POST",
+            url: '/Configuration/DeleteCity',
             data: { id: id },
             success: function (response) {
-                GetAttendanceData();
+                GetData();
             },
             error: function (response) {
                 console.error(response);
@@ -176,23 +193,28 @@
         });
     }
 
-    function GetAttendanceData() {
-        var table = $('#tableAttendance').DataTable();
+    function GetData() {
+        var table = $('#tablecity').DataTable();
         $.ajax({
-            type: 'POST',
-            url: '/Attendance/GetAttendanceData',
+            type: "POST",
+            url: '/Configuration/GetCityData',
             success: function (response) {
                 table.clear();
                 response.data.forEach(function (item) {
+                    var mobileNumbers = item.mobileNumbers.split(',');
+                    var mobileNumber1 = mobileNumbers[0] ? mobileNumbers[0] : '';
+                    var mobileNumber2 = mobileNumbers[1] ? mobileNumbers[1] : '';
+
                     table.row.add([
-                        item.helperName,
-                        item.patientName,
-                        item.attendanceDate,
-                        item.totalHours,
-                        item.description,
+                        item.name,
+                        item.officeAddress,
+                        mobileNumber1,
+                        mobileNumber2,
+                        item.email,
+                        `<img src="${item.imageBase64}" alt="Image" style="width: 50px; height: auto;">`,
                         `<div class="text-center">
                                 <i class="fa fa-edit me-4 btn-edit" style="color:green" data-full-data='${JSON.stringify(item).replace(/'/g, "&#39;")}'></i>
-                                <i class="fa fa-trash btn-delete" style="color:red" data-id="${item.id}"></i>
+                                <i class="fa fa-trash btn-delete" style="color:red" data-id='${JSON.stringify(item.id).replace(/'/g, "&#39;")}'></i>
                             </div>`
                     ]).draw();
                 });
