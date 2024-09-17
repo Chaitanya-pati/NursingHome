@@ -1,6 +1,149 @@
-﻿
+﻿<style>
+    .memo-container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .memo-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .memo-form label {
+        font-weight: bold;
+    }
+
+    .memo-form input, .memo-form textarea {
+        width: 100%;
+        border: none;
+        border-bottom: 1px dotted #000;
+        margin-bottom: 20px;
+        font-size: 16px;
+        padding: 5px 0;
+    }
+
+        .memo-form input[type="text"]::placeholder {
+            color: #000;
+        }
+
+    .memo-form .currency-box {
+        display: flex;
+        align-items: center;
+    }
+
+        .memo-form .currency-box span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+    .currency-box input {
+        width: auto;
+        border: 1px solid #000;
+        border-radius: 5px;
+        padding: 5px;
+        width: 80px;
+        text-align: right;
+    }
+
+
+    .signature-box canvas {
+        border-bottom: 1px solid #000;
+        cursor: crosshair;
+    }
+
+    .custom-modal {
+        width: 90%; /* Full width on mobile */
+    }
+
+    /* Styles for tablets (between 768px and 992px) */
+    @@media (min-width: 768px) and (max-width: 991.98px) {
+        .custom-modal {
+            width: 80%; /* Slightly narrower on tablets */
+        }
+    }
+
+    /* Styles for desktops (992px and larger) */
+    @@media (min-width: 992px) {
+        .custom-modal {
+            width: 60%; /* Narrower for larger screens */
+        }
+    }
+
+    /* Styles for larger desktops (1200px and larger) */
+    @@-media (min-width: 1200px) {
+        .custom-modal {
+            width: 50%; /* Even narrower for extra-large screens */
+        }
+    }
+</style>
+@*<div class="container-fluid">
+    <button class="customBtn" onclick="OpenOldAgePaymentPopup()">OldAgePayment</button>
+</div>
+*@
+<div class="container-fluid mt-3">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="oldAgePaymentTab" data-toggle="tab" href="#oldAgePaymentTabContent" role="tab" aria-controls="home" aria-selected="true">OldAgePayments</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="NursingPaymentTab" data-toggle="tab" href="#NursingPaymentTabContent" role="tab" aria-controls="profile" aria-selected="false">HomeNursingPayment</a>
+        </li>
+
+    </ul>
+    <div class="tab-content mt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="oldAgePaymentTabContent" role="tabpanel" aria-labelledby="home-tab">
+            <div class="container-fluid mb-2 contentEnd">
+                <button type="button" class="customBtn" onclick="ClearOldAgePaymentFields()">
+                    <i class="fa fa-add me-1"></i> Add
+                </button>
+            </div>
+            <div class="col-md-12">
+                <table id="tblOldAgePayment" class="display table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Payment Date</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="NursingPaymentTabContent" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="container-fluid mb-2 contentEnd">
+                <button type="button" class="customBtn">
+                    <i class="fa fa-add me-1"></i> Add
+                </button>
+            </div>
+            <div class="col-md-12">
+                <table id="tblNursingPayment" class="display table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Payment Date</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <h5>Contact</h5>
+            <p>This is the contact tab content.</p>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="oldAgeCashPopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl custom-modal" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Old Age Cash Memo</h5>
@@ -9,165 +152,306 @@
                 </button>
             </div>
             <div class="modal-body oldAgeCashFormContent">
-                <form>
+                <div style="border:1px solid black">
                     <input type="hidden" id="oldAgeCashId" />
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="row mt-2">
-                                        <div class="col-3">
-                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
-                                        </div>
-                                        <div class="col-6 contentCenter">
-                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
+                    <div class="HeaderContainer" style="border-bottom:1px solid black">
+                        <div class="row mt-2">
+                            <div class="col-3">
+                                <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                            </div>
+                            <div class="col-6 contentCenter">
+                                <label style="font-family:fantasy;font-size:50px;letter-spacing:5px">VEDHANTH</label>
 
-                                        </div>
-                                        <div class="col-3 contentEnd">
-                                            <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
-                                        </div>
-                                        <div class="col-2"></div>
-                                        <div class="col-8 contentCenter" style="margin-top:-20px">
-                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
-                                        </div>
+                            </div>
+                            <div class="col-3 contentEnd">
+                                <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+                            </div>
+                            <div class="col-2"></div>
+                            <div class="col-8 contentCenter" style="margin-top:-20px">
+                                <label style="font-size:26px;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                            </div>
+                        </div>
+                        <div id="customAddress">
+                            <div class="contentCenter">
+                                <span id="customAddressLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                            </div>
+                            <div class="contentCenter">
+                                <span id="customAddressLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="memo-container p-2">
+                        <div class="row">
+                            <div class="col-4"></div>
+                            <div class="memo-header col-auto">Cash Voucher</div>
+                            <div class="col-2"></div>
+                            <div class="col">
+                                <label>Date :</label>
+                                <input type="date" id="OAdate" />
+                            </div>
+                        </div>
+                        <div class="memo-form ml-2">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label for="name">Mrs/Ms:</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="OAInputField" id="OApatientName">
+                                    <input type="hidden" class="OAInputField" id="oldAgePaymentId">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label for="sum">The sum of (in words) Rs</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="OAInputField" id="OAamtInWords">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label for="payment-of">In Payment of</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="OAInputField" id="OApayment-of">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label for="payment-mode">By Cash/Online Transfer</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="OAInputField" id="OApayment-mode">
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="currency-box">
+                                <span>Rs</span>
+                                <input type="text" class="OAInputField" id="OAttlAmount" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="signature-section row ml-2">
+                            <div class="signature-box col-4 ">
+                                <canvas id="OAauthorizedSignature" class="signatureContainer"></canvas>
+                                <img id="OAauthorizedSignatureImage" class="signatureContainerImage"/>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <p>Authorized by &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('OAauthorizedSignature')"></i></p>
                                     </div>
-                                    <div id="customAddress">
-                                        <div class="contentCenter">
-                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
-                                        </div>
-                                        <div class="contentCenter">
-                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
-                                        </div>
+                                    <div class="col-2">
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
+                                </div>
 
-                                <td colspan="2">
-                                    <div class="row mt-2">
-                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:medium;font-weight:500">OLD AGE ADMISSION FORM:</label>
-                                        <div class="row col-5 ">
+                            </div>
+                            <div class="col-4"></div>
+                            <div class="signature-box col-4">
+                                <canvas id="OArecieverSignature" class="signatureContainer"></canvas>
+                                <img id="OArecieverSignatureImage" class="signatureContainerImage" hidden/>
+                                <div class="row">
+                                    <p>Receiver's Signature  &nbsp;&nbsp;&nbsp;<i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('OArecieverSignature')"></i></p>
+                                </div>
 
-                                            <span class="col-5">No :</span>
-                                            <input class="col-7 mt-1" type="number" style="height:25px" min="0" />
-                                        </div>
-                                        <div class="col-7"></div>
-                                        <div class="row col-5 mt-2 contentEnd">
-                                            <span class="col-5">Date :</span>
-                                            <input class="col-7" id="adminssionDate" type="date" />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label for="patientName">Patient Name:</label></td>
-                                <td><input type="text" class="form-control" id="patientName"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="address">Address:</label></td>
-                                <td><input type="text" class="form-control" id="address"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="patientAge">Patient Age:</label></td>
-                                <td><input type="text" class="form-control" id="patientAge"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="patientCondition">Patient Condition:</label></td>
-                                <td><input type="text" class="form-control" id="patientCondition"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="customerName">Customer Name:</label></td>
-                                <td><input type="text" class="form-control" id="customerName"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="mobileNo">Mobile No:</label></td>
-                                <td><input type="text" class="form-control" id="mobileNo"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="typesOfService">Types of Service:</label></td>
-                                <td><input type="text" class="form-control" id="typesOfService"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="idProof">ID Proof:</label></td>
-                                <td><div class="row col-12"><input type="file" class="form-control col-10" id="idProof" onchange=""><i id="downloadIdProof" class="fa-solid fa-download fa-lg contentEnd col-2 mt-3 "></i></div></td>
-                            </tr>
-                            <tr>
-                                <td><label for="registrationCharges">Registration Charges:</label></td>
-                                <td><input type="text" class="form-control" id="registrationCharges"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
-                                <td><input type="text" class="form-control" id="monthlyPayment"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="periodFrom">Period From:</label></td>
-                                <td><input type="date" class="form-control" id="periodFrom"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="periodTo">To:</label></td>
-                                <td><input type="date" class="form-control" id="periodTo"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div>
-                                        <b>Terms and Conditions for Client:</b>
-                                        <div style="display: flex; flex-direction: column;">
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                <div style="flex: 1; text-align: left;">We give with patients attender and nursing staff with emergency doctor visit.</div>
-                                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    @* <div class="row">
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                <div style="flex: 1; text-align: left;">Three times food and tea, coffee (daily changes of food).</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                <div style="flex: 1; text-align: left;">We don't allow outside food and we don't provide any event foods for patients.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                <div style="flex: 1; text-align: left;">We don't gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                <div style="flex: 1; text-align: left;">If the patient's discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
-                                                <div style="flex: 1; text-align: left;">In case patient death non refund advance amount.</div>
-                                            </div>
-                                        </div>
-
-                                        <b> Declaration</b></br>
-                                        <div style="display: flex; margin-top: 5px;margin-bottom:20px">
-                                            <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
-                                            <div style="flex: 1; text-align: left;">
-                                                I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
-                                            </div>
-                                        </div>
-                                        <div class="row">
-
-                                            <span class="col-4">Signature of the Client</span>
-                                            <span class="col-4"></span>
-                                            <span class="col-4 contentEnd">Authorised Signatory</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
+                    <span class="col-4">Signature of the Client</span>
+                    <span class="col-4"></span>
+                    <span class="col-4 contentEnd">Authorised Signatory</span>
+                    </div>*@
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="AddOldAge()">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="SaveOldAgeCashMemo()">Save</button>
                 <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    // Script for digital signature
+    // Get all canvas elements with the class 'signatureContainer'
+    const canvases = document.getElementsByClassName('signatureContainer');
+
+    // Loop through each canvas element and add event listeners for drawing
+    Array.from(canvases).forEach((canvas) => {
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Helper function to get coordinates for touch or mouse events
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect(); // Get canvas position
+            if (e.touches && e.touches.length > 0) {
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            } else {
+                return {
+                    x: e.offsetX,
+                    y: e.offsetY
+                };
+            }
+        }
+
+        // Event listener for starting the drawing (mouse + touch)
+        const startDrawing = (e) => {
+            isDrawing = true;
+            const { x, y } = getCoordinates(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        };
+
+        // Event listener for drawing as the mouse or touch moves
+        const draw = (e) => {
+            if (!isDrawing) return;
+            const { x, y } = getCoordinates(e);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            e.preventDefault(); // Prevent scrolling during touch
+        };
+
+        // Event listener for stopping the drawing
+        const stopDrawing = () => {
+            isDrawing = false;
+        };
+
+        // Mouse event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch event listeners
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+    });
+
+    function clearSignature(id) {
+        var canvas = document.getElementById(id);
+        if (canvas) {
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    $(document).ready(function () {
+        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+            const element = document.querySelector('.oldAgeCashFormContent');
+            element.style.transform = 'scale(1)';
+            element.style.transformOrigin = 'top center';
+            // Options for html2pdf
+            const options = {
+                margin: 0,
+                filename: 'form.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Generate PDF
+            html2pdf().from(element).set(options).save();
+        });
+    });
+
+
+    function SaveOldAgeCashMemo() {
+        var data = {}
+        data.id = $('#oldAgePaymentId').val();
+        data.patientName = $('#OApatientName').val();
+        data.amount = $('#OAttlAmount').val();
+        data.amountInWords = $('#OAamtInWords').val();
+        data.Inpaymentof = $('#OApayment-of').val();
+        data.paymentMode = $('#OApayment-mode').val();
+        data.date = $('#OAdate').val();
+        data.authorizedSign = $('#OAauthorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+        data.recieversSign = $('#OArecieverSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveOldAgeCashMemo", "CashMemo")',
+            data: data,
+            success: function (response) {
+                if (response) {
+                    let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                    msgPopup("success", msg);
+                    $('#oldAgeCashPopup').modal('toggle');
+                } else {
+                    msgPopup("error", "Something Went Wrong")
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+
+    }
+
+    function GetPaymentData() {
+        var OAtable = $('#tblOldAgePayment').DataTable();
+        var NHtable = $('#tblNursingPayment').DataTable();
+        $.get({
+            url: '@Url.Action("GetCashMemoData`", "OldAge")',
+            data: { startDate: $('#startDate').val(), endDate: $('#endDate').val() },
+            success: function (response) {
+                OAtable.clear();
+                response.oldAge.forEach(function (item) {
+                    OAtable.row.add([
+                        item.patientName,
+                        item.date,
+                        item.amount,
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                    ]).draw();
+                });
+                NHtable.clear();
+                response.nursing.forEach(function (item) {
+                    NHtable.row.add([
+                        item.patientName,
+                        item.date,
+                        item.amount,
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                    ]).draw();
+                });
+            },
+            error: function (response) {
+
+                console.error(response);
+            }
+        });
+    }
+    function ClearOldAgePaymentFields(){
+        $('.OAInputField').val('');
+        clearSignature('OAauthorizedSignature');
+        clearSignature('OArecieverSignature');
+        $('#OArecieverSignatureImage').prop('hidden', true);
+        $('#OArecieverSignature').prop('hidden', false);
+        $('#OAauthorizedSignatureImage').prop('hidden', true);
+        $('#OAauthorizedSignature').prop('hidden', false);
+        $('#oldAgeCashPopup').modal('toggle');
+    }
+    function BindOldAgePayment(data){
+        $('#oldAgePaymentId').val(data.id);
+        $('#OApatientName').val(data.patientName);
+        $('#OAttlAmount').val(data.amount);
+        $('#OAamtInWords').val(data.amountInWords);
+        $('#OApayment-of').val(data.Inpaymentof);
+        $('#OApayment-mode').val(data.paymentMode);
+        $('#OAdate').val(data.date);
+        $('#OArecieverSignatureImage').prop('hidden',false);
+        $('#OArecieverSignature').prop('hidden',true);
+        $('#OArecieverSignatureImage').attr('src', 'data:image/png;base64,' + data.recieversSign);
+        $('#OAauthorizedSignatureImage').prop('hidden', false);
+        $('#OAauthorizedSignature').prop('hidden',true);
+        $('#OAauthorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
+        $('#oldAgeCashPopup').modal('toggle');
+    }
+</script>

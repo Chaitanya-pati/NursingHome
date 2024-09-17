@@ -42,6 +42,4 @@ public partial class OldAge
     public DateTime? UpdatedDate { get; set; }
 
     public string SUser { get; set; }
-
-    public virtual ICollection<OldAgePayment> OldAgePayment { get; set; } = new List<OldAgePayment>();
 }

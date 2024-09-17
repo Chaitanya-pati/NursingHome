@@ -9,6 +9,17 @@ namespace NursingHome.Db.Interface
 {
     public interface ICashMemo
     {
-        void AddData();
+
+        bool AddOldAgeCashMemo(OldAgeCashMemo data);
+        bool UpdateOldAgeCashMemo(OldAgeCashMemo oldAge);
+
+        bool DeleteOldAgeCashMemo(int id);
+        List<OldAgeCashMemo> GetOldAgePaymentData(DateTime startDate, DateTime endDate);
+         bool AddNursingCashMemo(HomeNursingCashMemo data);
+        bool UpdateNursingCashMemo(HomeNursingCashMemo oldAge);
+
+        bool DeleteNursingCashMemo(int id);
+        List<HomeNursingCashMemo> GetNursingPaymentData(DateTime startDate, DateTime endDate);
+
     }
 }

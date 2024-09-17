@@ -17,13 +17,6 @@ namespace NursingHome.Db.Interface
 
         bool DeleteData(int id);
 
-        bool AddOldAgePayment(OldAgePayment data);
-        bool UpdatePaymentData(OldAgePayment oldAge);
-
-        bool DeleteOldAgePayment(int id);
-
-        List<OldAgePaymentData> GetPaymentData(DateTime startDate, DateTime endDate);
-
         int getLatestID();
 
     }

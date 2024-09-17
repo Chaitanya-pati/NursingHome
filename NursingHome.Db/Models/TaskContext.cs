@@ -23,11 +23,11 @@ public partial class TaskContext : DbContext
 
     public virtual DbSet<HomeNursing> HomeNursing { get; set; }
 
-    public virtual DbSet<HomeNursingPayment> HomeNursingPayment { get; set; }
+    public virtual DbSet<HomeNursingCashMemo> HomeNursingCashMemo { get; set; }
 
     public virtual DbSet<OldAge> OldAge { get; set; }
 
-    public virtual DbSet<OldAgePayment> OldAgePayment { get; set; }
+    public virtual DbSet<OldAgeCashMemo> OldAgeCashMemo { get; set; }
 
     public virtual DbSet<State> State { get; set; }
 
@@ -108,16 +108,16 @@ public partial class TaskContext : DbContext
                 .HasConstraintName("FK__HomeNursi__fkHel__30F848ED");
         });
 
-        modelBuilder.Entity<HomeNursingPayment>(entity =>
+        modelBuilder.Entity<HomeNursingCashMemo>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__HomeNurs__3214EC0771EF2C0D");
+            entity.HasNoKey();
 
-            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Date).HasColumnType("date");
-
-            entity.HasOne(d => d.fkNursing).WithMany(p => p.HomeNursingPayment)
-                .HasForeignKey(d => d.fkNursingId)
-                .HasConstraintName("FK__HomeNursi__fkNur__33D4B598");
+            entity.Property(e => e.amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.amountInWords).HasMaxLength(200);
+            entity.Property(e => e.date).HasColumnType("date");
+            entity.Property(e => e.id).ValueGeneratedOnAdd();
+            entity.Property(e => e.patientName).HasMaxLength(200);
+            entity.Property(e => e.paymentMode).HasMaxLength(100);
         });
 
         modelBuilder.Entity<OldAge>(entity =>
@@ -140,16 +140,13 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
 
-        modelBuilder.Entity<OldAgePayment>(entity =>
+        modelBuilder.Entity<OldAgeCashMemo>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OldAgePa__3214EC07CAC0EEE6");
-
-            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Date).HasColumnType("date");
-
-            entity.HasOne(d => d.fkOldAge).WithMany(p => p.OldAgePayment)
-                .HasForeignKey(d => d.fkOldAgeId)
-                .HasConstraintName("FK__OldAgePay__fkOld__2C3393D0");
+            entity.Property(e => e.amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.amountInWords).HasMaxLength(200);
+            entity.Property(e => e.date).HasColumnType("date");
+            entity.Property(e => e.patientName).HasMaxLength(200);
+            entity.Property(e => e.paymentMode).HasMaxLength(100);
         });
 
         modelBuilder.Entity<State>(entity =>

@@ -74,3 +74,9 @@ table.dataTable{
 .nav-tabs .nav-link.active { 
     border-bottom: 3px solid #6750a4 !important; 
 }
+
+.signatureContainer, .signatureContainerImage {
+    background-color: #f2f2f2;
+    width: 80%;
+    height: 60%
+}

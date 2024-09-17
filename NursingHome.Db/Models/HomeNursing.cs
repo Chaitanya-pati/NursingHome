@@ -47,7 +47,5 @@ public partial class HomeNursing
 
     public virtual ICollection<Attendance> Attendance { get; set; } = new List<Attendance>();
 
-    public virtual ICollection<HomeNursingPayment> HomeNursingPayment { get; set; } = new List<HomeNursingPayment>();
-
     public virtual Helpers fkHelper { get; set; }
 }
