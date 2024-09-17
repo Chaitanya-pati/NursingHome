@@ -1,82 +1,27 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Information Form</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- DataTables CSS -->
-    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        .modal-content {
-            border-radius: 10px;
-        }
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 text-right mb-3">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#userInfoModal">
+                Add New City
+            </button>
+        </div>
+    </div>
 
-        .modal-header {
-            background-color: #007bff;
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: none;
-        }
-
-        .modal-body {
-            position: relative;
-        }
-
-        .flower-bloom {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: #ff69b4;
-        }
-
-            .flower-bloom.show {
-                display: block;
-                animation: bloom 2s ease-in-out;
-            }
-
-        .alert-success {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container mt-4">
-        <h2>User Information</h2>
-        <!-- Add City Button to trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userInfoModal">
-            Add City
-        </button>
-
-        <!-- Bootstrap Modal -->
-        <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="userInfoModalLabel">User Information Form</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
+    <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoModalLabel">User Information Form</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm" novalidate>
                         <div class="form-group">
                             <label for="Name">City Name</label>
-                            <label id="CityId" for="Name" style="display: none;">City Name</label>
                             <input type="text" class="form-control" id="Name" required />
-                            <div class="invalid-feedback">Please enter your name.</div>
+                            <div class="invalid-feedback">Please enter the city name.</div>
                         </div>
                         <div class="form-group">
                             <label for="Email">Email</label>
@@ -104,196 +49,179 @@
                         <div class="alert alert-success mt-2" id="successMessage">
                             City added successfully!
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="SaveCityData">Save</button>
-                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="SaveCityData">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container mt-4">
-        <table id="tablecity" class="display table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Office Address</th>
-                    <th>MobileNumber1</th>
-                    <th>MobileNumber2</th>
-                    <th>Email</th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <table id="tablecity" class="table table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Office Address</th>
+                        <th>Mobile Number 1</th>
+                        <th>Mobile Number 2</th>
+                        <th>Email</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
+</div>
 
-   
-    <!-- Custom JS -->
-    <script>
-        $(document).ready(function () {
-            var table = $('#tablecity').DataTable();
-            GetData();
+<script>
+    $(document).ready(function () {
+        var table = $('#tablecity').DataTable();
+        GetData();
 
-            $('#successMessage').hide();
+        $('#successMessage').hide();
 
-            $('#SaveCityData').on('click', function () {1
+        $('#SaveCityData').on('click', function () {
+            var name = $('#Name').val();
+            var email = $('#Email').val();
+            var mobileNumber1 = $('#MobileNumber1').val();
+            var mobileNumber2 = $('#MobileNumber2').val();
+            var officeAddress = $('#OfficeAddress').val();
+            var imageInput = $('#ImageUpload')[0];
+            var imageBase64 = '';
+            var CityId = $('#CityId').val();
 
-                var name = $('#Name').val();
-                var email = $('#Email').val();
-                var mobileNumber1 = $('#MobileNumber1').val();
-                var mobileNumber2 = $('#MobileNumber2').val();
-                var officeAddress = $('#OfficeAddress').val();
-                var imageInput = $('#ImageUpload')[0];
-
-                var imageBase64 = '';
-                var CityId = $('#CityId').val();
-
-                if ($('#userInfoModal').find('.form-control:invalid').length === 0) {
-                    if (imageInput.files.length > 0) {
-                        var file = imageInput.files[0];
-                        var reader = new FileReader();
-                        reader.onloadend = function () {
-                            imageBase64 = reader.result;
-                            $('#ImageBase64').val(imageBase64);
-                            submitData();
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
+            if ($('#userForm')[0].checkValidity()) {
+                if (imageInput.files.length > 0) {
+                    var file = imageInput.files[0];
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        imageBase64 = reader.result;
+                        $('#ImageBase64').val(imageBase64);
                         submitData();
-                    }
+                    };
+                    reader.readAsDataURL(file);
                 } else {
-                    $('#userInfoModal').find('.form-control:invalid').addClass('was-validated');
+                    submitData();
                 }
+            } else {
+                $('#userForm').addClass('was-validated');
+            }
 
-                function submitData() {
-                    $.ajax({
-                        url: '/Configuration/AddOrEditCity',
-                        type: 'POST',
-                        data: {
-                            Name: name,
-                            Email: email,
-                            MobileNumbers: mobileNumber1 + (mobileNumber2 ? ',' + mobileNumber2 : ''),
-                            OfficeAddress: officeAddress,
-                            ImageBase64: imageBase64,
-                            ID: CityId
-                            
-                        },
-                        success: function (response) {
-                            if (response) {
-                             
-                                
-                                GetData();
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            alert('An error occurred: ' + error);
+            function submitData() {
+                $.ajax({
+                    url: '/Configuration/AddOrEditCity',
+                    type: 'POST',
+                    data: {
+                        Name: name,
+                        Email: email,
+                        MobileNumbers: mobileNumber1 + (mobileNumber2 ? ',' + mobileNumber2 : ''),
+                        OfficeAddress: officeAddress,
+                        ImageBase64: imageBase64,
+                        ID: CityId
+                    },
+                    success: function (response) {
+                        if (response) {
+                            GetData();
+                            $('#userInfoModal').modal('hide');
                         }
-                    });
-                }
-            });
-
-         
-
-            // Edit button functionality
-            $('#tablecity').on('click', '.btn-edit', function () {
-                var fullData = JSON.parse($(this).attr('data-full-data'));
-                BindData(fullData);
-            });
-            $('#tablecity').on('click', '.btn-delete', function () {
-                var ID = JSON.parse($(this).attr('data-id')); 
-                confirmDelete(ID);
-            });
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+            }
         });
-        function confirmDelete(id) {
-            $.alert({
-                title: 'Alert',
-                content: 'Are you sure want to delete ?',
-                typeAnimated: true,
-                backgroundDismiss: false,
-                backgroundDismissAnimation: 'glow',
-                boxWidth: '30%',
-                useBootstrap: false,
-                buttons: {
-                    Yes: {
-                        text: 'Yes',
-                        btnClass: 'btn btn-success',
-                        action: function () {
-                            deleteData(id);
-                        },
+
+        $('#tablecity').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindData(fullData);
+        });
+
+        $('#tablecity').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('data-id'));
+            confirmDelete(ID);
+        });
+    });
+
+    function confirmDelete(id) {
+        $.alert({
+            title: 'Alert',
+            content: 'Are you sure you want to delete?',
+            buttons: {
+                Yes: {
+                    text: 'Yes',
+                    btnClass: 'btn btn-success',
+                    action: function () {
+                        deleteData(id);
                     },
-                    No: {
-                        text: 'No',
-                        btnClass: 'btn btn-warning',
-                        action: function () {
-                            return;
-                        },
-                    },
                 },
-            });
-        }
-        function BindData(data) {
-            $('#Name').val(data.name);
-            $('#Email').val(data.email);
-            $('#OfficeAddress').val(data.officeAddress);
-            $('#MobileNumber1').val(data.mobileNumbers.split(',')[0]);
-            $('#MobileNumber2').val(data.mobileNumbers.split(',')[1]);
-            $('#CityId').val(data.id);
-
-            $('#userInfoModal').modal('toggle');
-        }
-        function deleteData(id) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("DeleteCity", "Configuration")',
-                data: { id: id },
-                success: function (response) {
-                    GetData();
-
-                },
-                error: function (response) {
-
-                    console.error(response);
+                No: {
+                    text: 'No',
+                    btnClass: 'btn btn-warning'
                 }
-            });
-        }
-        function GetData() {
-            var table = $('#tablecity').DataTable();
-            $.ajax({
-                type: "POST",
-                url: '/Configuration/GetCityData',
-                success: function (response) {
-                    table.clear();
-                    response.data.forEach(function (item) {
-                        var mobileNumbers = item.mobileNumbers.split(',');
-                        var mobileNumber1 = mobileNumbers[0] ? mobileNumbers[0] : ''; // Default to an empty string if undefined
-                        var mobileNumber2 = mobileNumbers[1] ? mobileNumbers[1] : ''; // Default to an empty string if undefined
+            }
+        });
+    }
 
-                        table.row.add([
-                            item.name,
-                            item.officeAddress,
-                            mobileNumber1,
-                            mobileNumber2,
-                            item.email,
-                            `<img src="${item.imageBase64}" alt="Image" style="width: 50px; height: auto;">`,
-                            '<div class="contentCenter">' +
-                            '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                            '<i class="fa fa-trash ml-2 btn-delete" style="color:red" data-id=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
-                            '</div>'
-                        ]).draw();
-                    });
-                },
-                error: function (xhr, status, error) {
-                    alert('An error occurred: ' + error);
-                }
-            });
-        }
+    function BindData(data) {
+        $('#Name').val(data.name);
+        $('#Email').val(data.email);
+        $('#OfficeAddress').val(data.officeAddress);
+        $('#MobileNumber1').val(data.mobileNumbers.split(',')[0]);
+        $('#MobileNumber2').val(data.mobileNumbers.split(',')[1]);
+        $('#CityId').val(data.id);
+        $('#userInfoModal').modal('show');
+    }
 
+    function deleteData(id) {
+        $.ajax({
+            type: "POST",
+            url: '/Configuration/DeleteCity',
+            data: { id: id },
+            success: function (response) {
+                GetData();
+            },
+            error: function (response) {
+                console.error(response);
+            }
+        });
+    }
 
-    </script>
-</body>
-</html>
+    function GetData() {
+        var table = $('#tablecity').DataTable();
+        $.ajax({
+            type: "POST",
+            url: '/Configuration/GetCityData',
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    var mobileNumbers = item.mobileNumbers.split(',');
+                    var mobileNumber1 = mobileNumbers[0] ? mobileNumbers[0] : '';
+                    var mobileNumber2 = mobileNumbers[1] ? mobileNumbers[1] : '';
+
+                    table.row.add([
+                        item.name,
+                        item.officeAddress,
+                        mobileNumber1,
+                        mobileNumber2,
+                        item.email,
+                        `<img src="${item.imageBase64}" alt="Image" style="width: 50px; height: auto;">`,
+                        `<div class="text-center">
+                                <i class="fa fa-edit me-4 btn-edit" style="color:green" data-full-data='${JSON.stringify(item).replace(/'/g, "&#39;")}'></i>
+                                <i class="fa fa-trash btn-delete" style="color:red" data-id='${JSON.stringify(item.id).replace(/'/g, "&#39;")}'></i>
+                            </div>`
+                    ]).draw();
+                });
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred: ' + error);
+            }
+        });
+    }
+</script>
