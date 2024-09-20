@@ -9,8 +9,8 @@ namespace NursingHome.Db.Interface
 {
     public interface ISalarySlipService
     {
-      
 
+        (double totalDaysWorked, double netSalary, double basicSalary, int totalDaysInMonth) GetAttendanceAndNetSalary(int employeeId, int month, int year);
 
     }
 }
