@@ -23,29 +23,18 @@
                             </div>
                         </div>
                         <!-- Multi-select Dropdown Columns -->
-                        <div class="col-4 row">
+                        <div class="col-4 row" id="userColumn">
                             <div class="col-4">
-                                <label for="multiSelect" class="mt-1">Select User:</label>
+                                <label  class="mt-1">Select User:</label>
                             </div>
                             <div class="col-8">
-                                <select id="multiSelect" class="form-control" multiple="multiple">
-                                    <option value="php">PHP</option>
-                                    <option value="javascript">JavaScript</option>
-                                    <option value="java">Java</option>
-                                    <option value="sql">SQL</option>
-                                    <option value="jquery">Jquery</option>
-                                    <option value=".net">.Net</option> 
-                                    <option value="javascript">JavaScript</option>
-                                    <option value="java">Java</option>
-                                    <option value="sql">SQL</option>
-                                    <option value="jquery">Jquery</option>
-                                    <option value=".net">.Net</option>
+                                <select id="ddlUsers" class="form-select">
                                 </select>
                             </div>
                         </div>
                         <!-- Button Column -->
                         <div class="col-2">
-                            <button id="btnSubmit" class="customBtn">Search</button>
+                            <button id="search" class="customBtn">Search</button>
                         </div>
                     </div>
                 </div>
@@ -54,13 +43,21 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        $('#multiSelect').multiselect({
-            includeSelectAllOption: true,
-            enableFiltering: true,
-            buttonWidth: '100%'
+   
+        
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('startDate').value = GetFormattedStartDate(new Date());
+            document.getElementById('endDate').value = GetFormatedDateValue(new Date());
+
+            $('#startDate').on('change', function () {
+                checkrange('startDate', 'endDate');
+            });
+            $('#endDate').on('change', function () {
+                checkrange('startDate', 'endDate');
+            });
+            
         });
-    });
+ 
 
     //$('#multiSelect').val(['php']);
     //$('#multiSelect').multiselect('rebuild')

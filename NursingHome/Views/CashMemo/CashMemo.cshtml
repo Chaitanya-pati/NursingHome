@@ -82,6 +82,10 @@
     <button class="customBtn" onclick="OpenOldAgePaymentPopup()">OldAgePayment</button>
 </div>
 *@
+<div class="col-md-12">
+    @Html.Partial("~/Partialviews/_SearchBar.cshtml")
+</div>
+
 <div class="container-fluid mt-3">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
@@ -95,8 +99,8 @@
     <div class="tab-content mt-2" id="myTabContent">
         <div class="tab-pane fade show active" id="oldAgePaymentTabContent" role="tabpanel" aria-labelledby="home-tab">
             <div class="container-fluid mb-2 contentEnd">
-                <button type="button" class="customBtn" onclick="ClearOldAgePaymentFields()">
-                    <i class="fa fa-add me-1"></i> Add
+                <button type="button" class="customBtn" id="oldAgebtn">
+                    <i class="fa fa-add me-1" ></i> Add
                 </button>
             </div>
             <div class="col-md-12">
@@ -116,8 +120,8 @@
         </div>
         <div class="tab-pane fade" id="NursingPaymentTabContent" role="tabpanel" aria-labelledby="profile-tab">
             <div class="container-fluid mb-2 contentEnd">
-                <button type="button" class="customBtn">
-                    <i class="fa fa-add me-1"></i> Add
+                <button type="button" class="customBtn" id="NursingHomebtn">
+                    <i class="fa fa-add me-1" ></i> Add
                 </button>
             </div>
             <div class="col-md-12">
@@ -224,10 +228,6 @@
                                     <input type="text" class="OAInputField" id="OApayment-mode">
                                 </div>
                             </div>
-
-
-
-
                             <div class="currency-box">
                                 <span>Rs</span>
                                 <input type="text" class="OAInputField" id="OAttlAmount" placeholder="0.00">
@@ -237,7 +237,7 @@
                         <div class="signature-section row ml-2">
                             <div class="signature-box col-4 ">
                                 <canvas id="OAauthorizedSignature" class="signatureContainer"></canvas>
-                                <img id="OAauthorizedSignatureImage" class="signatureContainerImage"/>
+                                <img id="OAauthorizedSignatureImage" class="signatureContainerImage" />
                                 <div class="row">
                                     <div class="col-10">
                                         <p>Authorized by &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('OAauthorizedSignature')"></i></p>
@@ -250,7 +250,7 @@
                             <div class="col-4"></div>
                             <div class="signature-box col-4">
                                 <canvas id="OArecieverSignature" class="signatureContainer"></canvas>
-                                <img id="OArecieverSignatureImage" class="signatureContainerImage" hidden/>
+                                <img id="OArecieverSignatureImage" class="signatureContainerImage" hidden />
                                 <div class="row">
                                     <p>Receiver's Signature  &nbsp;&nbsp;&nbsp;<i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('OArecieverSignature')"></i></p>
                                 </div>
@@ -275,8 +275,7 @@
     </div>
 </div>
 <script>
-    // Script for digital signature
-    // Get all canvas elements with the class 'signatureContainer'
+    var CashMode = '';
     const canvases = document.getElementsByClassName('signatureContainer');
 
     // Loop through each canvas element and add event listeners for drawing
@@ -344,6 +343,8 @@
     }
 
     $(document).ready(function () {
+        $('#userColumn').hide();
+        GetPaymentData();
         document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
             const element = document.querySelector('.oldAgeCashFormContent');
             element.style.transform = 'scale(1)';
@@ -360,6 +361,33 @@
             // Generate PDF
             html2pdf().from(element).set(options).save();
         });
+
+        $('#tblOldAgePayment').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            CashMode = "OldAge";
+            BindOldAgePayment(fullData);
+        });
+        $('#tblOldAgePayment').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            DeleteWarning(deleteOlgAgeCashData, ID);
+        });
+        $('#tblNursingPayment').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            CashMode = "NursingHome";
+            BindOldAgePayment(fullData);
+        });
+        $('#tblNursingPayment').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            DeleteWarning(deleteNursingCashData, ID);
+        });
+        $('#oldAgebtn').on('click', function () {
+            CashMode = "OldAge";
+            ClearOldAgePaymentFields();
+        });
+        $('#NursingHomebtn').on('click', function () {
+            CashMode = "NursingHome";
+            ClearOldAgePaymentFields();
+        })
     });
 
 
@@ -374,23 +402,45 @@
         data.date = $('#OAdate').val();
         data.authorizedSign = $('#OAauthorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
         data.recieversSign = $('#OArecieverSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("SaveOldAgeCashMemo", "CashMemo")',
-            data: data,
-            success: function (response) {
-                if (response) {
-                    let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                    msgPopup("success", msg);
-                    $('#oldAgeCashPopup').modal('toggle');
-                } else {
-                    msgPopup("error", "Something Went Wrong")
-                }
-            },
-            error: function (response) {
 
-            }
-        });
+        if (CashMode == "OldAge") {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveOldAgeCashMemo", "CashMemo")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        msgPopup("success", msg);
+                        $('#oldAgeCashPopup').modal('toggle');
+                    } else {
+                        msgPopup("error", "Something Went Wrong")
+                    }
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+        else if (CashMode == "NursingHome") {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveNursingCashMemo", "CashMemo")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        msgPopup("success", msg);
+                        $('#oldAgeCashPopup').modal('toggle');
+                    } else {
+                        msgPopup("error", "Something Went Wrong")
+                    }
+                },
+                error: function (response) {
+
+                }
+            });
+        }
 
     }
 
@@ -398,7 +448,7 @@
         var OAtable = $('#tblOldAgePayment').DataTable();
         var NHtable = $('#tblNursingPayment').DataTable();
         $.get({
-            url: '@Url.Action("GetCashMemoData`", "OldAge")',
+            url: '@Url.Action("GetCashMemoData", "CashMemo")',
             data: { startDate: $('#startDate').val(), endDate: $('#endDate').val() },
             success: function (response) {
                 OAtable.clear();
@@ -428,7 +478,7 @@
             }
         });
     }
-    function ClearOldAgePaymentFields(){
+    function ClearOldAgePaymentFields() {
         $('.OAInputField').val('');
         clearSignature('OAauthorizedSignature');
         clearSignature('OArecieverSignature');
@@ -438,20 +488,56 @@
         $('#OAauthorizedSignature').prop('hidden', false);
         $('#oldAgeCashPopup').modal('toggle');
     }
-    function BindOldAgePayment(data){
+    function BindOldAgePayment(data) {
         $('#oldAgePaymentId').val(data.id);
         $('#OApatientName').val(data.patientName);
         $('#OAttlAmount').val(data.amount);
         $('#OAamtInWords').val(data.amountInWords);
         $('#OApayment-of').val(data.Inpaymentof);
         $('#OApayment-mode').val(data.paymentMode);
-        $('#OAdate').val(data.date);
-        $('#OArecieverSignatureImage').prop('hidden',false);
-        $('#OArecieverSignature').prop('hidden',true);
+        $('#OAdate').val(formatDate(new Date(data.date)));
+        $('#OArecieverSignatureImage').prop('hidden', false);
+        $('#OArecieverSignature').prop('hidden', true);
         $('#OArecieverSignatureImage').attr('src', 'data:image/png;base64,' + data.recieversSign);
         $('#OAauthorizedSignatureImage').prop('hidden', false);
-        $('#OAauthorizedSignature').prop('hidden',true);
+        $('#OAauthorizedSignature').prop('hidden', true);
         $('#OAauthorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
         $('#oldAgeCashPopup').modal('toggle');
     }
+
+    function deleteOlgAgeCashData(id){
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteOldAgePayment", "CashMemo")',
+            data: {id:id},
+            success: function (response) {
+                if (response) {
+                    msgPopup("success", "Data Deleted Successfully");
+                } else {
+                    msgPopup("error", "Something Went Wrong")
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+    function deleteNursingCashData(id){
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteNursingPayment", "CashMemo")',
+            data: {id:id},
+            success: function (response) {
+                if (response) {
+                    msgPopup("success", "Data Deleted Successfully");
+                } else {
+                    msgPopup("error", "Something Went Wrong")
+                }
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+
 </script>

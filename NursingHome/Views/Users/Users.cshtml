@@ -1,7 +1,13 @@
-﻿<button type="button" class="customBtn" data-bs-toggle="modal" data-target="#userModal" onclick="OpenPopup();">
-    ADD USER
-</button>
+﻿<script src="~/js/face-api.min.js"></script>
 
+<style>
+    #video-container {
+        border: 1px solid black; /* Change color and size as needed */
+        width: 100%;
+        height: 400px;
+        box-sizing: border-box; /* Ensures padding and border are included in the total width/height */
+    }
+</style>
 <!-- Modal Structure -->
 <div class="modal fade" id="userModal" role="dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -20,8 +26,8 @@
                                     <label for="firstName" class="form-label">First Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" id="userId" hidden>
-                                    <input type="text" class="form-control" id="firstName">
+                                    <input type="text" id="userId" hidden class="UserIPfields">
+                                    <input type="text" class="form-control UserIPfields" id="firstName">
                                 </div>
                             </div>
                         </div>
@@ -31,7 +37,7 @@
                                     <label for="lastName" class="form-label">Last Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="lastName">
+                                    <input type="text" class="form-control UserIPfields" id="lastName">
                                 </div>
                             </div>
                         </div>
@@ -44,7 +50,7 @@
                                     <label for="userName" class="form-label">User Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="userName">
+                                    <input type="text" class="form-control UserIPfields" id="userName">
                                 </div>
                             </div>
                         </div>
@@ -54,7 +60,7 @@
                                     <label for="password" class="form-label">Password</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="password" class="form-control" id="password">
+                                    <input type="password" class="form-control UserIPfields" id="password">
                                 </div>
                             </div>
                         </div>
@@ -67,7 +73,7 @@
                                     <label for="roles" class="form-label">Roles</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <select  class="form-select" id="roles">
+                                    <select class="form-select UserIPfields" id="roles">
                                         <option value="admin">Admin</option>
                                         <option value="supervisor">Supervisor</option>
                                     </select>
@@ -80,7 +86,7 @@
                                     <label for="mobileNo" class="form-label">Mobile No</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="mobileNo">
+                                    <input type="text" class="form-control UserIPfields" id="mobileNo">
                                 </div>
                             </div>
                         </div>
@@ -108,31 +114,6 @@
                             </div>
                         </div>
                     </div>
-                  @*  <div class="row mb-3">
-                      
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="fkCountry" class="form-label">Country</label>
-                                </div>
-                                <div class="col-md-6"> 
-                                    <select id="fkCountry" class="form-select">
-                                      
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="fkState" class="form-label">State</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <select  class="form-select" id="fkState"></select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>*@
                     <div class="row mb-3">
                         <!-- Sixth Field Pair -->
                         <div class="col-md-6">
@@ -141,7 +122,7 @@
                                     <label for="fkCity" class="form-label">City</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <select  class="form-select" id="fkCity"></select>
+                                    <select class="form-select UserIPfields" id="fkCity"></select>
                                 </div>
                             </div>
                         </div>
@@ -151,7 +132,7 @@
                                     <label for="pinCode" class="form-label">Pin Code</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="pinCode">
+                                    <input type="text" class="form-control UserIPfields" id="pinCode">
                                 </div>
                             </div>
                         </div>
@@ -164,17 +145,7 @@
                                     <label for="highestQualification" class="form-label">Highest Qualification</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" id="highestQualification">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="faceDescriptor" class="form-label">Face Descriptor</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="faceDescriptor">
+                                    <input type="text" class="form-control UserIPfields" id="highestQualification">
                                 </div>
                             </div>
                         </div>
@@ -185,32 +156,92 @@
                     </div>
                 </form>
             </div>
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt-3">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="usersTab" data-toggle="tab" href="#userTabContent" role="tab" aria-controls="home" aria-selected="true">Users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="faceRecognition" data-toggle="tab" href="#facetabContent" role="tab" aria-controls="profile" aria-selected="false">Face Lock</a>
+        </li>
+
+    </ul>
+    <div class="tab-content mt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="userTabContent" role="tabpanel" aria-labelledby="home-tab">
+            <div class="container-fluid mb-2 contentEnd">
+                <button type="button" class="customBtn" data-bs-toggle="modal" data-target="#userModal" onclick="OpenPopup();">
+                    <i class="fa fa-add me-1"></i>  ADD USER
+                </button>
+            </div>
+            <table id="tblUsers" class="display table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>UserName</th>
+                        <th>Qualification</th>
+                        <th>Roles</th>
+                        <th>Mobile No</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="facetabContent" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="row col-12" style="display:flex;justify-content:space-evenly">
+                        <div class="col-2">
+                            <strong> Select User :</strong>
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" id="ddlUsers"></select>
+                        </div>
+                        <div class="col-2">
+                            <button id="captureFaceBtn" class="customBtn">Capture Face</button>
+                        </div>
+                    </div>
+                    <div class="col-3"></div>
+                    <div class="col-6 mt-4">
+                        <div id="video-container">
+                            <video id="video" style="width:100%" height="400" autoplay muted></video>
+                        </div>
+                    </div>
+                    <div class="row contentCenter mt-2">
+                        <div class="col-auto">
+                            <button class="btn btn-success" onclick="SaveFaceDescriptor();">Save Fave</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <h5>Contact</h5>
+            <p>This is the contact tab content.</p>
         </div>
     </div>
 </div>
 
-    <div class="col-md-12 container-fluid">
-        <table id="tblUsers" class="display table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>UserName</th>
-                    <th>Qualification</th>
-                    <th>Roles</th>
-                    <th>Mobile No</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+
+@*<h1>Face Recognition</h1>
+
+<button id="registerBtn">Register Face</button>
+<button id="loginBtn">Login with Face</button>*@
 <script>
-   
+
     var userIdPrrof;
     var userImageString;
+    var userFaceDescriptor;
     $(document).ready(function () {
-       // GetData();
+         GetUsersData();
+        userFaceDescriptor = '';
         $('#tblUsers').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindData(fullData);
@@ -219,21 +250,30 @@
             var ID = JSON.parse($(this).attr('dataId'));
             confirmDelete(ID);
         });
-
-    })
-
-
-    $('#idProof').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            userIdPrrof = base64;
+        $('#idProof').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                userIdPrrof = base64;
+            });
+        });
+        $('#imageString').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                userImageString = base64;
+            });
+        });
+        $('#faceRecognition').on('click',function(){
+            
         });
     });
-    $('#imageString').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            userImageString = base64;
-        });
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadModels();
+        document.getElementById('captureFaceBtn').addEventListener('click', registerFace);
     });
-    function OpenPopup(){
+
+
+    function OpenPopup() {
+        $('.UserIPfields').val();
+        userIdPrrof = '';
+        userImageString = '';
         $('#userModal').modal('toggle');
     }
     //document.getElementById('downloadIdProof').addEventListener('click', function () {
@@ -255,28 +295,37 @@
         document.body.removeChild(link);
     }
     function AddUser() {
-        var data = {};
-        data.Id = $('#userId').val();
-        data.FirstName = $('#firstName').val();
-        data.LastName = $('#lastName').val();
-        data.UserName = $('#userName').val();
-        data.Password = $('#password').val();
-        data.Roles = $('#roles').val();
-        data.MobileNo = $('#mobileNo').val();
-      //  data.fkCountry = $('#fkCountry').val();
-        data.IdProof = userIdPrrof; 
-        data.ImageString = userImageString;
-       // data.fkState = $('#fkState').val();
-        data.fkCity = $('#fkCity').val();
-        data.PinCode = $('#pinCode').val();
-        data.HighestQualification = $('#highestQualification').val();
-        data.faceDescriptor = $('#faceDescriptor').val();
+        var formData = new FormData();
+        formData.append('Id', $('#userId').val());
+        formData.append('FirstName', $('#firstName').val());
+        formData.append('LastName', $('#lastName').val());
+        formData.append('UserName', $('#userName').val());
+        formData.append('Password', $('#password').val());
+        formData.append('Roles', $('#roles').val());
+        formData.append('MobileNo', $('#mobileNo').val());
+        formData.append('IdProof', userIdPrrof); // Assuming userIdPrrof is a file object or relevant data
+        formData.append('ImageString', userImageString); // Assuming userImageString is a file object or relevant data
+        formData.append('fkCity', $('#fkCity').val());
+        formData.append('PinCode', $('#pinCode').val());
+        formData.append('HighestQualification', $('#highestQualification').val());
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddorEditUser", "Users")',
-            data: data,
+            data: formData,
+           processData: false, // Required for FormData
+            contentType: false, // Required for FormData
             success: function (response) {
-
+                if (response) {
+                    if ($('#userId').val() == '') {
+                        msgPopup("success", "User Added Successfully");
+                    } else {
+                        msgPopup("success", "User Updated Successfully");
+                    }
+                }
+                else {
+                    msgPopup("error", "Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -285,32 +334,147 @@
         });
     }
 
-    //function GetData() {
-    //    var table = $('#tblUsers').DataTable();
-    //    $.ajax({
-    //        type: "POST",
-    //        url: '@Url.Action("GetData", "Users")',
-    //        // data: data,
-    //        success: function (response) {
-    //            table.clear();
-    //            response.data.forEach(function (item) {
-    //                table.row.add([
-    //                    item.firstName + " " item.lastName,
-    //                    item.userName,
-    //                    item.highestQualification,
-    //                    item.roles,
-    //                    item.mobileNo,
-    //                    '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-    //                    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
-    //                ]).draw();
-    //            });
-    //        },
-    //        error: function (response) {
+    function GetUsersData() {
+        var table = $('#tblUsers').DataTable();
 
-    //            console.error(response);
+        $.ajax({
+            url: '/Users/GetData', // Ensure this URL is correct and matches your route
+            type: 'GET', // Use GET method
+            dataType: 'json', // Ensure the expected data type is JSON
+            success: function (response) {
+                table.clear();
+                response.data.forEach(function (item) {
+                    table.row.add([
+                        item.firstName + " " + item.lastName, // Added a "+" sign between firstName and lastName
+                        item.userName,
+                        item.highestQualification,
+                        item.roles,
+                        item.mobileNo,
+                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete" style="color:red" data-id="' + item.id + '"></i>' // Use data-id for storing the id attribute
+                    ]).draw();
+                });
+                BindUserDropdown(response.data); // Call your dropdown binding function
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText); // Log detailed error info
+            }
+        });
+    }
+
+    function BindUserDropdown(data) {
+        // Get the dropdown element by ID
+        const ddlUsers = document.getElementById("ddlUsers");
+
+        // Clear any existing options
+        ddlUsers.innerHTML = "";
+
+        // Add the default "Select User" option
+        const defaultOption = document.createElement("option");
+        defaultOption.text = "Select User";
+        defaultOption.value = "";
+        ddlUsers.appendChild(defaultOption);
+
+        // Loop through the data and add options to the dropdown
+        data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.userName; // Set the value to userName
+            option.text = item.firstName + " " + item.lastName; // Set the text to firstName + lastName
+            ddlUsers.appendChild(option);
+        });
+    }
+
+    async function setupCamera() {
+        const video = document.getElementById('video');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+        video.srcObject = stream;
+        return new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play();
+                resolve(video);
+            };
+        });
+    }
+
+    async function loadModels() {
+        const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    }
+
+    async function registerFace() {
+        const video = await setupCamera();
+        console.log("Camera setup complete, starting face detection...");
+
+        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+
+        if (detections) {
+            const descriptors = [detections.descriptor];
+            const labeledDescriptors = new faceapi.LabeledFaceDescriptors('registeredFace', descriptors);
+            userFaceDescriptor = JSON.stringify(labeledDescriptors);
+            alertMessage('Face captured successfully!');
+        } else {
+            alertMessage('No face detected, please try again.');
+        }
+    }
+
+
+    function SaveFaceDescriptor() {
+        let username = $('#ddlUsers').val();
+        if (username != '' && userFaceDescriptor != '') {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveFaceDescriptor", "Users")',
+                data: { username: username, face: userFaceDescriptor },
+                success: function (response) {
+                    if (response) {
+                        msgPopup("success", "Face Data Added Successfully");
+                    }
+                    else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
+                },
+                error: function (response) {
+
+                }
+            });
+        } else {
+            alertMessage("Please Select User or Add face");
+        }
+    }
+    //async function loginWithFace() {
+    //    const video = await setupCamera();
+    //    console.log("Camera setup complete, starting face detection...");
+
+    //    const storedDescriptorsJSON = localStorage.getItem('faceDescriptors');
+    //    if (!storedDescriptorsJSON) {
+    //        alert('No registered face found.');
+    //        return;
+    //    }
+
+    //    const storedDescriptorsObj = JSON.parse(storedDescriptorsJSON);
+    //    const labeledDescriptors = new faceapi.LabeledFaceDescriptors(
+    //        storedDescriptorsObj.label,
+    //        storedDescriptorsObj.descriptors.map(d => new Float32Array(Object.values(d)))
+    //    );
+
+    //    const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+    //    if (detections) {
+    //        const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+    //        const match = faceMatcher.findBestMatch(detections.descriptor);
+
+    //        if (match.distance < 0.6) {
+    //            alert('Face matched! Login successful.');
+    //        } else {
+    //            alert('Face not recognized. Please try again.');
     //        }
-    //    });
+    //    } else {
+    //        alert('No face detected, please try again.');
+    //    }
     //}
+
 
 
     function BindData(data) {
@@ -333,9 +497,9 @@
         $('#userModal').modal('toggle');
     }
 
-    function confirmDelete(id){
+    function confirmDelete(id) {
         $.alert({
-            title:'Alert',
+            title: 'Alert',
             content: 'Are you sure want to delete ?',
             typeAnimated: true,
             backgroundDismiss: false,
@@ -347,24 +511,24 @@
                     text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                     //  deleteData(id);
+                        //  deleteData(id);
                     },
                 },
                 No: {
                     text: 'No',
                     btnClass: 'btn btn-warning',
                     action: function () {
-                      return;
+                        return;
                     },
                 },
             },
         });
     }
-    function deleteData(id){
+    function deleteData(id) {
         $.ajax({
             type: "POST",
             url: '@Url.Action("DeleteUser", "Users")',
-            data: {id:id},
+            data: { id: id },
             success: function (response) {
 
             },

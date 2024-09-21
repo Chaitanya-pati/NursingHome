@@ -9,24 +9,24 @@ using NursingHome.Db.Models;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System.Diagnostics.SymbolStore;
-
+using Newtonsoft.Json;
 namespace NursingHome.Db.Implementation
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly DbContextOptions<TaskContext> _dbConn;
 
         public UserService(string DbConn)
         {
-            _dbConn= new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
+            _dbConn = new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
         public bool AddData(Users users)
         {
             try
             {
                 using var Db = new TaskContext(_dbConn);
-               
-                users.IsFaceAdded = users.faceDescriptor != null?true:false;
+
+                users.IsFaceAdded = users.faceDescriptor != null ? true : false;
                 Db.Add(users);
                 Db.SaveChanges();
                 return true;
@@ -54,8 +54,7 @@ namespace NursingHome.Db.Implementation
                 GetData.ImageString = user.ImageString;
                 GetData.fkCity = user.fkCity;
                 GetData.fkCountry = user.fkCountry;
-                GetData.faceDescriptor = user.faceDescriptor;
-                GetData.IsFaceAdded = user.faceDescriptor !=null?true:false;
+                GetData.IsFaceAdded = user.faceDescriptor != null ? true : false;
                 GetData.MobileNo = user.MobileNo;
                 GetData.PinCode = user.PinCode;
                 GetData.HighestQualification = user.HighestQualification;
@@ -81,9 +80,10 @@ namespace NursingHome.Db.Implementation
         public bool DeleteUser(int id)
         {
             using var Db = new TaskContext(_dbConn);
-            var IsUserExist = Db.Users.Where(x=>x.Id == id).FirstOrDefault();
+            var IsUserExist = Db.Users.Where(x => x.Id == id).FirstOrDefault();
 
-            if (IsUserExist != null) {
+            if (IsUserExist != null)
+            {
                 Db.Remove(IsUserExist);
                 return true;
             }
@@ -92,6 +92,31 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
 
+        }
+
+        public bool SaveFaceDescriptor(string username, string faceid)
+        {
+            var db = new TaskContext(_dbConn);
+            var IsExistUser = db.Users.FirstOrDefault(x => x.UserName == username);
+            if (IsExistUser != null)
+            {
+                string faceDescriptorJson = JsonConvert.SerializeObject(faceid);
+                IsExistUser.faceDescriptor = faceDescriptorJson;
+                IsExistUser.IsFaceAdded = true;
+                db.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public string GetFaceDescriptor(string Username)
+        {
+            var db = new TaskContext (_dbConn);
+            return db.Users.Where(x => x.UserName == Username).Select(user => user.faceDescriptor).ToString();
         }
     }
 }

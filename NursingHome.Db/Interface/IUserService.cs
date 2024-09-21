@@ -13,5 +13,8 @@ namespace NursingHome.Db.Interface
         bool UpdateData(Users user);
         List<Users> GetData();
         bool DeleteUser(int id);
+        bool SaveFaceDescriptor(string username, string faceid);
+
+        string GetFaceDescriptor(string Username);
     }
 }

@@ -27,8 +27,8 @@ namespace NursingHome.Controllers
         {
             return View();
         }
-
-        public IActionResult AddorEditUser(Users userData)
+       // [HttpPost]
+        public IActionResult AddorEditUser([FromForm] Users userData)
         {
             if (userData.Id == 0)
             {
@@ -50,6 +50,15 @@ namespace NursingHome.Controllers
         {
             var IsDeleted = _DbConn.DeleteUser(id);
             return Json(IsDeleted);
+        }
+
+        public IActionResult GetFaceData(string username)
+        {
+            return Json(_DbConn.GetFaceDescriptor(username));
+        }
+        public IActionResult SaveFaceDescriptor(string username,string face)
+        {
+            return Json(_DbConn.SaveFaceDescriptor(username, face));
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
