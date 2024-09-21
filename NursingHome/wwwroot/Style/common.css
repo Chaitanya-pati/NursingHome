@@ -80,3 +80,8 @@ table.dataTable{
     width: 80%;
     height: 60%
 }
+
+.signature-box canvas {
+    border-bottom: 1px solid #000;
+    cursor: crosshair;
+}

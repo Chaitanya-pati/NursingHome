@@ -198,11 +198,34 @@
                                                 I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        @*<div class="row">
 
                                             <span class="col-4">Signature of the Client</span>
                                             <span class="col-4"></span>
                                             <span class="col-4 contentEnd">Authorised Signatory</span>
+                                        </div>*@
+                                        <div class="signature-section row ml-2">
+                                            <div class="signature-box col-4 ">
+                                                <canvas id="clientSignature" class="signatureContainer"></canvas>
+                                                <img id="clientSignatureImage" class="signatureContainerImage" />
+                                                <div class="row">
+                                                    <div class="col-10">
+                                                        <p>Signature of the Client &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
+                                                    </div>
+                                                    <div class="col-2">
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-4"></div>
+                                            <div class="signature-box col-4">
+                                                <canvas id="authorizedSignature" class="signatureContainer"></canvas>
+                                                <img id="authorizedSignatureImage" class="signatureContainerImage" hidden />
+                                                <div class="row">
+                                                    <p>Authorised Signatory  &nbsp;&nbsp;&nbsp;<i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('authorizedSignature')"></i></p>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </td>

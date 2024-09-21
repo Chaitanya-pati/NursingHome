@@ -291,3 +291,70 @@ $(document).ready(function () {
         }
     });
 });
+
+        //For Sugnature 
+const canvases = document.getElementsByClassName('signatureContainer');
+
+// Loop through each canvas element and add event listeners for drawing
+Array.from(canvases).forEach((canvas) => {
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    // Helper function to get coordinates for touch or mouse events
+    function getCoordinates(e) {
+        const rect = canvas.getBoundingClientRect(); // Get canvas position
+        if (e.touches && e.touches.length > 0) {
+            return {
+                x: e.touches[0].clientX - rect.left,
+                y: e.touches[0].clientY - rect.top
+            };
+        } else {
+            return {
+                x: e.offsetX,
+                y: e.offsetY
+            };
+        }
+    }
+
+    // Event listener for starting the drawing (mouse + touch)
+    const startDrawing = (e) => {
+        isDrawing = true;
+        const { x, y } = getCoordinates(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    };
+
+    // Event listener for drawing as the mouse or touch moves
+    const draw = (e) => {
+        if (!isDrawing) return;
+        const { x, y } = getCoordinates(e);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        e.preventDefault(); // Prevent scrolling during touch
+    };
+
+    // Event listener for stopping the drawing
+    const stopDrawing = () => {
+        isDrawing = false;
+    };
+
+    // Mouse event listeners
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    // Touch event listeners
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
+});
+
+function clearSignature(id) {
+    var canvas = document.getElementById(id);
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
