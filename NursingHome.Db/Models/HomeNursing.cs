@@ -45,6 +45,10 @@ public partial class HomeNursing
 
     public int? fkHelperId { get; set; }
 
+    public string clientSign { get; set; }
+
+    public string authorizedSign { get; set; }
+
     public virtual ICollection<Attendance> Attendance { get; set; } = new List<Attendance>();
 
     public virtual Helpers fkHelper { get; set; }

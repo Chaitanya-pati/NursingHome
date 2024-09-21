@@ -42,4 +42,8 @@ public partial class OldAge
     public DateTime? UpdatedDate { get; set; }
 
     public string SUser { get; set; }
+
+    public string clientSign { get; set; }
+
+    public string authorizedSign { get; set; }
 }

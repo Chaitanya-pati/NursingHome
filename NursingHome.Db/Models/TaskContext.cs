@@ -90,6 +90,7 @@ public partial class TaskContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__HomeNurs__3214EC0723E6127E");
 
             entity.Property(e => e.AdmissionDate).HasColumnType("date");
+            entity.Property(e => e.Condition).HasMaxLength(200);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.CustomerName).HasMaxLength(100);
             entity.Property(e => e.MobileNo).HasMaxLength(20);
@@ -99,8 +100,10 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.PeriodFrom).HasColumnType("date");
             entity.Property(e => e.PeriodTo).HasColumnType("date");
             entity.Property(e => e.RegistrationCharges).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.SUser).HasMaxLength(50);
-            entity.Property(e => e.TypesofServices).HasMaxLength(100);
+            entity.Property(e => e.SUser)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.TypesofServices).HasMaxLength(200);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.fkHelper).WithMany(p => p.HomeNursing)
@@ -125,7 +128,7 @@ public partial class TaskContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__OldAge__3214EC07242C81C6");
 
             entity.Property(e => e.AdmissionDate).HasColumnType("date");
-            entity.Property(e => e.Condition).HasMaxLength(100);
+            entity.Property(e => e.Condition).HasMaxLength(200);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.CustomerName).HasMaxLength(100);
             entity.Property(e => e.MobileNo).HasMaxLength(20);
@@ -135,8 +138,10 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.PeriodFrom).HasColumnType("date");
             entity.Property(e => e.PeriodTo).HasColumnType("date");
             entity.Property(e => e.RegistrationCharges).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.SUser).HasMaxLength(50);
-            entity.Property(e => e.TypesofServices).HasMaxLength(100);
+            entity.Property(e => e.SUser)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.TypesofServices).HasMaxLength(200);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
 
