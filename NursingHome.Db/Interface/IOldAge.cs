@@ -11,7 +11,7 @@ namespace NursingHome.Db.Interface
     {
         bool AddData(OldAge oldAge);
 
-        List<Models.OldAge> GetData(DateTime startDate, DateTime endDate);
+        List<Models.OldAge> GetData(DateTime startDate, DateTime endDate, string username);
 
         bool UpdateData(Models.OldAge oldAge);
 

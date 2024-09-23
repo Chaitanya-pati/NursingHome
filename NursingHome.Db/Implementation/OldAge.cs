@@ -42,18 +42,25 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
-        public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate)
+        public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate,string username)
         {
             using var Db = new TaskContext(_dbConn);
 
             var query = @"
-        SELECT *
-        FROM OldAge
-        WHERE AdmissionDate BETWEEN @startDate AND @endDate";
+    SELECT *
+    FROM OldAge
+    WHERE AdmissionDate BETWEEN @startDate AND @endDate 
+    AND (@username = '' OR SUSer = @username)";
+
             List<Models.OldAge> result = new List<Models.OldAge>();
-            result = Db.OldAge.FromSqlRaw(query, new SqlParameter("@startDate", startDate), new SqlParameter("@endDate", endDate)).ToList();
+            result = Db.OldAge.FromSqlRaw(query,
+                new SqlParameter("@startDate", startDate),
+                new SqlParameter("@endDate", endDate),
+                new SqlParameter("@username", string.IsNullOrWhiteSpace(username) ? "" : username)
+            ).ToList();
 
             return result;
+
         }
 
         public bool UpdateData(Models.OldAge oldAge)
@@ -100,14 +107,15 @@ namespace NursingHome.Db.Implementation
             }
         }
 
-      
+
         public int getLatestID()
         {
-             var Db = new TaskContext(_dbConn);
-          return Db.OldAge.Max(o => o.Id);
-
+            var Db = new TaskContext(_dbConn);
+            int maxId = Db.OldAge.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
+            return maxId == 0 ? 1 : maxId;
         }
+
     }
 
-  
+
 }

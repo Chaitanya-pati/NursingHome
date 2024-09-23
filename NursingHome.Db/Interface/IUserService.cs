@@ -16,5 +16,7 @@ namespace NursingHome.Db.Interface
         bool SaveFaceDescriptor(string username, string faceid);
 
         string GetFaceDescriptor(string Username);
+        Users CheckValidUser(string userName, string password);
+        Users GetUserDataById(int id);
     }
 }

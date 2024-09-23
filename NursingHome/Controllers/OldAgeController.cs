@@ -42,9 +42,9 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetData()
+        public IActionResult GetData(DateTime startDate,DateTime endDate ,string username)
         {
-            var result = _DbConn.GetData(DateTime.Now.AddDays(-40), DateTime.Now);  
+            var result = _DbConn.GetData(startDate, endDate,username);  
             return Json(new { data = result });
         }
         public IActionResult DeleteData(int id)

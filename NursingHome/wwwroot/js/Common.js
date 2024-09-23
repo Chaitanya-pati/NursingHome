@@ -290,67 +290,68 @@ $(document).ready(function () {
             $inputField.after('<small class="error-message" style="color:red;">Please enter a valid phone number (10 digits only)</small>');
         }
     });
-});
+    //For Sugnature 
+    const canvases = document.getElementsByClassName('signatureContainer');
 
-        //For Sugnature 
-const canvases = document.getElementsByClassName('signatureContainer');
+    // Loop through each canvas element and add event listeners for drawing
+    Array.from(canvases).forEach((canvas) => {
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
 
-// Loop through each canvas element and add event listeners for drawing
-Array.from(canvases).forEach((canvas) => {
-    const ctx = canvas.getContext('2d');
-    let isDrawing = false;
+        // Helper function to get coordinates for touch or mouse events
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect(); // Get canvas position
+            let x, y;
 
-    // Helper function to get coordinates for touch or mouse events
-    function getCoordinates(e) {
-        const rect = canvas.getBoundingClientRect(); // Get canvas position
-        if (e.touches && e.touches.length > 0) {
-            return {
-                x: e.touches[0].clientX - rect.left,
-                y: e.touches[0].clientY - rect.top
-            };
-        } else {
-            return {
-                x: e.offsetX,
-                y: e.offsetY
-            };
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left; // Use clientX instead of offsetX
+                y = e.clientY - rect.top;   // Use clientY instead of offsetY
+            }
+
+            return { x: x * (canvas.width / rect.width), y: y * (canvas.height / rect.height) };
         }
-    }
 
-    // Event listener for starting the drawing (mouse + touch)
-    const startDrawing = (e) => {
-        isDrawing = true;
-        const { x, y } = getCoordinates(e);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-    };
+        // Event listener for starting the drawing (mouse + touch)
+        const startDrawing = (e) => {
+            isDrawing = true;
+            const { x, y } = getCoordinates(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        };
 
-    // Event listener for drawing as the mouse or touch moves
-    const draw = (e) => {
-        if (!isDrawing) return;
-        const { x, y } = getCoordinates(e);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        e.preventDefault(); // Prevent scrolling during touch
-    };
+        // Event listener for drawing as the mouse or touch moves
+        const draw = (e) => {
+            if (!isDrawing) return;
+            const { x, y } = getCoordinates(e);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            e.preventDefault(); // Prevent scrolling during touch
+        };
 
-    // Event listener for stopping the drawing
-    const stopDrawing = () => {
-        isDrawing = false;
-    };
+        // Event listener for stopping the drawing
+        const stopDrawing = () => {
+            isDrawing = false;
+        };
 
-    // Mouse event listeners
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
+        // Mouse event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
 
-    // Touch event listeners
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', stopDrawing);
-    canvas.addEventListener('touchcancel', stopDrawing);
+        // Touch event listeners
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+    });
+
 });
 
+   
 function clearSignature(id) {
     var canvas = document.getElementById(id);
     if (canvas) {

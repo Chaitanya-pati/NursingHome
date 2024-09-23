@@ -118,5 +118,17 @@ namespace NursingHome.Db.Implementation
             var db = new TaskContext (_dbConn);
             return db.Users.Where(x => x.UserName == Username).Select(user => user.faceDescriptor).ToString();
         }
+
+        public Users GetUserDataById(int id)
+        {
+            var db = new TaskContext(_dbConn);
+            return db.Users.Where(x => x.Id == id).FirstOrDefault();
+        }
+
+        public Users CheckValidUser(string userName, string password)
+        {
+            var db = new TaskContext(_dbConn);
+            return db.Users.Where(x => x.UserName == userName && x.Password == password).FirstOrDefault();
+        }
     }
 }

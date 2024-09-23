@@ -60,6 +60,29 @@ namespace NursingHome.Controllers
         {
             return Json(_DbConn.SaveFaceDescriptor(username, face));
         }
+        public IActionResult Login()
+        {
+            return View();
+        }
+        public IActionResult LoginUser(string userName, string password)
+        {
+            var user = _DbConn.CheckValidUser(userName, password);
+
+            if (user != null)
+            {
+                return Json(new { success = true, userID = user.Id });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Invalid username or password." });
+            }
+        }
+
+        public IActionResult GetUserDataById(int id)
+        {
+            var data = _DbConn.GetUserDataById(id);
+            return Json(data);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
