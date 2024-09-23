@@ -38,9 +38,9 @@ namespace NursingHome.Controllers
                 return Json(isUpdated);
             }
         }
-        public IActionResult GetData()
+        public IActionResult GetData(DateTime startDate, DateTime endDate, string username)
         {
-            var result = _DbConn.GetData(DateTime.Now.AddDays(-40), DateTime.Now);
+            var result = _DbConn.GetData(startDate, endDate,username);
             return Json(new { data = result });
         }
 
@@ -48,7 +48,10 @@ namespace NursingHome.Controllers
         {
             return View();
         }
-
+        public IActionResult GetLatestID()
+        {
+            return Json(_DbConn.getLatestID());
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

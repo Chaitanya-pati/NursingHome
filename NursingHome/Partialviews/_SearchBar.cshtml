@@ -6,6 +6,7 @@
                 <div class="card-body">
                     <div class="row p-2" style="display:flex;justify-content:space-evenly">
                         <!-- Date Range Picker Columns -->
+                        <input type="hidden" id="titlename" value="@ViewData["Title"]"/>
                         <div class="col-4 row">
                             <div class="col-4">
                                 <label class="mt-1">Start Date:</label>
@@ -34,7 +35,7 @@
                         </div>
                         <!-- Button Column -->
                         <div class="col-1">
-                            <button id="search" class="customBtn" onclick="sendWhatsapp()">Search</button>
+                            <button id="search" class="customBtn">Search</button>
                         </div>
                     </div>
                 </div>
@@ -90,6 +91,9 @@
         });
 
         $('#ddlUsers').val(localStorage.getItem('username'));
+        if($('#titlename').val() == "OldAge" || $('#titlename').val() == "Nursing Home"){
+        GetData();
+        }
     }
     function sendWhatsapp() {
         var phonenumber = "+919972148686";

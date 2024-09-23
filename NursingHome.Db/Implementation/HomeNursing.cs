@@ -40,16 +40,21 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
-        public List<HomeNursingView> GetData(DateTime startDate, DateTime endDate)
+        public List<HomeNursingView> GetData(DateTime startDate, DateTime endDate,string username)
         {
             using var Db = new TaskContext(_dbConn);
 
             var query = @"
-        SELECT *
-        FROM HomeNursing
-        WHERE AdmissionDate BETWEEN @startDate AND @endDate";
+    SELECT *
+    FROM HomeNursing
+    WHERE AdmissionDate BETWEEN @startDate AND @endDate 
+    AND (@username = '' OR SUSer = @username)";
             List<Models.HomeNursing> result = new List<Models.HomeNursing>();
-            result = Db.HomeNursing.FromSqlRaw(query, new SqlParameter("@startDate", startDate), new SqlParameter("@endDate", endDate)).ToList();
+            result = Db.HomeNursing.FromSqlRaw(query,
+                 new SqlParameter("@startDate", startDate),
+                 new SqlParameter("@endDate", endDate),
+                 new SqlParameter("@username", string.IsNullOrWhiteSpace(username) ? "" : username)
+             ).ToList();
             var data = new List<HomeNursingView>();
             foreach (var item in result)
             {
@@ -122,6 +127,12 @@ namespace NursingHome.Db.Implementation
             {
                 return false;
             }
+        }
+        public int getLatestID()
+        {
+            var Db = new TaskContext(_dbConn);
+            int maxId = Db.HomeNursing.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
+            return maxId == 0 ? 1 : maxId + 1;
         }
     }
 }

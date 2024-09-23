@@ -12,10 +12,11 @@ namespace NursingHome.Db.Interface
     {
         bool AddData(Models.HomeNursing homeNursing);
 
-        List<HomeNursingView> GetData(DateTime startDate, DateTime endDate);
+        List<HomeNursingView> GetData(DateTime startDate, DateTime endDate, string username);
 
         bool UpdateData(Models.HomeNursing obj);
 
         bool DeleteData(int id);
+        int getLatestID();
     }
 }

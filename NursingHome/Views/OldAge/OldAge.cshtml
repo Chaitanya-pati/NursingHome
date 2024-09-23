@@ -1,4 +1,7 @@
-﻿
+﻿@{
+
+    ViewData["Title"] = "OldAge";
+}
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
@@ -339,7 +342,7 @@
     var table = $('#tblOldAge').DataTable();
     var OldAgeIdProof;
     $(document).ready(function () {
-        GetData();
+       
         $('#tblOldAge').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindData(fullData);
@@ -448,6 +451,7 @@
         data.RegistrationCharges = $('#registrationCharges').val();
         data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
         data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+        data.SUser = localStorage.getItem('username');
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddorEditOldAge", "OldAge")',

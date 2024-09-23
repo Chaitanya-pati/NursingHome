@@ -29,7 +29,6 @@ namespace NursingHome.Db.Implementation
             try
             {
                 using var Db = new TaskContext(_dbConn);
-                oldAge.SUser = "Admin";
                 oldAge.CreatedDate = DateTime.Now;
                 oldAge.UpdatedDate = DateTime.Now;
 
@@ -112,7 +111,7 @@ namespace NursingHome.Db.Implementation
         {
             var Db = new TaskContext(_dbConn);
             int maxId = Db.OldAge.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
-            return maxId == 0 ? 1 : maxId;
+            return maxId == 0 ? 1 : maxId+1;
         }
 
     }

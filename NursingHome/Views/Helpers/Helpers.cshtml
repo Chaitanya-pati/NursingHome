@@ -324,6 +324,7 @@
         data.Salary = $('#salary').val();
         data.Reference = $('#referenceDetail').val();
         data.FamilyMembers = $('#famMembers').val();
+        data.suser = localStorage.getItem('username');
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddorEditHelper", "Helpers")',
