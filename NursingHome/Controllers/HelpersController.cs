@@ -36,9 +36,9 @@ namespace NursingHome.Controllers
 
         }
 
-        public IActionResult GetData()
+        public IActionResult GetData(string UserName)
         {
-            var data = _DbConn.GetData();
+            var data = _DbConn.GetData(UserName);
             return Json(new {data = data});
         }
 

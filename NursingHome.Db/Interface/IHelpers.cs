@@ -12,7 +12,7 @@ namespace NursingHome.Db.Interface
         bool AddData(Helpers helpers);
 
         bool UpdateData(Models.Helpers helperData);
-        List<Models.Helpers> GetData();
+        List<Models.Helpers> GetData(string username);
         bool DeleteData(int id);
     }
 }

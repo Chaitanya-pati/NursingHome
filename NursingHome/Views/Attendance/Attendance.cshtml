@@ -1,12 +1,14 @@
-﻿
+﻿@{
 
+    ViewData["Title"] = "Attendance";
+}
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12 text-right mb-3">
-            <button type="button" class="btn btn-success" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
+            <button type="button" class="customBtn" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
                 Add Attendance
             </button>
         </div>
@@ -105,8 +107,15 @@
             debugger
             confirmDelete(ID);
         });
+        $('#search').on('click',function (){
+
+        }); 
        
     });
+    function GetAttendencehelper()
+    {
+
+    }
     function AddandEditAttendence() {
         var helperName = $('#HelperNameDDL').val();
         var patientName = $('#PatientNameDDL').val();
@@ -297,7 +306,7 @@
             url: '/Attendance/GetHelpers',
             type: 'GET',
             success: function (response) {
-                const HelpersDropDownDDL1 = $('#DdlUser');
+                const HelpersDropDownDDL1 = $('#ddlHelper');
                 HelpersDropDownDDL1.empty();
 
                 const $defaultOption = $('<option>', {

@@ -359,8 +359,14 @@
     }
 
     function GetData(){
+        let UserName='';
+        if (localStorage.getItem('userRole') != 'admin'){
+            UserName = localStorage.getItem('username');
+        }
+     
         $.ajax({
             type: "POST",
+            data: UserName,
             url: '@Url.Action("GetData", "Helpers")',
             // data: data,
             success: function (response) {
