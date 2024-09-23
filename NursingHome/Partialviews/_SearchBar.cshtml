@@ -32,6 +32,15 @@
                                 <select id="ddlUsers" class="form-select">
                                 </select>
                             </div>
+                        </div> 
+                        <div class="col-3 row" id="helperColumn" hidden>
+                            <div class="col-4">
+                                <label class="mt-1">Select Helper:</label>
+                            </div>
+                            <div class="col-8">
+                                <select id="ddlHelper" class="form-select">
+                                </select>
+                            </div>
                         </div>
                         <!-- Button Column -->
                         <div class="col-1">
@@ -57,10 +66,12 @@
             checkrange('startDate', 'endDate');
         });
 
-        if (localStorage.getItem('userRole') == 'admin'){
+        if (localStorage.getItem('userRole') == 'admin' && $('#titlename').val() != "Attendance") {
             $('#userColumn').prop('hidden',false);
         }
-
+        if ($('#titlename').val() == "Attendance") {
+            $('#helperColumn').prop('hidden', false);
+        }
         $.ajax({
             url: '/Users/GetData',
             type: 'GET', 
