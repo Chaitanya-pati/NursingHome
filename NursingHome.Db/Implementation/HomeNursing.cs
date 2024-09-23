@@ -27,7 +27,6 @@ namespace NursingHome.Db.Implementation
             try
             {
                 using var Db = new TaskContext(_dbConn);
-                homeNursing.SUser = "Admin";
                 homeNursing.CreatedDate = DateTime.Now;
                 homeNursing.UpdatedDate = DateTime.Now;
 

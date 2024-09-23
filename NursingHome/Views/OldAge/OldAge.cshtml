@@ -339,7 +339,7 @@
 
 *@
 <script>
-    var table = $('#tblOldAge').DataTable();
+   
     var OldAgeIdProof;
     $(document).ready(function () {
        
@@ -359,7 +359,9 @@
             var ID = JSON.parse($(this).attr('dataId'));
             confirmDelete(ID);
         });
-
+        $('#search').on('click',function(){
+            GetData();
+        })
     })
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
@@ -467,6 +469,7 @@
     }
 
     function GetData() {
+        var table = $('#tblOldAge').DataTable();
         let startDate = $('#startDate').val();
         let endDate = $('#endDate').val();
         let user = $('#ddlUsers').val();
