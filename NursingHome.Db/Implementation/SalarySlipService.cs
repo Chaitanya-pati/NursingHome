@@ -50,6 +50,7 @@ namespace NursingHome.Db.Implementation
 
                 // Calculate the net salary (based on attendance and working days)
                 double netSalary = (basicSalary / totalDaysInMonth) * totalDaysWorked;
+                netSalary = Math.Round(netSalary, 2);
 
                 return (totalDaysWorked, netSalary, basicSalary, totalDaysInMonth); // Returning total days worked, net salary, basic salary, and total days in month
             }
