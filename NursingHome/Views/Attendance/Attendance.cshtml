@@ -1,4 +1,9 @@
-﻿<div class="container-fluid">
+﻿
+
+<div class="col-md-12">
+    @Html.Partial("~/Partialviews/_SearchBar.cshtml")
+</div>
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12 text-right mb-3">
             <button type="button" class="btn btn-success" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
@@ -84,7 +89,7 @@
         GetAttendanceData();
         HelpersDropDownList();
         PatientDropDownList();
-
+        HelpersDropDownList1()
         
 
           
@@ -285,6 +290,45 @@
             }
         });
     }
+
+    function HelpersDropDownList1() {
+        debugger
+        $.ajax({
+            url: '/Attendance/GetHelpers',
+            type: 'GET',
+            success: function (response) {
+                const HelpersDropDownDDL1 = $('#DdlUser');
+                HelpersDropDownDDL1.empty();
+
+                const $defaultOption = $('<option>', {
+                    value: '',
+                    text: 'Select Helper',
+                    selected: true
+                });
+                HelpersDropDownDDL1.append($defaultOption);
+
+                // Assuming the properties for helpers follow the same structure
+                $.each(response.data, function (index, item) {
+                    const $option = $('<option>', {
+                        value: item.id,            // Changed to lowercase 'id'
+                        text: item.name            // Assuming the property is 'name' for helpers
+                    });
+                    HelpersDropDownDDL1.append($option);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching Helpers Details:", error);
+            }
+        });
+    }
+
+
+
+
+
+
+
+
     function ClearAttendenceModalData()
     {
         $('.ClearAttendenceClass').val('')
