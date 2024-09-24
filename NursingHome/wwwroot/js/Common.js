@@ -227,7 +227,7 @@ function alertMessage(msg) {
                 text: 'Ok',
                 btnClass: 'btn btn-success',
                 action: function () {
-                    return;
+                    return true;
                 },
             },
         },

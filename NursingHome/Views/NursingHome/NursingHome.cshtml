@@ -8,7 +8,7 @@
     <!-- Button to trigger modal -->
     <div class="col-md-2">
         <div class="container-fluid mt-2 mb-2">
-            <button type="button" class="customBtn" onclick="Clearfields()" >
+        <button type="button" class="customBtn" onclick="verifyFace()">
             <i class="fa fa-add me-1"></i> Add
             </button>
         </div>  
@@ -247,6 +247,7 @@
             <tbody>
             </tbody>
         </table>
+    @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
     </div>
 
 <script>

@@ -8,7 +8,6 @@
 
 
 
-
 <!-- Modal -->
 <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -289,7 +288,7 @@
     <div class="tab-content mt-2" id="myTabContent">*@
 @* <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">*@
 <div class="container-fluid mb-2 mt-2">
-    <button type="button" class="customBtn" onclick="Clearfields()">
+    <button type="button" class="customBtn" onclick="verifyFace()">
         <i class="fa fa-add me-1"></i> Add
     </button>
 </div>
@@ -308,6 +307,7 @@
         <tbody>
         </tbody>
     </table>
+   @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
 </div>
 @*  </div>*@
 @* <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
@@ -339,10 +339,10 @@
 
 *@
 <script>
-   
+
     var OldAgeIdProof;
     $(document).ready(function () {
-       
+
         $('#tblOldAge').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindData(fullData);
@@ -359,9 +359,10 @@
             var ID = JSON.parse($(this).attr('dataId'));
             confirmDelete(ID);
         });
-        $('#search').on('click',function(){
+        $('#search').on('click', function () {
             GetData();
         })
+        document.getElementsByClassName('jconfirm-buttons').addEventListener('click', stopCamera);
     })
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
@@ -379,7 +380,7 @@
 
         // Generate PDF
         html2pdf().from(element).set(options).save().finally(() => {
-           
+
             element.style.transform = '';
             element.style.transformOrigin = '';
         });
@@ -476,7 +477,7 @@
         $.get({
             //type: "POST",
             url: '@Url.Action("GetData", "OldAge")',
-            data: {startDate : startDate,endDate:endDate,username:user},
+            data: { startDate: startDate, endDate: endDate, username: user },
             success: function (response) {
                 table.clear();
                 response.data.forEach(function (item) {
@@ -662,5 +663,6 @@
             }
         });
     }
+   
 
 </script>

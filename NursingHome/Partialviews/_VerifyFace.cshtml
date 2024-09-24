@@ -1,0 +1,96 @@
+﻿
+<script src="~/js/face-api.min.js"></script>
+<div class="col-12 contentCenter">
+<div class="col-4">
+    <video id="video" style="width:100%" height="400" autoplay muted></video>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadModels();
+
+    });
+
+    async function verifyFace() {
+        let username = localStorage.getItem('username');
+        try {
+            const response = await $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetFaceData", "Users")',
+                data: { username: username }
+            });
+
+            let isface = await loginWithFace(response);
+            stopCamera();
+            if (isface) {
+                Clearfields();
+            }
+        } catch (error) {
+            console.error("Error during face verification:", error);
+            // Handle the error as needed
+        }
+    }
+
+    async function setupCamera() {
+        const video = document.getElementById('video');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+        video.srcObject = stream;
+        return new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play();
+                resolve(video);
+            };
+        });
+    }
+    async function loginWithFace(data) {
+        const video = await setupCamera();
+        console.log("Camera setup complete, starting face detection...");
+
+        const storedDescriptorsJSON = data;
+        if (!storedDescriptorsJSON) {
+            alertMessage('No registered face found.');
+            return false;
+        }
+
+        const storedDescriptorsObj = JSON.parse(storedDescriptorsJSON);
+        const labeledDescriptors = new faceapi.LabeledFaceDescriptors(
+            storedDescriptorsObj.label,
+            storedDescriptorsObj.descriptors.map(d => new Float32Array(Object.values(d)))
+        );
+
+        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+        if (detections) {
+            const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
+            const match = faceMatcher.findBestMatch(detections.descriptor);
+
+            if (match.distance < 0.6) {
+                alertMessage('Face Verified!');
+                return true;
+            } else {
+                alertMessage('Face not recognized. Please try again.');
+                return false;
+            }
+        } else {
+            alertMessage('No face detected, please try again.');
+            return false;
+        }
+    }
+    async function loadModels() {
+        const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    }
+ 
+    function stopCamera() {
+        const video = document.getElementById('video');
+        video.pause();
+        if (video.srcObject) {
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
+        }
+    }
+</script>

@@ -101,7 +101,7 @@ namespace NursingHome.Db.Implementation
             if (IsExistUser != null)
             {
                 string faceDescriptorJson = JsonConvert.SerializeObject(faceid);
-                IsExistUser.faceDescriptor = faceDescriptorJson;
+                IsExistUser.faceDescriptor = faceid;
                 IsExistUser.IsFaceAdded = true;
                 db.SaveChanges();
                 return true;
@@ -113,10 +113,10 @@ namespace NursingHome.Db.Implementation
         }
 
 
-        public string GetFaceDescriptor(string Username)
+        public dynamic GetFaceDescriptor(string Username)
         {
             var db = new TaskContext (_dbConn);
-            return db.Users.Where(x => x.UserName == Username).Select(user => user.faceDescriptor).ToString();
+            return db.Users.Where(x => x.UserName == Username).Select(user => user.faceDescriptor);
         }
 
         public Users GetUserDataById(int id)
