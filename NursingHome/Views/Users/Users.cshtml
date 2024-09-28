@@ -10,11 +10,11 @@
 </style>
 <!-- Modal Structure -->
 <div class="modal fade" id="userModal" role="dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="custom-modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">User Information Form</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" onclick="HidePopup('userModal')" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form>
@@ -151,7 +151,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" onclick="HidePopup('userModal')">Close</button>
                         <button type="submit" class="btn btn-primary" onclick="AddUser()">Save</button>
                     </div>
                 </form>
@@ -172,8 +172,8 @@
     </ul>
     <div class="tab-content mt-2" id="myTabContent">
         <div class="tab-pane fade show active" id="userTabContent" role="tabpanel" aria-labelledby="home-tab">
-            <div class="container-fluid mb-2 contentEnd">
-                <button type="button" class="customBtn" data-bs-toggle="modal" data-target="#userModal" onclick="OpenPopup();">
+            <div class="container-fluid mb-2">
+                <button type="button" class="customBtn" onclick="OpenPopup();">
                     <i class="fa fa-add me-1"></i>  ADD USER
                 </button>
             </div>
@@ -182,7 +182,7 @@
                     <tr>
                         <th>Name</th>
                         <th>UserName</th>
-                        <th>Qualification</th>
+                        <th>Face Added</th>
                         <th>Roles</th>
                         <th>Mobile No</th>
                         <th>Action</th>
@@ -222,10 +222,7 @@
 
 
         </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <h5>Contact</h5>
-            <p>This is the contact tab content.</p>
-        </div>
+        
     </div>
 </div>
 
@@ -241,6 +238,7 @@
     var userFaceDescriptor;
     $(document).ready(function () {
          GetUsersData();
+         BindCityDdl();
         userFaceDescriptor = '';
         $('#tblUsers').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
@@ -274,7 +272,7 @@
         $('.UserIPfields').val();
         userIdPrrof = '';
         userImageString = '';
-        $('#userModal').modal('toggle');
+        showPopup('userModal');
     }
     //document.getElementById('downloadIdProof').addEventListener('click', function () {
     //    if (userIdPrrof) {
@@ -315,6 +313,8 @@
             data: formData,
            processData: false, // Required for FormData
             contentType: false, // Required for FormData
+            traditional:true,
+            async:false,
             success: function (response) {
                 if (response) {
                     if ($('#userId').val() == '') {
@@ -342,16 +342,16 @@
             type: 'GET', // Use GET method
             dataType: 'json', // Ensure the expected data type is JSON
             success: function (response) {
-                table.clear();
+                table.clear().draw();
                 response.data.forEach(function (item) {
                     table.row.add([
                         item.firstName + " " + item.lastName, // Added a "+" sign between firstName and lastName
                         item.userName,
-                        item.highestQualification,
+                        item.isFaceAdded ? '<div class="contentCenter"><span class="badge bg-success p-1">True</span></div>' : '<div class= "contentCenter"> <span class="badge bg-danger p-1" > False < /span></div>',
                         item.roles,
                         item.mobileNo,
-                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete" style="color:red" data-id="' + item.id + '"></i>' // Use data-id for storing the id attribute
+                        '<div class= "contentCenter" > <i class="fa fa-edit me-4 ml-2 btn-edit" style = "color:green" data - full - data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<i class="fa fa-trash ml-2 btn-delete" style="color:red" data-id="' + item.id + '"></i></div>' // Use data-id for storing the id attribute
                     ]).draw();
                 });
                 BindUserDropdown(response.data); // Call your dropdown binding function
@@ -366,16 +366,13 @@
         // Get the dropdown element by ID
         const ddlUsers = document.getElementById("ddlUsers");
 
-        // Clear any existing options
         ddlUsers.innerHTML = "";
 
-        // Add the default "Select User" option
         const defaultOption = document.createElement("option");
         defaultOption.text = "Select User";
         defaultOption.value = "";
         ddlUsers.appendChild(defaultOption);
 
-        // Loop through the data and add options to the dropdown
         data.forEach(item => {
             const option = document.createElement("option");
             option.value = item.userName; // Set the value to userName
@@ -406,8 +403,6 @@
 
     async function registerFace() {
         const video = await setupCamera();
-        console.log("Camera setup complete, starting face detection...");
-
         const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
 
         if (detections) {
@@ -431,6 +426,8 @@
                 success: function (response) {
                     if (response) {
                         msgPopup("success", "Face Data Added Successfully");
+                        stopCamera();
+                        GetUsersData();
                     }
                     else {
                         msgPopup("error", "Error! Please Try Again");
@@ -444,39 +441,6 @@
             alertMessage("Please Select User or Add face");
         }
     }
-    //async function loginWithFace() {
-    //    const video = await setupCamera();
-    //    console.log("Camera setup complete, starting face detection...");
-
-    //    const storedDescriptorsJSON = localStorage.getItem('faceDescriptors');
-    //    if (!storedDescriptorsJSON) {
-    //        alert('No registered face found.');
-    //        return;
-    //    }
-
-    //    const storedDescriptorsObj = JSON.parse(storedDescriptorsJSON);
-    //    const labeledDescriptors = new faceapi.LabeledFaceDescriptors(
-    //        storedDescriptorsObj.label,
-    //        storedDescriptorsObj.descriptors.map(d => new Float32Array(Object.values(d)))
-    //    );
-
-    //    const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
-    //    if (detections) {
-    //        const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
-    //        const match = faceMatcher.findBestMatch(detections.descriptor);
-
-    //        if (match.distance < 0.6) {
-    //            alert('Face matched! Login successful.');
-    //        } else {
-    //            alert('Face not recognized. Please try again.');
-    //        }
-    //    } else {
-    //        alert('No face detected, please try again.');
-    //    }
-    //}
-
-
-
     function BindData(data) {
         $('#userId').val(data.id);
         $('#firstName').val(data.firstName);
@@ -494,7 +458,7 @@
         userIdPrrof = data.idProof;
         userImageString = data.imageString;
         //  data.PaymentStatus = "Pending";
-        $('#userModal').modal('toggle');
+        showPopup('userModal');
     }
 
     function confirmDelete(id) {
@@ -511,7 +475,7 @@
                     text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                        //  deleteData(id);
+                          deleteData(id);
                     },
                 },
                 No: {
@@ -530,11 +494,50 @@
             url: '@Url.Action("DeleteUser", "Users")',
             data: { id: id },
             success: function (response) {
-
+                if (response) {
+                        msgPopup("success", "User Deleted Successfully");
+                    }
+                    else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
             },
             error: function (response) {
 
                 console.error(response);
+            }
+        });
+    }
+    function stopCamera() {
+        const video = document.getElementById('video');
+        video.pause();
+        if (video.srcObject) {
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
+        }
+    }
+    function BindCityDdl() {
+        
+        $.ajax({
+            type: "POST",
+            url: '/Configuration/GetCityData',
+            success: function (response) {
+                const ddlCity = document.getElementById("fkCity");
+                ddlCity.innerHTML = "";
+                const defaultOption = document.createElement("option");
+                defaultOption.text = "Select City";
+                defaultOption.value = "";
+                ddlCity.appendChild(defaultOption);
+                response.data.forEach(function (item) {
+                        const option = document.createElement("option");
+                        option.value = item.id;
+                        option.text = item.name 
+                        ddlCity.appendChild(option);
+                });
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred: ' + error);
             }
         });
     }

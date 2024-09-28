@@ -61,11 +61,8 @@ namespace NursingHome.Controllers
         {
             if (model.Id==0)
             {
-
                 var IsAdded = _DbConn.AddCity(model);
                 return Json(IsAdded);
-
-                
             }
             else
             {
@@ -73,7 +70,6 @@ namespace NursingHome.Controllers
                 return Json(IsUpdated);
             }
 
-            
         }
 
 

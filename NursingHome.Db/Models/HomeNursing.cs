@@ -49,6 +49,8 @@ public partial class HomeNursing
 
     public string authorizedSign { get; set; }
 
+    public bool? isActive { get; set; }
+
     public virtual ICollection<Attendance> Attendance { get; set; } = new List<Attendance>();
 
     public virtual Helpers fkHelper { get; set; }

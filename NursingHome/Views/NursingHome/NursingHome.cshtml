@@ -15,10 +15,11 @@
     </div>
     <!-- Modal -->
     <div class="modal fade" id="homeNursingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="custom-modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
+                    <button type="button" class="close" onclick="HidePopup('homeNursingModal')" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -46,7 +47,7 @@
                                         </div>
                                         <div id="customAddress">
                                             <div class="contentCenter">
-                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                             </div>
                                             <div class="contentCenter">
                                                 <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
@@ -222,9 +223,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="AddHomeNursing()">Save changes</button>
-                    <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
+                    <button type="button" class="btn btn-secondary" onclick="HidePopup('homeNursingModal')">Close</button>
+                    <button type="button" class="btn btn-success" onclick="AddHomeNursing()">Save changes</button>
+                    <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
                 </div>
             </div>
         </div>
@@ -294,12 +295,12 @@
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
         $('#helperRow').attr('hidden','hidden');
         const element = document.querySelector('.registrationFormContent');
-        element.style.transform = 'scale(0.8)';
+        element.style.transform = 'scale(0.75)';
         element.style.transformOrigin = 'top center';
         const options = {
             margin: 0,
-            filename: 'form.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
+            filename: $('#patientName').val() + '.pdf',
+            image: { type: 'jpeg', quality: 2 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
@@ -338,7 +339,7 @@
         $('#clientSignature').prop('hidden', false);
         $('#clientSignatureImage').prop('hidden', true);
         GetSerialNo();
-        $('#homeNursingModal').modal('toggle');
+       showPopup('homeNursingModal');
     }
     function GetSerialNo() {
         $.get({
@@ -376,7 +377,14 @@
             url: '@Url.Action("AddorEditHomeNursing", "NursingHome")',
             data: data,
             success: function (response) {
-
+                 if(response){
+                    let msg = $('#homeNursingPatientId').val() == ''?"Data Added Successfully":"Data Updated Successfully";
+                    HidePopup('homeNursingModal');
+                    msgPopup("success",msg);
+                    GetData();
+                }else{
+                    msgPopup("error","Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -394,7 +402,7 @@
             url: '@Url.Action("GetData", "NursingHome")',
             data: { startDate: startDate, endDate: endDate, username: user },
             success: function (response) {
-                table.clear();
+                table.clear().draw();
                 response.data.forEach(function (item) {
                     table.row.add([
                         item.patientName,
@@ -437,7 +445,7 @@
         $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
         $('#authorizedSignatureImage').prop('hidden', false);
         $('#authorizedSignature').prop('hidden', true);
-        $('#homeNursingModal').modal('toggle');
+        showPopup('homeNursingModal');
     }
 
     function confirmDelete(id) {

@@ -47,33 +47,6 @@
         text-align: right;
     }
 
-
-
-
-    .custom-modal {
-        width: 90%; /* Full width on mobile */
-    }
-
-    /* Styles for tablets (between 768px and 992px) */
-    @@media (min-width: 768px) and (max-width: 991.98px) {
-        .custom-modal {
-            width: 80%; /* Slightly narrower on tablets */
-        }
-    }
-
-    /* Styles for desktops (992px and larger) */
-    @@media (min-width: 992px) {
-        .custom-modal {
-            width: 60%; /* Narrower for larger screens */
-        }
-    }
-
-    /* Styles for larger desktops (1200px and larger) */
-    @@-media (min-width: 1200px) {
-        .custom-modal {
-            width: 50%; /* Even narrower for extra-large screens */
-        }
-    }
 </style>
 @*<div class="container-fluid">
     <button class="customBtn" onclick="OpenOldAgePaymentPopup()">OldAgePayment</button>
@@ -95,7 +68,7 @@
     </ul>
     <div class="tab-content mt-2" id="myTabContent">
         <div class="tab-pane fade show active" id="oldAgePaymentTabContent" role="tabpanel" aria-labelledby="home-tab">
-            <div class="container-fluid mb-2 contentEnd">
+            <div class="container-fluid mb-2">
                 <button type="button" class="customBtn" id="oldAgebtn">
                     <i class="fa fa-add me-1" ></i> Add
                 </button>
@@ -116,7 +89,7 @@
             </div>
         </div>
         <div class="tab-pane fade" id="NursingPaymentTabContent" role="tabpanel" aria-labelledby="profile-tab">
-            <div class="container-fluid mb-2 contentEnd">
+            <div class="container-fluid mb-2">
                 <button type="button" class="customBtn" id="NursingHomebtn">
                     <i class="fa fa-add me-1" ></i> Add
                 </button>
@@ -144,11 +117,11 @@
 </div>
 
 <div class="modal fade" id="oldAgeCashPopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl custom-modal" role="document">
+    <div class="custom-modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Old Age Cash Memo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="exampleModalLabel">Cash Memo</h5>
+                <button type="button" class="close" onclick="HidePopup('oldAgeCashPopup')" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -181,14 +154,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="memo-container p-2">
-                        <div class="row">
+                    <div class="memo-container p-2 ">
+                        <div class="row ">
                             <div class="col-4"></div>
                             <div class="memo-header col-auto">Cash Voucher</div>
-                            <div class="col-2"></div>
-                            <div class="col">
+                           <div class="col">
+                            <div class="contentEnd">
                                 <label>Date :</label>
                                 <input type="date" id="OAdate" />
+                            </div>
                             </div>
                         </div>
                         <div class="memo-form ml-2">
@@ -255,18 +229,12 @@
                             </div>
                         </div>
                     </div>
-                    @* <div class="row">
-
-                    <span class="col-4">Signature of the Client</span>
-                    <span class="col-4"></span>
-                    <span class="col-4 contentEnd">Authorised Signatory</span>
-                    </div>*@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="SaveOldAgeCashMemo()">Save</button>
-                <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="HidePopup('oldAgeCashPopup')">Close</button>
+                <button type="button" class="btn btn-success" onclick="SaveOldAgeCashMemo()">Save</button>
+                <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
     </div>
@@ -274,7 +242,6 @@
 <script>
     var CashMode = '';
   
-
     $(document).ready(function () {
         $('#userColumn').hide();//Hide the User Dropdown from Searchbar
         GetPaymentData();
@@ -345,7 +312,8 @@
                     if (response) {
                         let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
                         msgPopup("success", msg);
-                        $('#oldAgeCashPopup').modal('toggle');
+                        HidePopup('oldAgeCashPopup');
+                        GetPaymentData();
                     } else {
                         msgPopup("error", "Something Went Wrong")
                     }
@@ -364,7 +332,8 @@
                     if (response) {
                         let msg = $('#oldAgePaymentId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
                         msgPopup("success", msg);
-                        $('#oldAgeCashPopup').modal('toggle');
+                        HidePopup('oldAgeCashPopup');
+                        GetPaymentData();
                     } else {
                         msgPopup("error", "Something Went Wrong")
                     }
@@ -384,21 +353,21 @@
             url: '@Url.Action("GetCashMemoData", "CashMemo")',
             data: { startDate: $('#startDate').val(), endDate: $('#endDate').val() },
             success: function (response) {
-                OAtable.clear();
+                OAtable.clear().draw();
                 response.oldAge.forEach(function (item) {
                     OAtable.row.add([
                         item.patientName,
-                        item.date,
+                        item.date.split("T")[0],
                         item.amount,
                         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
                     ]).draw();
                 });
-                NHtable.clear();
+                NHtable.clear().draw();
                 response.nursing.forEach(function (item) {
                     NHtable.row.add([
                         item.patientName,
-                        item.date,
+                        item.date.split("T")[0],
                         item.amount,
                         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
@@ -419,7 +388,8 @@
         $('#OArecieverSignature').prop('hidden', false);
         $('#OAauthorizedSignatureImage').prop('hidden', true);
         $('#OAauthorizedSignature').prop('hidden', false);
-        $('#oldAgeCashPopup').modal('toggle');
+        $('#OAdate').val(formatDate(new Date()));
+        showPopup('oldAgeCashPopup');
     }
     function BindOldAgePayment(data) {
         $('#oldAgePaymentId').val(data.id);
@@ -435,7 +405,7 @@
         $('#OAauthorizedSignatureImage').prop('hidden', false);
         $('#OAauthorizedSignature').prop('hidden', true);
         $('#OAauthorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-        $('#oldAgeCashPopup').modal('toggle');
+        showPopup('oldAgeCashPopup');
     }
 
     function deleteOlgAgeCashData(id){
@@ -446,6 +416,7 @@
             success: function (response) {
                 if (response) {
                     msgPopup("success", "Data Deleted Successfully");
+                    GetPaymentData();
                 } else {
                     msgPopup("error", "Something Went Wrong")
                 }
@@ -463,6 +434,7 @@
             success: function (response) {
                 if (response) {
                     msgPopup("success", "Data Deleted Successfully");
+                    GetPaymentData();
                 } else {
                     msgPopup("error", "Something Went Wrong")
                 }

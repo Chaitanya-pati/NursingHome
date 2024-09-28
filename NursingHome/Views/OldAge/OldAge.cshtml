@@ -6,15 +6,16 @@
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 
-
+<script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script>
+<script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.js"></script>
 
 <!-- Modal -->
 <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="custom-modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" onclick="HidePopup('oldAgePopup')" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -43,7 +44,7 @@
                                     </div>
                                     <div id="customAddress">
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                         </div>
                                         <div class="contentCenter">
                                             <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
@@ -178,7 +179,7 @@
                                         <div class="signature-section row ml-2">
                                             <div class="signature-box col-4 ">
                                                 <canvas id="clientSignature" class="signatureContainer"></canvas>
-                                                <img id="clientSignatureImage" class="signatureContainerImage" />
+                                                <img id="clientSignatureImage" class="signatureContainerImage" hidden/>
                                                 <div class="row">
                                                     <div class="col-10">
                                                         <p>Signature of the Client &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
@@ -206,87 +207,14 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="AddOldAge()">Save changes</button>
-                <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="HidePopup('oldAgePopup')" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="AddOldAge()">Save changes</button>
+                <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
     </div>
 </div>
 
-@*<div class="modal fade" id="oldAgePaymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Old Age Payment Form</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="row mb-3">
-                        <!-- First Field Pair -->
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="hidden" id="paymentPatientId" />
-                                    <label for="firstName" class="form-label">Patient Name</label>
-                                </div>
-                                <div class="col-md-6">
-
-                                    <select class="form-select" id="patientPayment"> </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="lastName" class="form-label">Amount</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control  OldAgeIpfields" id="paymentAmt">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <!-- Second Field Pair -->
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="userName" class="form-label">Date</label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="date" class="form-control  OldAgeIpfields" id="paymentDate">
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>*@
-@*<div class="container-fluid mt-3">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Payment</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
-        </li>
-    </ul>
-    <div class="tab-content mt-2" id="myTabContent">*@
-@* <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">*@
 <div class="container-fluid mb-2 mt-2">
     <button type="button" class="customBtn" onclick="verifyFace()">
         <i class="fa fa-add me-1"></i> Add
@@ -298,7 +226,6 @@
             <tr>
                 <th>Patient Name</th>
                 <th>Admission Date</th>
-                <th>Payment Status</th>
                 <th>Period From</th>
                 <th>Period To</th>
                 <th>Action</th>
@@ -307,37 +234,8 @@
         <tbody>
         </tbody>
     </table>
-   @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
+    @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
 </div>
-@*  </div>*@
-@* <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <div class="container-fluid mb-2 contentEnd">
-                <button type="button" class="customBtn" data-toggle="modal" data-target="#oldAgePaymentModal">
-                    <i class="fa fa-add me-1"></i> Add
-                </button>
-            </div>
-            <div class="col-md-12">
-                <table id="tblOldAgePayment" class="display table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Patient Name</th>
-                            <th>Payment Date</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <h5>Contact</h5>
-            <p>This is the contact tab content.</p>
-        </div>
-    </div>
-</div>
-
-*@
 <script>
 
     var OldAgeIdProof;
@@ -362,7 +260,7 @@
         $('#search').on('click', function () {
             GetData();
         })
-        document.getElementsByClassName('jconfirm-buttons').addEventListener('click', stopCamera);
+
     })
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
@@ -372,7 +270,7 @@
         // Options for html2pdf
         const options = {
             margin: 0,
-            filename: 'form.pdf',
+            filename: $('#patientName').val() + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -421,7 +319,11 @@
         $('#clientSignatureImage').prop('hidden', true);
         OldAgeIdProof = '';
         GetSerialNo();
-        $('#oldAgePopup').modal('toggle');
+        $('#adminssionDate').val(formatDate(new Date()));
+        $('#periodTo').val(formatDate(new Date()));
+        $('#periodFrom').val(formatDate(new Date()));
+        showPopup('oldAgePopup');
+       // $('#oldAgePopup').modal('toggle');
     }
 
     function GetSerialNo() {
@@ -460,7 +362,15 @@
             url: '@Url.Action("AddorEditOldAge", "OldAge")',
             data: data,
             success: function (response) {
-
+                if(response){
+                    let msg = $('#oldAgePatientId').val() == ''?"Data Added Successfully":"Data Updated Successfully";
+                    // $('#oldAgePopup').modal('toggle');
+                    HidePopup('oldAgePopup');
+                    msgPopup("success",msg);
+                    GetData();
+                }else{
+                    msgPopup("error","Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -479,12 +389,11 @@
             url: '@Url.Action("GetData", "OldAge")',
             data: { startDate: startDate, endDate: endDate, username: user },
             success: function (response) {
-                table.clear();
+                table.clear().draw();
                 response.data.forEach(function (item) {
                     table.row.add([
                         item.patientName,
                         item.admissionDate.split("T")[0],
-                        item.paymentStatus,
                         item.periodFrom.split("T")[0],
                         item.periodTo.split("T")[0],
                         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
@@ -522,7 +431,7 @@
         $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
         $('#authorizedSignatureImage').prop('hidden', false);
         $('#authorizedSignature').prop('hidden', true);
-        $('#oldAgePopup').modal('toggle');
+        showPopup('oldAgePopup');
     }
 
     function confirmDelete(id) {
@@ -558,7 +467,12 @@
             url: '@Url.Action("DeleteData", "OldAge")',
             data: { id: id },
             success: function (response) {
-
+                if(response){
+                    msgPopup("success","Data Deleted Successfully");
+                    GetData();
+                }else{
+                    msgPopup("error","Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -566,103 +480,5 @@
             }
         });
     }
-
-
-    // Old Age Payment Section
-    function GetPaymentData() {
-
-        $.get({
-            //type: "POST",
-            url: '@Url.Action("GetPaymentData", "OldAge")',
-            // data: data,
-            success: function (response) {
-                table.clear();
-                response.data.forEach(function (item) {
-                    table.row.add([
-                        item.patientName,
-                        item.amount,
-                        item.date,
-                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-                    ]).draw();
-                });
-            },
-            error: function (response) {
-
-                console.error(response);
-            }
-        });
-    }
-
-    function AddOldAgePayment() {
-        var data = {};
-        data.Id = $('#paymentPatientId').val();
-        data.fkOldAgeId = $('#patientPayment').val();
-        data.Date = $('#paymentDate').val();
-        data.Amount = $('#paymentAmt').val();
-
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("AddorEditOldAgePayment", "OldAge")',
-            data: data,
-            success: function (response) {
-
-            },
-            error: function (response) {
-
-            }
-        });
-    }
-
-    function BindPaymentData(data) {
-        $('#paymentPatientId').val(data.id);
-        $('#paymentAmt').val(data.amount);
-        $('#patientPayment').val();//Dropdown Binding required
-        $('#paymentDate').val(formatDate(new Date(data.date)));
-        $('#oldAgePaymentModal').modal('toggle');
-    }
-
-    function confirmDeletePayment(id) {
-        $.alert({
-            title: 'Alert',
-            content: 'Are you sure want to delete ?',
-            typeAnimated: true,
-            backgroundDismiss: false,
-            backgroundDismissAnimation: 'glow',
-            boxWidth: '30%',
-            useBootstrap: false,
-            buttons: {
-                Yes: {
-                    text: 'Yes',
-                    btnClass: 'btn btn-success',
-                    action: function () {
-                        deletePayment(id);
-                    },
-                },
-                No: {
-                    text: 'No',
-                    btnClass: 'btn btn-warning',
-                    action: function () {
-                        return;
-                    },
-                },
-            },
-        });
-    }
-
-    function deletePayment(id) {
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("DeletePaymentData", "OldAge")',
-            data: { id: id },
-            success: function (response) {
-
-            },
-            error: function (response) {
-
-            }
-        });
-    }
-   
 
 </script>

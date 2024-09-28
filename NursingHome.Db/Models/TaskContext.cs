@@ -25,6 +25,8 @@ public partial class TaskContext : DbContext
 
     public virtual DbSet<HomeNursingCashMemo> HomeNursingCashMemo { get; set; }
 
+    public virtual DbSet<Logger> Logger { get; set; }
+
     public virtual DbSet<OldAge> OldAge { get; set; }
 
     public virtual DbSet<OldAgeCashMemo> OldAgeCashMemo { get; set; }
@@ -121,6 +123,13 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.id).ValueGeneratedOnAdd();
             entity.Property(e => e.patientName).HasMaxLength(200);
             entity.Property(e => e.paymentMode).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Logger>(entity =>
+        {
+            entity.Property(e => e.actionName).HasMaxLength(100);
+            entity.Property(e => e.controllerName).HasMaxLength(100);
+            entity.Property(e => e.createdDate).HasColumnType("date");
         });
 
         modelBuilder.Entity<OldAge>(entity =>

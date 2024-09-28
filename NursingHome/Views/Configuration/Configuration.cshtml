@@ -1,54 +1,49 @@
 ﻿<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 text-right mb-5">
-            <button type="button" class="customBtn" data-toggle="modal" data-target="#userInfoModal">
-                Add New City
+        <div class="col-md-12 text-right mt-2">
+            <button type="button" class="customBtn" data-toggle="modal" data-target="#cityModal" onclick="ClearFields()">
+                <i class="fa fa-add me-1"></i>   Add New City
             </button>
         </div>
     </div>
 
-    <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="cityModal" tabindex="-1" role="dialog" aria-labelledby="cityModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="userInfoModalLabel">User Information Form</h5>
+                    <h5 class="modal-title" id="cityModalLabel">User Information Form</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <form id="userForm" novalidate>
+                        <input type="hidden" id="CityId" />
                         <div class="form-group">
                             <label for="Name">City Name</label>
-                            <input type="text" class="form-control" id="Name" required />
+                            <input type="text" class="form-control CityIpFileds" id="Name" required />
                             <div class="invalid-feedback">Please enter the city name.</div>
                         </div>
                         <div class="form-group">
                             <label for="Email">Email</label>
-                            <input type="email" class="form-control" id="Email" required />
+                            <input type="email" class="form-control CityIpFileds" id="Email" required />
                             <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
                         <div class="form-group">
-                            <label for="MobileNumber1">Mobile Number 1</label>
-                            <input type="tel" class="form-control" id="MobileNumber1" required />
+                            <label for="MobileNumber">Mobile Number</label>
+                            <input type="tel" class="form-control CityIpFileds" id="MobileNumber" required />
                             <div class="invalid-feedback">Please enter a valid mobile number.</div>
                         </div>
                         <div class="form-group">
-                            <label for="MobileNumber2">Mobile Number 2 (Optional)</label>
-                            <input type="tel" class="form-control" id="MobileNumber2" />
-                        </div>
-                        <div class="form-group">
                             <label for="OfficeAddress">Office Address (Optional)</label>
-                            <input type="text" class="form-control" id="OfficeAddress" />
+                            <input type="text" class="form-control CityIpFileds" id="OfficeAddress" />
                         </div>
                         <div class="form-group">
                             <label for="ImageUpload">Upload Image (Optional)</label>
                             <input type="file" class="form-control-file" id="ImageUpload" accept="image/*" />
                         </div>
                         <input type="hidden" id="ImageBase64" />
-                        <div class="alert alert-success mt-2" id="successMessage">
-                            City added successfully!
-                        </div>
+                        
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -61,15 +56,10 @@
 
     <div class="row mt-4">
         <div class="col-md-12">
-            <table id="tablecity" class="table table-bordered table-hover">
+            <table id="tablecity" class="display table-bordered">
                 <thead class="thead-light">
                     <tr>
                         <th>Name</th>
-                        <th>Office Address</th>
-                        <th>Mobile Number 1</th>
-                        <th>Mobile Number 2</th>
-                        <th>Email</th>
-                        <th>Image</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -80,35 +70,26 @@
 </div>
 
 <script>
+    var BarCodeImg  = '';
     $(document).ready(function () {
         var table = $('#tablecity').DataTable();
         GetData();
-
-        $('#successMessage').hide();
-
+        $('#ImageUpload').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                BarCodeImg = base64;
+            });
+        });
         $('#SaveCityData').on('click', function () {
             var name = $('#Name').val();
             var email = $('#Email').val();
-            var mobileNumber1 = $('#MobileNumber1').val();
-            var mobileNumber2 = $('#MobileNumber2').val();
+            var mobileNumber = $('#MobileNumber').val();
             var officeAddress = $('#OfficeAddress').val();
-            var imageInput = $('#ImageUpload')[0];
-            var imageBase64 = '';
+           // var imageInput = $('#ImageUpload')[0];
+            var imageBase64 = BarCodeImg;
             var CityId = $('#CityId').val();
 
             if ($('#userForm')[0].checkValidity()) {
-                if (imageInput.files.length > 0) {
-                    var file = imageInput.files[0];
-                    var reader = new FileReader();
-                    reader.onloadend = function () {
-                        imageBase64 = reader.result;
-                        $('#ImageBase64').val(imageBase64);
-                        submitData();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
                     submitData();
-                }
             } else {
                 $('#userForm').addClass('was-validated');
             }
@@ -120,15 +101,19 @@
                     data: {
                         Name: name,
                         Email: email,
-                        MobileNumbers: mobileNumber1 + (mobileNumber2 ? ',' + mobileNumber2 : ''),
+                        MobileNumbers: mobileNumber,
                         OfficeAddress: officeAddress,
                         ImageBase64: imageBase64,
-                        ID: CityId
+                        Id: CityId
                     },
                     success: function (response) {
                         if (response) {
+                            let msg = $('#CityId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                            msgPopup("success", msg);
                             GetData();
-                            $('#userInfoModal').modal('hide');
+                            $('#cityModal').modal('hide');
+                        }else{
+                            msgPopup("error","Error! Please Try Again");
                         }
                     },
                     error: function (xhr, status, error) {
@@ -173,19 +158,26 @@
         $('#Name').val(data.name);
         $('#Email').val(data.email);
         $('#OfficeAddress').val(data.officeAddress);
-        $('#MobileNumber1').val(data.mobileNumbers.split(',')[0]);
-        $('#MobileNumber2').val(data.mobileNumbers.split(',')[1]);
+        $('#MobileNumber').val(data.mobileNumbers);
         $('#CityId').val(data.id);
-        $('#userInfoModal').modal('show');
+        $('#cityModal').modal('show');
     }
-
+    function ClearFields(){
+        $('.CityIpFileds').val('');
+        BarCodeImg = '';
+    }
     function deleteData(id) {
         $.ajax({
             type: "POST",
             url: '/Configuration/DeleteCity',
             data: { id: id },
             success: function (response) {
+                if(response){
+                    msgPopup("success","Data Added Successfully");
                 GetData();
+                }else{
+                    msgPopup("error","Error! Please Try Again");
+                }
             },
             error: function (response) {
                 console.error(response);
@@ -199,7 +191,7 @@
             type: "POST",
             url: '/Configuration/GetCityData',
             success: function (response) {
-                table.clear();
+                table.clear().draw();
                 response.data.forEach(function (item) {
                     var mobileNumbers = item.mobileNumbers.split(',');
                     var mobileNumber1 = mobileNumbers[0] ? mobileNumbers[0] : '';
@@ -207,12 +199,7 @@
 
                     table.row.add([
                         item.name,
-                        item.officeAddress,
-                        mobileNumber1,
-                        mobileNumber2,
-                        item.email,
-                        `<img src="${item.imageBase64}" alt="Image" style="width: 50px; height: auto;">`,
-                        `<div class="text-center">
+                        `<div class="contentCenter">
                                 <i class="fa fa-edit me-4 btn-edit" style="color:green" data-full-data='${JSON.stringify(item).replace(/'/g, "&#39;")}'></i>
                                 <i class="fa fa-trash btn-delete" style="color:red" data-id='${JSON.stringify(item.id).replace(/'/g, "&#39;")}'></i>
                             </div>`

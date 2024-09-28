@@ -39,6 +39,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Logger]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[OldAge]",
          "ObjectType": 0
       },

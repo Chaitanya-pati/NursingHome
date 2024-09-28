@@ -1,25 +1,18 @@
-﻿<!DOCTYPE html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page</title>
-
-</head>
-
-<div class="col-md-2">
-    <div class="container">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#helperModal" onclick="ClearInputFields();">
-            Open Modal
+﻿<script src="https://cdn.tailwindcss.com"></script>
+<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
+    <div class="container-fluid">
+        <button type="button" class="customBtn" onclick="ClearInputFields();">
+            Add Helper
         </button>
     </div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="helperModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="custom-modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="exampleModalLabel">Helper Application Form</h5>
+                <button type="button" class="close" onclick="HidePopup('helperModal')" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -51,7 +44,7 @@
                                     </div>
                                     <div id="customAddress">
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;margin-top:-10px">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                         </div>
                                         <div class="contentCenter">
                                             <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
@@ -158,6 +151,76 @@
                                             </div>
                                         </div>
                                     </div>
+                                    </br>
+                                    </br>
+                                    </br>
+                                    </br>
+                                </td>
+
+                            </tr>
+                           
+                            <tr>
+                                <td colspan="2">
+
+                                    <div>
+                                        <b class="contentCenter">For Care Givers</b>
+                                        <b>There are few set of things that need to be followed before you take the nursing services.</b>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
+                                                <div style="flex: 1; text-align: left;">Help with everyday activities like bathing and dressing, meal preparation and to enable independence and safety.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
+                                                <div style="flex: 1; text-align: left;">Long term, hourly nursing care at home for adults with chronic illness, injury or Disability.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="flex: 1; text-align: left;">Companionship an engaging in hobbies and activities.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="flex: 1; text-align: left;">Care provided on an ongoing basis on a schedule that meets a client's need to 24 hours a day, 7 days a week, including possible live-in-care.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
+                                                <div style="flex: 1; text-align: left;">Without Office permission patient should not be taken out.</div>
+                                            </div>
+                                        </div>
+
+                                        <b class="contentCenter">Terms and Conditions</b>
+                                        <b>There are few set of things that need to be followed before you take the nursing services.</b>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
+                                                <div style="flex: 1; text-align: left;">You will be on probation for a period of six months, if your service is found satisfactory then you will be confirmed. During your probation period your service can be terminated at any time, without prior notice.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
+                                                <div style="flex: 1; text-align: left;">You should give prior notice before 30 days when you are leaving services, if not you are liable to lose the salary of 30 days.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="flex: 1; text-align: left;">You will be offered a 6 month probation period after successful completion of the period you will be given a permanent employment in the company.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="flex: 1; text-align: left;">You cannot take leave without prior information, Unless in emergency you must inform and take clearance otherwise your salary will be deducted.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
+                                                <div style="flex: 1; text-align: left;">You will not start a similar business or any firm which directly or indirectly affects the company, if found, you will be legally prosecuted.</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -165,15 +228,15 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="AddHelper()">Save changes</button>
-                <button id="downloadRegistrationForm" class="btn btn-primary">Download PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="HidePopup('helperModal')">Close</button>
+                <button type="button" class="btn btn-success" onclick="AddHelper()">Save changes</button>
+                <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="col-md-12 container-fluid">
+<div class="col-12 container-fluid">
     <table id="tblHelpers" class="display table-bordered" style="width:100%">
         <thead>
             <tr>
@@ -191,25 +254,29 @@
 <script>
     var candidateImage = "";
     var helperIdProof = "";
-    var table = $('#tblHelpers').DataTable();
-    $(document).ready(function (){
+
+    $(document).ready(function () {
         GetData();
     });
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
         const element = document.querySelector('.registrationFormContent');
-        element.style.transform = 'scale(0.8)';
+        element.style.transform = 'scale(1)';
         element.style.transformOrigin = 'top center';
         // Options for html2pdf
         const options = {
             margin: 0,
-            filename: 'form.pdf',
+            filename: $('#candidateName').val() + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        html2pdf().from(element).set(options).save();
+        html2pdf().from(element).set(options).save().finally(() => {
+
+            element.style.transform = '';
+            element.style.transformOrigin = '';
+        });
     });
     function chooseOption() {
         $.alert({
@@ -330,7 +397,14 @@
             url: '@Url.Action("AddorEditHelper", "Helpers")',
             data: data,
             success: function (response) {
-
+                if (response) {
+                    let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                    HidePopup('helperModal');
+                    msgPopup("success", msg);
+                    GetData();
+                } else {
+                    msgPopup("error", "Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -355,22 +429,23 @@
         $('#salary').val(data.salary);
         $('#referenceDetail').val(data.reference);
         $('#famMembers').val(data.familyMembers);
-        $('#helperModal').modal('toggle');
+        showPopup('helperModal');
     }
 
-    function GetData(){
-        let UserName='';
-        if (localStorage.getItem('userRole') != 'admin'){
+    function GetData() {
+        var table = $('#tblHelpers').DataTable();
+        let UserName = '';
+        if (localStorage.getItem('userRole') != 'admin') {
             UserName = localStorage.getItem('username');
         }
-     
+
         $.ajax({
             type: "POST",
             data: UserName,
             url: '@Url.Action("GetData", "Helpers")',
             // data: data,
             success: function (response) {
-                table.clear();
+                table.clear().draw();
                 response.data.forEach(function (item) {
                     table.row.add([
                         item.name,
@@ -388,10 +463,11 @@
         });
     }
 
-    function ClearInputFields(){
+    function ClearInputFields() {
         $('.inputFields').val('');
         candidateImage = "";
         helperIdProof = "";
+        showPopup('helperModal');
     }
 
     function confirmDelete(id) {
@@ -428,7 +504,12 @@
             url: '@Url.Action("DeleteData", "Helpers")',
             data: { id: id },
             success: function (response) {
-
+                if (response) {
+                    msgPopup("success", "Data Deleted Successfully");
+                    GetData();
+                } else {
+                    msgPopup("error", "Error! Please Try Again");
+                }
             },
             error: function (response) {
 

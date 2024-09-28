@@ -40,8 +40,15 @@ namespace NursingHome.Controllers
         }
         public IActionResult GetData(DateTime startDate, DateTime endDate, string username)
         {
-            var result = _DbConn.GetData(startDate, endDate,username);
-            return Json(new { data = result });
+            try
+            {
+                var result = _DbConn.GetData(startDate, endDate, username);
+                return Json(new { data = result });
+            }
+            catch
+            {
+               return Json(null);
+            }
         }
 
         public IActionResult Privacy()

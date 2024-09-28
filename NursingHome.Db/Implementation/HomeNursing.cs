@@ -41,8 +41,9 @@ namespace NursingHome.Db.Implementation
         }
         public List<HomeNursingView> GetData(DateTime startDate, DateTime endDate,string username)
         {
+            
             using var Db = new TaskContext(_dbConn);
-
+           
             var query = @"
     SELECT *
     FROM HomeNursing

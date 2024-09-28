@@ -359,3 +359,15 @@ function clearSignature(id) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 }
+function showPopup(id) {
+    $('body').append('<div class="modal-backdrop fade show"></div>');
+
+    $('#'+id).addClass('show');
+    $('#'+id).css('display', 'block');
+}
+function HidePopup(id) {
+    $('.modal-backdrop').remove();
+
+    $('#'+id).removeClass('show');
+    $('#'+id).css('display', 'none');
+}

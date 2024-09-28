@@ -20,13 +20,13 @@
 
 </head>
 <body>
-<<div class="container-fluid">
+<div class="container-fluid">
     <div>
         <h1>Salary Slip Generation</h1>
 
         <div class="row mt-4">
             <div class="col-md-12">
-                <table id="salaryslipid" class="table table-bordered table-hover">
+                <table id="salaryslipid" class="display table-bordered">
                     <thead>
                         <tr>
                             <th>Helper ID</th>
@@ -112,7 +112,7 @@
                     type: 'GET',
                     url: '@Url.Action("GetData", "Helpers")',
                     success: function (response) {
-                        table.clear();
+                        table.clear().draw();
                         $.each(response.data, function (index, item) {
                             table.row.add([
                                 item.id,
