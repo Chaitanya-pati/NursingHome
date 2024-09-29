@@ -47,7 +47,7 @@
                                             <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                         </div>
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob : <span id="cutomMobileNumbers"></span> Email : <span id="customEmailAddress"></span></span>
                                         </div>
                                     </div>
                                 </td>
@@ -65,20 +65,20 @@
                                         <div class="col-7"></div>
                                         <div class="row col-5 mt-2 contentEnd">
                                             <span class="col-5">Date :</span>
-                                            <input class="col-7" id="adminssionDate" type="date" />
+                                            <input class="col-7 requiredfield" id="adminssionDate" type="date" />
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td><label for="patientName">Patient Name:</label></td>
-                                <td><input type="text" class="form-control  OldAgeIpfields" id="patientName"></td>
+                                <td><input type="text" class="form-control  OldAgeIpfields requiredfield" id="patientName"></td>
                             </tr>
                             <tr>
                                 <td><label for="address">Address:</label></td>
                                 <td><input type="text" class="form-control  OldAgeIpfields" id="address"></td>
                             </tr>
-                            <tr>
+                            <tr>         
                                 <td><label for="patientAge">Patient Age:</label></td>
                                 <td><input type="text" class="form-control  OldAgeIpfields" id="patientAge"></td>
                             </tr>
@@ -179,7 +179,7 @@
                                         <div class="signature-section row ml-2">
                                             <div class="signature-box col-4 ">
                                                 <canvas id="clientSignature" class="signatureContainer"></canvas>
-                                                <img id="clientSignatureImage" class="signatureContainerImage" hidden/>
+                                                <img id="clientSignatureImage" class="signatureContainerImage" hidden />
                                                 <div class="row">
                                                     <div class="col-10">
                                                         <p>Signature of the Client &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
@@ -208,7 +208,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="HidePopup('oldAgePopup')" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" onclick="AddOldAge()">Save changes</button>
+                <button type="button" class="btn btn-success" onclick="OpenQRPopup()">Pay</button>
+                <button type="button" class="btn btn-success" onclick="AddOldAge()">Save</button>
                 <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
@@ -323,7 +324,7 @@
         $('#periodTo').val(formatDate(new Date()));
         $('#periodFrom').val(formatDate(new Date()));
         showPopup('oldAgePopup');
-       // $('#oldAgePopup').modal('toggle');
+        // $('#oldAgePopup').modal('toggle');
     }
 
     function GetSerialNo() {
@@ -338,45 +339,47 @@
     }
 
     function AddOldAge() {
-        var data = {};
-        data.Id = $('#oldAgePatientId').val();
-        data.PatientName = $('#patientName').val();
-        data.Address = $('#address').val();
-        data.Age = $('#patientAge').val();
-        data.Condition = $('#patientCondition').val();
-        data.CustomerName = $('#customerName').val();
-        data.MobileNo = $('#mobileNo').val();
-        data.TypesofServices = $('#typesOfService').val();
-        data.IdProof = OldAgeIdProof;
-        data.PaymentStatus = "Pending";
-        data.PeriodFrom = $('#periodFrom').val();
-        data.PeriodTo = $('#periodTo').val();
-        data.AdmissionDate = $('#adminssionDate').val();
-        data.MonthlyPayment = $('#monthlyPayment').val();
-        data.RegistrationCharges = $('#registrationCharges').val();
-        data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        data.SUser = localStorage.getItem('username');
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("AddorEditOldAge", "OldAge")',
-            data: data,
-            success: function (response) {
-                if(response){
-                    let msg = $('#oldAgePatientId').val() == ''?"Data Added Successfully":"Data Updated Successfully";
-                    // $('#oldAgePopup').modal('toggle');
-                    HidePopup('oldAgePopup');
-                    msgPopup("success",msg);
-                    GetData();
-                }else{
-                    msgPopup("error","Error! Please Try Again");
-                }
-            },
-            error: function (response) {
+        if (CheckEmptyFields()) {
+            var data = {};
+            data.Id = $('#oldAgePatientId').val();
+            data.PatientName = $('#patientName').val();
+            data.Address = $('#address').val();
+            data.Age = $('#patientAge').val();
+            data.Condition = $('#patientCondition').val();
+            data.CustomerName = $('#customerName').val();
+            data.MobileNo = $('#mobileNo').val();
+            data.TypesofServices = $('#typesOfService').val();
+            data.IdProof = OldAgeIdProof;
+            data.PaymentStatus = "Pending";
+            data.PeriodFrom = $('#periodFrom').val();
+            data.PeriodTo = $('#periodTo').val();
+            data.AdmissionDate = $('#adminssionDate').val();
+            data.MonthlyPayment = $('#monthlyPayment').val();
+            data.RegistrationCharges = $('#registrationCharges').val();
+            data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            data.SUser = localStorage.getItem('username');
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddorEditOldAge", "OldAge")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        let msg = $('#oldAgePatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        // $('#oldAgePopup').modal('toggle');
+                        HidePopup('oldAgePopup');
+                        msgPopup("success", msg);
+                        GetData();
+                    } else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
+                },
+                error: function (response) {
 
-                console.error(response);
-            }
-        });
+                    console.error(response);
+                }
+            });
+        }
     }
 
     function GetData() {
@@ -467,11 +470,11 @@
             url: '@Url.Action("DeleteData", "OldAge")',
             data: { id: id },
             success: function (response) {
-                if(response){
-                    msgPopup("success","Data Deleted Successfully");
+                if (response) {
+                    msgPopup("success", "Data Deleted Successfully");
                     GetData();
-                }else{
-                    msgPopup("error","Error! Please Try Again");
+                } else {
+                    msgPopup("error", "Error! Please Try Again");
                 }
             },
             error: function (response) {

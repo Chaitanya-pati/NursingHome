@@ -34,6 +34,9 @@ builder.Services.AddTransient<ICashMemo,CashMemo>(provider =>
 });builder.Services.AddTransient<ISalarySlipService, SalarySlipService>(provider =>
 {
     return new SalarySlipService(builder.Configuration.GetConnectionString("NursingHome"));
+});builder.Services.AddTransient<IHomeService, HomeService>(provider =>
+{
+    return new HomeService(builder.Configuration.GetConnectionString("NursingHome"));
 });
 
 var app = builder.Build();

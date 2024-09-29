@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <input type="text" id="userId" hidden class="UserIPfields">
-                                    <input type="text" class="form-control UserIPfields" id="firstName">
+                                    <input type="text" class="form-control UserIPfields requiredfield" id="firstName">
                                 </div>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                                     <label for="userName" class="form-label">User Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control UserIPfields" id="userName">
+                                    <input type="text" class="form-control UserIPfields requiredfield" id="userName">
                                 </div>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                                     <label for="password" class="form-label">Password</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="password" class="form-control UserIPfields" id="password">
+                                    <input type="password" class="form-control UserIPfields requiredfield" id="password">
                                 </div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                                     <label for="roles" class="form-label">Roles</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <select class="form-select UserIPfields" id="roles">
+                                    <select class="form-select UserIPfields requiredfield" id="roles">
                                         <option value="admin">Admin</option>
                                         <option value="supervisor">Supervisor</option>
                                     </select>
@@ -122,7 +122,7 @@
                                     <label for="fkCity" class="form-label">City</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <select class="form-select UserIPfields" id="fkCity"></select>
+                                    <select class="form-select UserIPfields requiredfield" id="fkCity"></select>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +152,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="HidePopup('userModal')">Close</button>
-                        <button type="submit" class="btn btn-primary" onclick="AddUser()">Save</button>
+                        <button type="submit" class="btn btn-success" onclick="AddUser()">Save</button>
                     </div>
                 </form>
             </div>
@@ -222,7 +222,7 @@
 
 
         </div>
-        
+
     </div>
 </div>
 
@@ -232,13 +232,13 @@
 <button id="registerBtn">Register Face</button>
 <button id="loginBtn">Login with Face</button>*@
 <script>
-
+     var userNameArr = [];
     var userIdPrrof;
     var userImageString;
     var userFaceDescriptor;
     $(document).ready(function () {
-         GetUsersData();
-         BindCityDdl();
+        GetUsersData();
+        BindCityDdl();
         userFaceDescriptor = '';
         $('#tblUsers').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
@@ -258,8 +258,18 @@
                 userImageString = base64;
             });
         });
-        $('#faceRecognition').on('click',function(){
-            
+        $('#faceRecognition').on('click', function () {
+
+        });
+
+        $('#userName').on('keyup', function () {
+            var username = $(this).val();
+            var exists = userNameArr.includes(username);
+            if (exists) {
+                $(this).after('<span style="color: red;">Username already exists</span>');
+            } else {
+                $(this).next('span').remove();
+            }
         });
     });
     document.addEventListener('DOMContentLoaded', async () => {
@@ -293,50 +303,52 @@
         document.body.removeChild(link);
     }
     function AddUser() {
-        var formData = new FormData();
-        formData.append('Id', $('#userId').val());
-        formData.append('FirstName', $('#firstName').val());
-        formData.append('LastName', $('#lastName').val());
-        formData.append('UserName', $('#userName').val());
-        formData.append('Password', $('#password').val());
-        formData.append('Roles', $('#roles').val());
-        formData.append('MobileNo', $('#mobileNo').val());
-        formData.append('IdProof', userIdPrrof); // Assuming userIdPrrof is a file object or relevant data
-        formData.append('ImageString', userImageString); // Assuming userImageString is a file object or relevant data
-        formData.append('fkCity', $('#fkCity').val());
-        formData.append('PinCode', $('#pinCode').val());
-        formData.append('HighestQualification', $('#highestQualification').val());
+        if (CheckEmptyFields()) {
+            var formData = new FormData();
+            formData.append('Id', $('#userId').val());
+            formData.append('FirstName', $('#firstName').val());
+            formData.append('LastName', $('#lastName').val());
+            formData.append('UserName', $('#userName').val());
+            formData.append('Password', $('#password').val());
+            formData.append('Roles', $('#roles').val());
+            formData.append('MobileNo', $('#mobileNo').val());
+            formData.append('IdProof', userIdPrrof); // Assuming userIdPrrof is a file object or relevant data
+            formData.append('ImageString', userImageString); // Assuming userImageString is a file object or relevant data
+            formData.append('fkCity', $('#fkCity').val());
+            formData.append('PinCode', $('#pinCode').val());
+            formData.append('HighestQualification', $('#highestQualification').val());
 
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("AddorEditUser", "Users")',
-            data: formData,
-           processData: false, // Required for FormData
-            contentType: false, // Required for FormData
-            traditional:true,
-            async:false,
-            success: function (response) {
-                if (response) {
-                    if ($('#userId').val() == '') {
-                        msgPopup("success", "User Added Successfully");
-                    } else {
-                        msgPopup("success", "User Updated Successfully");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddorEditUser", "Users")',
+                data: formData,
+                processData: false, // Required for FormData
+                contentType: false, // Required for FormData
+                traditional: true,
+                async: false,
+                success: function (response) {
+                    if (response) {
+                        if ($('#userId').val() == '') {
+                            msgPopup("success", "User Added Successfully");
+                        } else {
+                            msgPopup("success", "User Updated Successfully");
+                        }
                     }
-                }
-                else {
-                    msgPopup("error", "Error! Please Try Again");
-                }
-            },
-            error: function (response) {
+                    else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
+                },
+                error: function (response) {
 
-                console.error(response);
-            }
-        });
+                    console.error(response);
+                }
+            });
+        }
     }
-
+   
     function GetUsersData() {
         var table = $('#tblUsers').DataTable();
-
+        userNameArr = [];
         $.ajax({
             url: '/Users/GetData', // Ensure this URL is correct and matches your route
             type: 'GET', // Use GET method
@@ -344,13 +356,14 @@
             success: function (response) {
                 table.clear().draw();
                 response.data.forEach(function (item) {
+                    userNameArr.push(item.userName);
                     table.row.add([
                         item.firstName + " " + item.lastName, // Added a "+" sign between firstName and lastName
                         item.userName,
-                        item.isFaceAdded ? '<div class="contentCenter"><span class="badge bg-success p-1">True</span></div>' : '<div class= "contentCenter"> <span class="badge bg-danger p-1" > False < /span></div>',
+                        item.isFaceAdded ? '<div class="contentCenter"><span class="badge bg-success">True</span></div>' : '<div class= "contentCenter"> <span class="badge bg-danger" > False </span></div>',
                         item.roles,
                         item.mobileNo,
-                        '<div class= "contentCenter" > <i class="fa fa-edit me-4 ml-2 btn-edit" style = "color:green" data - full - data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                        '<div class= "contentCenter" > <i class="fa fa-edit me-4 ml-2 btn-edit" style = "color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                         '<i class="fa fa-trash ml-2 btn-delete" style="color:red" data-id="' + item.id + '"></i></div>' // Use data-id for storing the id attribute
                     ]).draw();
                 });
@@ -475,7 +488,7 @@
                     text: 'Yes',
                     btnClass: 'btn btn-success',
                     action: function () {
-                          deleteData(id);
+                        deleteData(id);
                     },
                 },
                 No: {
@@ -495,11 +508,11 @@
             data: { id: id },
             success: function (response) {
                 if (response) {
-                        msgPopup("success", "User Deleted Successfully");
-                    }
-                    else {
-                        msgPopup("error", "Error! Please Try Again");
-                    }
+                    msgPopup("success", "User Deleted Successfully");
+                }
+                else {
+                    msgPopup("error", "Error! Please Try Again");
+                }
             },
             error: function (response) {
 
@@ -518,7 +531,7 @@
         }
     }
     function BindCityDdl() {
-        
+
         $.ajax({
             type: "POST",
             url: '/Configuration/GetCityData',
@@ -530,10 +543,10 @@
                 defaultOption.value = "";
                 ddlCity.appendChild(defaultOption);
                 response.data.forEach(function (item) {
-                        const option = document.createElement("option");
-                        option.value = item.id;
-                        option.text = item.name 
-                        ddlCity.appendChild(option);
+                    const option = document.createElement("option");
+                    option.value = item.id;
+                    option.text = item.name
+                    ddlCity.appendChild(option);
                 });
             },
             error: function (xhr, status, error) {

@@ -135,8 +135,8 @@ namespace NursingHome.Db.Implementation
                     ImageBase64 = userInfo.ImageBase64
                 };
 
-                
-                Db.City.Add(user);  
+
+                Db.City.Add(user);
                 Db.SaveChanges();
 
                 return true;
@@ -192,7 +192,22 @@ namespace NursingHome.Db.Implementation
                 return false; // No city was found with the specified ID
             }
         }
-
+        public City GetCityDetails(string username)
+        {
+            var db = new TaskContext(_dbConn);
+            var data = (from u in db.Users
+                        join c in db.City on u.fkCity equals c.Id
+                        where u.UserName == username
+                        select new City
+                        {
+                            Name = c.Name,
+                            OfficeAddress = c.OfficeAddress,
+                            MobileNumbers = c.MobileNumbers,
+                            Email = c.Email,
+                            ImageBase64 = c.ImageBase64
+                        }).FirstOrDefault();
+            return data;
+        }
 
     }
 }

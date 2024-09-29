@@ -1,4 +1,53 @@
-﻿
+﻿function validatePhoneNumber(phoneNumber) {
+    // Regular expression to check for 10 digits
+    var phoneRegex = /^[0-9]{0,10}$/;
+    return phoneRegex.test(phoneNumber);
+
+}
+// Event listener on keypress for the phone number validation
+$(document).ready(function () {
+    $('.PhonenumberValidation').on('input', function () {
+        var $inputField = $(this);
+        var phoneNumber = $inputField.val();
+
+        // Remove any existing warning message
+        $inputField.next('.error-message').remove();
+
+        // Check if phone number is valid
+        if (!validatePhoneNumber(phoneNumber)) {
+            // Append warning message if the format is wrong
+            $inputField.after('<small class="error-message" style="color:red;">Please enter a valid phone number (10 digits only)</small>');
+        }
+    });
+
+    $('.requiredfield').on('input', function () {
+        const field = $(this);
+        if (field.val().trim() !== '') {
+            field.next('.error-message-field').remove(); // Remove error message only for this field
+        }
+    });
+});
+
+function CheckEmptyFields() {
+    $('.error-message-field').remove();
+
+    // Initialize a flag to track whether all fields are filled
+    let flag = true
+    // Loop through each required field
+    $('.requiredfield').each(function () {
+        const field = $(this);
+        if (field.val().trim() === '') {
+
+            // Create the error message
+            const errorMessage = $('<div class="error-message-field">Please fill this field</div>');
+
+            field.after(errorMessage);
+            flag = false;
+        }
+    });
+    return flag;
+
+}
 function GetFormatedDateValue(now) {
     var curr_day = getFormattedValue(now.getDate());
     var curr_month = getFormattedValue((now.getMonth() + 1));

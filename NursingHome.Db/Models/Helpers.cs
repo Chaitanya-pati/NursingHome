@@ -39,6 +39,12 @@ public partial class Helpers
 
     public string suser { get; set; }
 
+    public string candidateSign { get; set; }
+
+    public string Place { get; set; }
+
+    public DateTime? admissionDate { get; set; }
+
     public virtual ICollection<Attendance> Attendance { get; set; } = new List<Attendance>();
 
     public virtual ICollection<HomeNursing> HomeNursing { get; set; } = new List<HomeNursing>();

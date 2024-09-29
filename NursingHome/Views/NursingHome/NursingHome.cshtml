@@ -5,101 +5,101 @@
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
-    <!-- Button to trigger modal -->
-    <div class="col-md-2">
-        <div class="container-fluid mt-2 mb-2">
+<!-- Button to trigger modal -->
+<div class="col-md-2">
+    <div class="container-fluid mt-2 mb-2">
         <button type="button" class="customBtn" onclick="verifyFace()">
             <i class="fa fa-add me-1"></i> Add
-            </button>
-        </div>  
+        </button>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="homeNursingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+</div>
+<!-- Modal -->
+<div class="modal fade" id="homeNursingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="custom-modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
-                    <button type="button" class="close" onclick="HidePopup('homeNursingModal')" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body registrationFormContent">
-                    <form>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>    
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <div class="col-3">
-                                                <img src="~/images/plus icon.png" style="height:70px;width:90px" />
-                                            </div>
-                                            <div class="col-6 contentCenter">
-                                                <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
-
-                                            </div>
-                                            <div class="col-3 contentEnd">
-                                                <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
-                                            </div>
-                                            <div class="col-2"></div>
-                                            <div class="col-8 contentCenter" style="margin-top:-20px">
-                                                <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
-                                            </div>
+                <button type="button" class="close" onclick="HidePopup('homeNursingModal')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body registrationFormContent">
+                <form>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <div class="col-3">
+                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
                                         </div>
-                                        <div id="customAddress">
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
-                                            </div>
-                                            <div class="contentCenter">
-                                                <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
-                                            </div>
+                                        <div class="col-6 contentCenter">
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
+
                                         </div>
-                                    </td>
-                                </tr>
-                                <tr>
+                                        <div class="col-3 contentEnd">
+                                            <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+                                        </div>
+                                        <div class="col-2"></div>
+                                        <div class="col-8 contentCenter" style="margin-top:-20px">
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                                        </div>
+                                    </div>
+                                    <div id="customAddress">
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                        </div>
+                                        <div class="contentCenter">
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob : <span id="cutomMobileNumbers"></span> Email : <span id="customEmailAddress"></span></span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
 
-                                    <td colspan="2">
-                                        <div class="row mt-2">
-                                            <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Registration Form:</label>
-                                            <div class="row col-5 ">
+                                <td colspan="2">
+                                    <div class="row mt-2">
+                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Registration Form:</label>
+                                        <div class="row col-5 ">
 
-                                                <span class="col-5">No :</span>
+                                            <span class="col-5">No :</span>
                                             <input class="col-7" id="serialNo" type="number" style="height:25px" min="0" />
-                                            </div>
-                                            <div class="col-7"></div>
-                                            <div class="row col-5 mt-2 contentEnd">
-                                                <span class="col-5">Date :</span>
-                                                <input class="col-7" type="date" id="adminssionDate" />
-                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <input type="hidden" id="homeNursingPatientId" />
-                                    <td><label for="patientName">Patient Name:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="patientName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="address">Address:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="address"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="patientAge">Patient Age:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="patientAge"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="patientCondition">Patient Condition:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="patientCondition"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="customerName">Customer Name:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="customerName"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="mobileNo">Mobile No:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="mobileNo"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="idProof">ID Proof:</label></td>
+                                        <div class="col-7"></div>
+                                        <div class="row col-5 mt-2 contentEnd">
+                                            <span class="col-5">Date :</span>
+                                            <input class="col-7 requiredfield" type="date" id="adminssionDate" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <input type="hidden" id="homeNursingPatientId" />
+                                <td><label for="patientName">Patient Name:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields requiredfield" id="patientName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="address">Address:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="address"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="patientAge">Patient Age:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="patientAge"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="patientCondition">Patient Condition:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="patientCondition"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="customerName">Customer Name:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="customerName"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="mobileNo">Mobile No:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="mobileNo"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="idProof">ID Proof:</label></td>
                                 <td>
                                     <div class="row col-12">
                                         <div class="col-10">
@@ -110,90 +110,90 @@
                                         </div>
                                     </div>
                                 </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="typesOfService">Types of Service:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="typesOfService"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="registrationCharges">Registration Charges:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="registrationCharges"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
-                                    <td><input type="text" class="form-control NursingHomeIpfields" id="monthlyPayment"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="periodFrom">Period From:</label></td>
-                                    <td><input type="date" class="form-control NursingHomeIpfields" id="periodFrom"></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="periodTo">To:</label></td>
-                                    <td><input type="date" class="form-control NursingHomeIpfields" id="periodTo"></td>
-                                </tr> 
-                                <tr id="helperRow">
-                                    <td><label >Select Helper:</label></td>
+                            </tr>
+                            <tr>
+                                <td><label for="typesOfService">Types of Service:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="typesOfService"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="registrationCharges">Registration Charges:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="registrationCharges"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
+                                <td><input type="text" class="form-control NursingHomeIpfields" id="monthlyPayment"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="periodFrom">Period From:</label></td>
+                                <td><input type="date" class="form-control NursingHomeIpfields" id="periodFrom"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="periodTo">To:</label></td>
+                                <td><input type="date" class="form-control NursingHomeIpfields" id="periodTo"></td>
+                            </tr>
+                            <tr id="helperRow">
+                                <td><label>Select Helper:</label></td>
                                 <td><select class="form-select NursingHomeIpfields" id="ddlHelper"></select></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <div>
-                                            <b>Terms and Conditions for Client:</b>
-                                            <div style="display: flex; flex-direction: column;">
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                    <div style="flex: 1; text-align: left;">The Nurse / Attender is supposed to render only signed up work (depends on patient's conditions).</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                    <div style="flex: 1; text-align: left;">The Nurse / Attender is able to take 2 leaves in a month or 1 leave in 15 days.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                    <div style="flex: 1; text-align: left;">The Nurse / Attender can use his/her mobile during break hours.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                    <div style="flex: 1; text-align: left;">The Vedhanth Home Nursing help-line will take legal action against the client in case of physical abuse against the nurse/attender.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                    <div style="flex: 1; text-align: left;">If our service is canceled, the registration amount is non-refundable.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
-                                                    <div style="flex: 1; text-align: left;">The client should not encourage our employee to continue the service without organization permission.</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">7.</div>
-                                                    <div style="flex: 1; text-align: left;">The organization is not responsible for any loss or damage in the working place (e.g., valuable items like gold, diamond, silver ornaments, debit and credit cards).</div>
-                                                </div>
-
-                                                <div style="display: flex; margin-top: 10px;">
-                                                    <div style="width: 50px; font-weight: bold; text-align: center;">8.</div>
-                                                    <div style="flex: 1; text-align: left;">The client should not allow our staff to go outside from the working place without organization permission.</div>
-                                                </div>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div>
+                                        <b>Terms and Conditions for Client:</b>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
+                                                <div style="flex: 1; text-align: left;">The Nurse / Attender is supposed to render only signed up work (depends on patient's conditions).</div>
                                             </div>
 
-                                            <b> Declaration</b></br>
-                                            <div style="display: flex; margin-top: 5px;margin-bottom:20px">
-                                                <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
-                                                <div style="flex: 1; text-align: left;">
-                                                    I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
-                                                </div>
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
+                                                <div style="flex: 1; text-align: left;">The Nurse / Attender is able to take 2 leaves in a month or 1 leave in 15 days.</div>
                                             </div>
-                                           @* <div class="row">
 
-                                                <span class="col-4">Signature of the Client</span>
-                                                <span class="col-4"></span>
-                                                <span class="col-4 contentEnd">Authorised Signatory</span>
-                                            </div>*@
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="flex: 1; text-align: left;">The Nurse / Attender can use his/her mobile during break hours.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="flex: 1; text-align: left;">The Vedhanth Home Nursing help-line will take legal action against the client in case of physical abuse against the nurse/attender.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
+                                                <div style="flex: 1; text-align: left;">If our service is canceled, the registration amount is non-refundable.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">6.</div>
+                                                <div style="flex: 1; text-align: left;">The client should not encourage our employee to continue the service without organization permission.</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">7.</div>
+                                                <div style="flex: 1; text-align: left;">The organization is not responsible for any loss or damage in the working place (e.g., valuable items like gold, diamond, silver ornaments, debit and credit cards).</div>
+                                            </div>
+
+                                            <div style="display: flex; margin-top: 10px;">
+                                                <div style="width: 50px; font-weight: bold; text-align: center;">8.</div>
+                                                <div style="flex: 1; text-align: left;">The client should not allow our staff to go outside from the working place without organization permission.</div>
+                                            </div>
+                                        </div>
+
+                                        <b> Declaration</b></br>
+                                        <div style="display: flex; margin-top: 5px;margin-bottom:20px">
+                                            <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
+                                            <div style="flex: 1; text-align: left;">
+                                                I hereby read, I heard all the above terms and conditions and agree to sign up with Vedhanth Home Care for my service requirement.
+                                            </div>
+                                        </div>
+                                        @* <div class="row">
+
+                                        <span class="col-4">Signature of the Client</span>
+                                        <span class="col-4"></span>
+                                        <span class="col-4 contentEnd">Authorised Signatory</span>
+                                        </div>*@
                                         <div class="signature-section row ml-2">
                                             <div class="signature-box col-4 ">
                                                 <canvas id="clientSignature" class="signatureContainer"></canvas>
@@ -215,48 +215,49 @@
 
                                             </div>
                                         </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="HidePopup('homeNursingModal')">Close</button>
-                    <button type="button" class="btn btn-success" onclick="AddHomeNursing()">Save changes</button>
-                    <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="HidePopup('homeNursingModal')">Close</button>
+                <button type="button" class="btn btn-success" onclick="OpenQRPopup()">Pay</button>
+                <button type="button" class="btn btn-success" onclick="AddHomeNursing()">Save</button>
+                <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-md-12 container-fluid">
-        <table id="tblNursingHome" class="display table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Patient Name</th>
-                    <th>Helper Name</th>
-                    <th>Admission Date</th>
-                    <th>Payment Status</th>
-                    
-                    <th>Period From</th>
-                    <th>Period To</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+<div class="col-md-12 container-fluid">
+    <table id="tblNursingHome" class="display table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Helper Name</th>
+                <th>Admission Date</th>
+                <th>Payment Status</th>
+
+                <th>Period From</th>
+                <th>Period To</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
     @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
-    </div>
+</div>
 
 <script>
     var HomeNursingIdproof = "";
-    $(document).ready(function (){
+    $(document).ready(function () {
         GetData();
         GetHelperData();
-        
+
     });
 
     $('#tblNursingHome').on('click', '.btn-edit', function () {
@@ -293,7 +294,7 @@
     }
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-        $('#helperRow').attr('hidden','hidden');
+        $('#helperRow').attr('hidden', 'hidden');
         const element = document.querySelector('.registrationFormContent');
         element.style.transform = 'scale(0.75)';
         element.style.transformOrigin = 'top center';
@@ -319,7 +320,7 @@
             success: function (response) {
                 $.each(response.data, function (index, item) {
                     var option = $("<option></option>")
-                        .val(item.id) 
+                        .val(item.id)
                         .text(item.name);
                     $('#ddlHelper').append(option);
                 });
@@ -330,7 +331,7 @@
         });
     }
 
-    function Clearfields(){
+    function Clearfields() {
         $('.NursingHomeIpfields').val('');
         clearSignature('authorizedSignature');
         clearSignature('clientSignature');
@@ -339,7 +340,7 @@
         $('#clientSignature').prop('hidden', false);
         $('#clientSignatureImage').prop('hidden', true);
         GetSerialNo();
-       showPopup('homeNursingModal');
+        showPopup('homeNursingModal');
     }
     function GetSerialNo() {
         $.get({
@@ -352,44 +353,46 @@
         });
     }
     function AddHomeNursing() {
-        var data = {};
-        data.Id = $('#homeNursingPatientId').val();
-        data.PatientName = $('#patientName').val();
-        data.Address = $('#address').val();
-        data.Age = $('#patientAge').val();
-        data.Condition = $('#patientCondition').val();
-        data.CustomerName = $('#customerName').val();
-        data.MobileNo = $('#mobileNo').val();
-        data.TypesofServices = $('#typesOfService').val();
-        data.IdProof = HomeNursingIdproof;
-        data.PaymentStatus = "Pending";
-        data.PeriodFrom = $('#periodFrom').val();
-        data.PeriodTo = $('#periodTo').val();
-        data.AdmissionDate = $('#adminssionDate').val();
-        data.MonthlyPayment = $('#monthlyPayment').val();
-        data.RegistrationCharges = $('#registrationCharges').val();
-        data.fkHelperId = $('#ddlHelper').val();
-        data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-        data.SUser = localStorage.getItem('username');
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("AddorEditHomeNursing", "NursingHome")',
-            data: data,
-            success: function (response) {
-                 if(response){
-                    let msg = $('#homeNursingPatientId').val() == ''?"Data Added Successfully":"Data Updated Successfully";
-                    HidePopup('homeNursingModal');
-                    msgPopup("success",msg);
-                    GetData();
-                }else{
-                    msgPopup("error","Error! Please Try Again");
-                }
-            },
-            error: function (response) {
+        if (CheckEmptyFields()) {
+            var data = {};
+            data.Id = $('#homeNursingPatientId').val();
+            data.PatientName = $('#patientName').val();
+            data.Address = $('#address').val();
+            data.Age = $('#patientAge').val();
+            data.Condition = $('#patientCondition').val();
+            data.CustomerName = $('#customerName').val();
+            data.MobileNo = $('#mobileNo').val();
+            data.TypesofServices = $('#typesOfService').val();
+            data.IdProof = HomeNursingIdproof;
+            data.PaymentStatus = "Pending";
+            data.PeriodFrom = $('#periodFrom').val();
+            data.PeriodTo = $('#periodTo').val();
+            data.AdmissionDate = $('#adminssionDate').val();
+            data.MonthlyPayment = $('#monthlyPayment').val();
+            data.RegistrationCharges = $('#registrationCharges').val();
+            data.fkHelperId = $('#ddlHelper').val();
+            data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            data.SUser = localStorage.getItem('username');
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddorEditHomeNursing", "NursingHome")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        let msg = $('#homeNursingPatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        HidePopup('homeNursingModal');
+                        msgPopup("success", msg);
+                        GetData();
+                    } else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
+                },
+                error: function (response) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     function GetData() {

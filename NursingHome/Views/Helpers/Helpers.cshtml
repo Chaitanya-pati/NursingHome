@@ -44,10 +44,10 @@
                                     </div>
                                     <div id="customAddress">
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
                                         </div>
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob :9916916843, 9902765441, 7022396109 Email:vedhanthhomecare6843@gmail.com</span>
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob : <span id="cutomMobileNumbers"></span> Email : <span id="customEmailAddress"></span></span>
                                         </div>
                                     </div>
                                 </td>
@@ -65,7 +65,7 @@
                                         <div class="col-7"></div>
                                         <div class="row col-5 mt-2 contentEnd">
                                             <span class="col-5">Date :</span>
-                                            <input class="col-7" type="date" />
+                                            <input class="col-7 requiredfield" type="date" id="admissionDate" />
                                         </div>
                                     </div>
                                 </td>
@@ -73,7 +73,7 @@
                             <tr>
                                 <input type="hidden" id="helperId" />
                                 <td><label for="candidateName">Name in full:</label></td>
-                                <td><input type="text" class="form-control inputFields" id="candidateName"></td>
+                                <td><input type="text" class="form-control inputFields requiredfield" id="candidateName"></td>
                             </tr>
                             <tr>
                                 <td><label for="parentName">Father's / Husband's Name:</label></td>
@@ -158,7 +158,7 @@
                                 </td>
 
                             </tr>
-                           
+
                             <tr>
                                 <td colspan="2">
 
@@ -221,7 +221,33 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row mt-2">
+                                        <div class="col-4">
+                                            <div>
+                                                <p>Place :</p>
+                                                <input type="text" id="place" />
+                                            </div>
+                                            <div>
+                                                <p>Date :</p>
+                                                <input type="date" id="bottomDate" />
+                                            </div>
+                                        </div>
+                                        <div class="col-4"></div>
+                                        <div class="signature-box col-4 text-right">
+                                            <canvas id="clientSignature" class="signatureContainer"></canvas>
+                                            <img id="clientSignatureImage" class="signatureContainerImage" hidden />
+                                            <div class="row">
+                                                <div class="col-10">
+                                                    <p>Signature of the Candidate &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
+
+
+
+
                             </tr>
                         </tbody>
                     </table>
@@ -257,6 +283,7 @@
 
     $(document).ready(function () {
         GetData();
+        GetCityDetails();
     });
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
@@ -375,42 +402,47 @@
     }
     // CRUD Operation
     function AddHelper() {
-        var data = {};
-        data.Id = $('#helperId').val();
-        data.Name = $('#candidateName').val();
-        data.ParentName = $('#parentName').val();
-        data.Image = candidateImage;
-        data.DateOfBirth = $('#candidateDOB').val();
-        data.MaritalStatus = $('#maritalStatus').val();
-        data.PermanentAddress = $('#permanentAddress').val();
-        data.PresentAddress = $('#presentAddress').val();
-        data.IdProof = helperIdProof;
-        data.Education = $('#education').val();
-        data.LanguagesKnown = $('#languages').val();
-        data.Experience = $('#experience').val();
-        data.Salary = $('#salary').val();
-        data.Reference = $('#referenceDetail').val();
-        data.FamilyMembers = $('#famMembers').val();
-        data.suser = localStorage.getItem('username');
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("AddorEditHelper", "Helpers")',
-            data: data,
-            success: function (response) {
-                if (response) {
-                    let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                    HidePopup('helperModal');
-                    msgPopup("success", msg);
-                    GetData();
-                } else {
-                    msgPopup("error", "Error! Please Try Again");
-                }
-            },
-            error: function (response) {
+        if (CheckEmptyFields()) {
+            var data = {};
+            data.Id = $('#helperId').val();
+            data.Name = $('#candidateName').val();
+            data.ParentName = $('#parentName').val();
+            data.Image = candidateImage;
+            data.DateOfBirth = $('#candidateDOB').val();
+            data.MaritalStatus = $('#maritalStatus').val();
+            data.PermanentAddress = $('#permanentAddress').val();
+            data.PresentAddress = $('#presentAddress').val();
+            data.IdProof = helperIdProof;
+            data.Education = $('#education').val();
+            data.LanguagesKnown = $('#languages').val();
+            data.Experience = $('#experience').val();
+            data.Salary = $('#salary').val();
+            data.Reference = $('#referenceDetail').val();
+            data.FamilyMembers = $('#famMembers').val();
+            data.suser = localStorage.getItem('username');
+            data.candidateSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            data.Place = $('#place').val();
+            data.admissionDate = $('#admissionDate').val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddorEditHelper", "Helpers")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        HidePopup('helperModal');
+                        msgPopup("success", msg);
+                        GetData();
+                    } else {
+                        msgPopup("error", "Error! Please Try Again");
+                    }
+                },
+                error: function (response) {
 
-                console.error(response);
-            }
-        });
+                    console.error(response);
+                }
+            });
+        }
     }
 
     function BindData(data) {
@@ -429,6 +461,12 @@
         $('#salary').val(data.salary);
         $('#referenceDetail').val(data.reference);
         $('#famMembers').val(data.familyMembers);
+        $('#admissionDate').val(formatDate(new Date(data.admissionDate)));
+        $('#bottomDate').val(formatDate(new Date(data.admissionDate)));
+        $('#place').val(data.place);
+        $('#clientSignatureImage').prop('hidden', false);
+        $('#clientSignature').prop('hidden', true);
+        $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.candidateSign);
         showPopup('helperModal');
     }
 
@@ -467,6 +505,8 @@
         $('.inputFields').val('');
         candidateImage = "";
         helperIdProof = "";
+        $('#clientSignature').prop('hidden', false);
+        $('#clientSignatureImage').prop('hidden', true);
         showPopup('helperModal');
     }
 
@@ -513,6 +553,24 @@
             },
             error: function (response) {
 
+            }
+        });
+    }
+
+    function GetCityDetails() {
+        let username = localStorage.getItem('username');
+        $.ajax({
+            url: '/Configuration/CityDetails',
+            type: 'GET',
+            dataType: 'json',
+            data: { username: username },
+            success: function (response) {
+                $('#customAdreesLine1').text(response.officeAddress);
+                $('#cutomMobileNumbers').text(response.mobileNumbers);
+                $('#customEmailAddress').text(response.email);
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
             }
         });
     }

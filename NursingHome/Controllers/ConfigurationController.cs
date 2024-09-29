@@ -103,10 +103,11 @@ namespace NursingHome.Controllers
             return Json(isDelete);
         }
 
-
-
-
-
+        public IActionResult CityDetails(string username)
+        {
+            var data = _DbConn.GetCityDetails(username);
+            return Json(data);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

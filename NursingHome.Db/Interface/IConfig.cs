@@ -21,6 +21,6 @@ namespace NursingHome.Db.Interface
         List<State> GetStateList();
         List<City> GetCityData();
 
-
+        City GetCityDetails(string username);
     }
 }

@@ -52,6 +52,25 @@
         </div>
     </div>
 </div>
+<!-- Modal popup -->
+<div id="imageModal" class="modal" tabindex="-1" role="dialog" style="z-index:9999  ">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">QR Code</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="imgQrCode" src="" style="width: 100%; height: 100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 
 
@@ -83,6 +102,7 @@
                 console.error(xhr.responseText);
             }
         });
+        GetCityDetails();
     });
     function BindUserDropdownSeachBar(data) {
         const ddlUsers = document.getElementById("ddlUsers");
@@ -120,5 +140,25 @@
 
         window.open(url, "_blank").focus();
     }
-
+    function GetCityDetails(){
+       let username = localStorage.getItem('username');
+        $.ajax({
+            url: '/Configuration/CityDetails',
+            type: 'GET',
+            dataType: 'json',
+            data:{username:username},
+            success: function (response) {
+                $('#imgQrCode').attr('src', "data:image/*;base64," + response.imageBase64.split("~")[1]);
+                $('#customAdreesLine1').text(response.officeAddress);
+                $('#cutomMobileNumbers').text(response.mobileNumbers);
+                $('#customEmailAddress').text(response.email);
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+    function OpenQRPopup(){
+        $('#imageModal').modal('toggle');
+    }
 </script>

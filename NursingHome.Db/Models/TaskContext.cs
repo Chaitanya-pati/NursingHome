@@ -83,7 +83,9 @@ public partial class TaskContext : DbContext
             entity.Property(e => e.MaritalStatus).HasMaxLength(20);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.ParentName).HasMaxLength(100);
+            entity.Property(e => e.Place).HasMaxLength(100);
             entity.Property(e => e.Salary).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.admissionDate).HasColumnType("date");
             entity.Property(e => e.suser).HasMaxLength(110);
         });
 
@@ -115,12 +117,9 @@ public partial class TaskContext : DbContext
 
         modelBuilder.Entity<HomeNursingCashMemo>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.amountInWords).HasMaxLength(200);
             entity.Property(e => e.date).HasColumnType("date");
-            entity.Property(e => e.id).ValueGeneratedOnAdd();
             entity.Property(e => e.patientName).HasMaxLength(200);
             entity.Property(e => e.paymentMode).HasMaxLength(100);
         });

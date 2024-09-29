@@ -54,7 +54,11 @@ table.dataTable{
     max-height:200px;
     overflow-y:scroll;
 }
-
+.error-message-field {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
 .nav-tabs {
     --bs-nav-tabs-border-width: none !important;
     --bs-nav-tabs-border-color: none !important;
