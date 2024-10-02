@@ -70,7 +70,7 @@ namespace NursingHome.Controllers
 
             if (user != null)
             {
-                return Json(new { success = true, userID = user.Id });
+                return Json(new { success = true, userID = user.Id,isFaceAdded = user.IsFaceAdded });
             }
             else
             {

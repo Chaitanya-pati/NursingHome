@@ -1,5 +1,88 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+   
+    .blue-header {
+        background-color: #b3d1ff;
+    }
+    .blue-body {
+        background-color: #cce0ff;
+    } 
+    .green-header {
+        background-color: #c6ffb3;
+    }
+    .green-body {
+        background-color: #d9ffcc;
+    }
+    .orange-header {
+        background-color: #fff0b3;
+    }
+    .orange-body {
+        background-color: #fff5cc;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
+            <div class="card">
+                <div class="card-header green-header">
+                    <h4 class="contentCenter"><i class="fa-solid fa-person-walking-with-cane mt-1 me-3"></i> Old Age Admission</h4>
+                </div>
+                <div class="card-body green-body">
+
+                    <p class="text-sm text-muted contentCenter">Total old age patients admitted in last 30 days</p>
+                    <div class="contentCenter">
+                        <h2 id="oldAgeCount"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
+            <div class="card">
+                <div class="card-header blue-header">
+                    <h4 class="contentCenter"> <i class="fa-solid fa-hand-holding-medical mt-1 me-3"></i>Nursing Home Admission</h4>
+                </div>
+                <div class="card-body blue-body">
+
+                    <p class="text-sm text-muted contentCenter">Total Nursing Home patients admitted in last 30 days</p>
+                    <div class="contentCenter">
+                        <h2 id="NursingCount"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
+            <div class="card">
+                <div class="card-header orange-header">
+                    <h4 class="contentCenter"> <i class="fa-solid fa-user-doctor mt-1 me-3"></i>Helper Admission</h4>
+                </div>
+                <div class="card-body orange-body">
+                    
+                    <p class="text-sm text-muted contentCenter">Total Helpers Joined Till Today</p>
+                    <div class="contentCenter">
+                        <h2 id="HelpersCount"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
+</div>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetLast30DaysRecords',
+            success: function (response) {
+                $('#oldAgeCount').text(response.oldeAge);
+                $('#NursingCount').text(response.nursingHome);
+                $('#HelpersCount').text(response.helper);
+            },
+            error: function (response) {
+                console.error(response);
+            }
+        });
+    });
+</script>

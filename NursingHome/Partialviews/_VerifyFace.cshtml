@@ -20,11 +20,11 @@
                 data: { username: username }
             });
 
-            //let isface = await loginWithFace(response);
-            //stopCamera();
-            //if (isface) {
+            let isface = await loginWithFace(response);
+            stopCamera();
+            if (isface) {
                 Clearfields();
-            //}
+            }
         } catch (error) {
             console.error("Error during face verification:", error);
             // Handle the error as needed
