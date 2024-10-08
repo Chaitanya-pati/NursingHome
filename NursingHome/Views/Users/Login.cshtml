@@ -190,6 +190,7 @@
                         localStorage.setItem('userID', response.userID);
                         window.location.href = '/Home/Index';
                     }else{
+                        alert("Please Add Your face");
                         registerFace();
                     }
 
@@ -250,7 +251,7 @@
                 data: { username: username, face: userFaceDescriptor },
                 success: function (response) {
                     if (response) {
-                        alert("Face Data Added Successfully");
+                        alert("Face Data Added Successfully Please Click on Login Button");
                         stopCamera();
                     }
                     else {

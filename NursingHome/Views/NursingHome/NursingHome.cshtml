@@ -318,12 +318,11 @@
             url: '@Url.Action("GetData", "Helpers")',
             // data: data,
             success: function (response) {
+                let option = "";
                 $.each(response.data, function (index, item) {
-                    var option = $("<option></option>")
-                        .val(item.id)
-                        .text(item.name);
-                    $('#ddlHelper').append(option);
+                    option += `<option value="${item.id}">${item.name}</option>`;
                 });
+                $('#ddlHelper').append(option);
             },
             error: function (response) {
 

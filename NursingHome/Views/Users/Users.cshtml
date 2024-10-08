@@ -37,7 +37,7 @@
                                     <label for="lastName" class="form-label">Last Name</label>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control UserIPfields" id="lastName">
+                                    <input type="text" class="form-control UserIPfields requiredfield" id="lastName">
                                 </div>
                             </div>
                         </div>
@@ -239,6 +239,7 @@
     $(document).ready(function () {
         GetUsersData();
         BindCityDdl();
+        
         userFaceDescriptor = '';
         $('#tblUsers').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
@@ -266,7 +267,7 @@
             var username = $(this).val();
             var exists = userNameArr.includes(username);
             if (exists) {
-                $(this).after('<span style="color: red;">Username already exists</span>');
+                $(this).after('<span style="color: red;" id="usernameError">Username already exists</span>');
             } else {
                 $(this).next('span').remove();
             }
@@ -283,6 +284,8 @@
         userIdPrrof = '';
         userImageString = '';
         showPopup('userModal');
+        $('#usernameError').remove();
+        GetUsersData();
     }
     //document.getElementById('downloadIdProof').addEventListener('click', function () {
     //    if (userIdPrrof) {
@@ -455,10 +458,12 @@
         }
     }
     function BindData(data) {
+        userNameArr = userNameArr.filter(userName => userName !== data.userName);
         $('#userId').val(data.id);
         $('#firstName').val(data.firstName);
         $('#lastName').val(data.lastName);
         $('#userName').val(data.userName);
+        $('#usernameError').remove();
         $('#password').val(data.password);
         $('#roles').val(data.roles);
         $('#mobileNo').val(data.mobileNo);
