@@ -254,10 +254,10 @@
                 });
                 PatientDropDownDDl.append($defaultOption);
 
-                // Adjusting to match the actual property names from the response (id and patientName)
+                
                 $.each(response.data, function (index, item) {
                     const $option = $('<option>', {
-                        value: item.id,            // Changed to lowercase 'id'
+                        value: item.id,           
                         text: item.patientName     // Changed to lowercase 'patientName'
                     });
                     PatientDropDownDDl.append($option);
