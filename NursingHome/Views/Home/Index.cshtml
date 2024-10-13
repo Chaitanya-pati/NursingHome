@@ -2,74 +2,169 @@
     ViewData["Title"] = "Home Page";
 }
 <style>
-   
-    .blue-header {
-        background-color: #b3d1ff;
+    /* Container styling */
+    .container-fluid {
+        padding: 20px;
     }
-    .blue-body {
-        background-color: #cce0ff;
-    } 
+
+    /* Card styling */
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        min-height: 200px; /* Ensuring cards are taller */
+    }
+
+        .card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+    /* Header styling */
+    .card-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+
+    .card-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* Color Schemes */
     .green-header {
-        background-color: #c6ffb3;
+        background-image: linear-gradient(45deg, #4CAF50, #66BB6A);
     }
+
     .green-body {
-        background-color: #d9ffcc;
+        background-color: #E8F5E9;
     }
+
+    .blue-header {
+        background-image: linear-gradient(45deg, #2196F3, #42A5F5);
+    }
+
+    .blue-body {
+        background-color: #E3F2FD;
+    }
+
     .orange-header {
-        background-color: #fff0b3;
+        background-image: linear-gradient(45deg, #FF9800, #FFA726);
     }
+
     .orange-body {
-        background-color: #fff5cc;
+        background-color: #FFF3E0;
+    }
+
+    /* Data styling */
+    h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+        color: #333;
+    }
+
+    p.text-sm {
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+    /* Button */
+    .btn-view {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-view:hover {
+            background-color: #0056b3;
+        }
+
+    /* Charts/Graphs styling */
+    .chart-section {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .chart-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+    /* Responsiveness */
+    @@media (max-width: 768px) {
+        h2 {
+            font-size: 2rem;
+        }
+
+        p.text-sm {
+            font-size: 0.85rem;
+        }
     }
 </style>
+
 <div class="container-fluid">
     <div class="row">
+        <!-- Green Card: Old Age Admission -->
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
             <div class="card">
                 <div class="card-header green-header">
-                    <h4 class="contentCenter"><i class="fa-solid fa-person-walking-with-cane mt-1 me-3"></i> Old Age Admission</h4>
+                    <h4 class="contentCenter"><i class="fa-solid fa-person-walking-with-cane me-2 mt-1"></i> Old Age Admission</h4>
                 </div>
                 <div class="card-body green-body">
-
-                    <p class="text-sm text-muted contentCenter">Total old age patients admitted in last 30 days</p>
-                    <div class="contentCenter">
-                        <h2 id="oldAgeCount"></h2>
-                    </div>
+                    <p class="text-sm">Total old age patients admitted in last 30 days</p>
+                    <h2 id="oldAgeCount">0</h2>
+                    
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
-            <div class="card">
-                <div class="card-header blue-header">
-                    <h4 class="contentCenter"> <i class="fa-solid fa-hand-holding-medical mt-1 me-3"></i>Nursing Home Admission</h4>
-                </div>
-                <div class="card-body blue-body">
-
-                    <p class="text-sm text-muted contentCenter">Total Nursing Home patients admitted in last 30 days</p>
-                    <div class="contentCenter">
-                        <h2 id="NursingCount"></h2>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Orange Card: Helper Admission -->
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
             <div class="card">
                 <div class="card-header orange-header">
-                    <h4 class="contentCenter"> <i class="fa-solid fa-user-doctor mt-1 me-3"></i>Helper Admission</h4>
+                    <h4 class="contentCenter"><i class="fa-solid fa-user-doctor me-2 mt-1"></i> Helper Admission</h4>
                 </div>
                 <div class="card-body orange-body">
-                    
-                    <p class="text-sm text-muted contentCenter">Total Helpers Joined Till Today</p>
-                    <div class="contentCenter">
-                        <h2 id="HelpersCount"></h2>
-                    </div>
+                    <p class="text-sm">Total Helpers Joined Till Today</p>
+                    <h2 id="HelpersCount">0</h2>
+
                 </div>
             </div>
         </div>
+        <!-- Blue Card: Nursing Home Admission -->
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
+            <div class="card">
+                <div class="card-header blue-header">
+                    <h4 class="contentCenter"><i class="fa-solid fa-hand-holding-medical me-2 mt-1"></i> Nursing Home Admission</h4>
+                </div>
+                <div class="card-body blue-body">
+                    <p class="text-sm">Total Nursing Home patients admitted in last 30 days</p>
+                    <h2 id="NursingCount">0</h2>
+                   
+                </div>
+            </div>
+        </div>
+
+       
     </div>
-
-
 </div>
+
 <script>
     $(document).ready(function () {
         $.ajax({

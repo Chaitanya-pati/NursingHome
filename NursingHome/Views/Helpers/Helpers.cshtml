@@ -20,6 +20,7 @@
                 <form>
                     <table class="table table-bordered">
                         <tbody>
+                            
                             <tr>
                                 <td colspan="2">
                                     <div class="row mt-2">
@@ -27,8 +28,8 @@
                                             <img src="~/images/plus icon.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
-                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
-
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">ಸಿದ್ಧಾರ್ಥ</label>
+                                           
                                         </div>
                                         <div class="col-3 contentEnd">
                                             <label for="candidateImg">
@@ -36,199 +37,177 @@
                                             </label>
                                             <input type="file" id="candidateImg" accept="image/*" style="display: none;" onchange="previewImage(event)">
                                         </div>
-
                                         <div class="col-2"></div>
                                         <div class="col-8 contentCenter" style="margin-top:-20px">
-                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">ಹೋಮ್ ನರ್ಸಿಂಗ್ ಹೆಲ್ಪ್‌ಲೈನ್</label>
                                         </div>
                                     </div>
                                     <div id="customAddress">
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">No.69,New No. 6/1, 1st Cross, 3rd Main Road, Mathikere, Bengaluru-560 054.</span>
+                                            <span id="" style="font-weight:500;font-size:smaller;">ನಂ.69, ಹೊಸ ನಂ. 6/1, 1ನೇ ಅಡ್ಡ, 3ನೇ ಮುಖ್ಯ ರಸ್ತೆ, ಮತಿಕೆರೆಯು, ಬೆಂಗಳೂರು-560054.</span>
                                         </div>
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mob : <span id="cutomMobileNumbers"></span> Email : <span id="customEmailAddress"></span></span>
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">ಮೊಬೈಲ್: <span id="cutomMobileNumbers"></span> ಇಮೇಲ್: <span id="customEmailAddress"></span></span>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-
                                 <td colspan="2">
                                     <div class="row mt-2">
-                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">Application Form:</label>
-                                        <div class="row col-5 ">
-
-                                            <span class="col-5">No :</span>
+                                        <label for="" class="col-7 contentEnd" style="color:red;font-size:large;font-weight:500">ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್:</label>
+                                        <div class="row col-5">
+                                            <span class="col-5">ನಂ:</span>
                                             <input class="col-7" type="number" style="height:25px" min="0" />
                                         </div>
                                         <div class="col-7"></div>
                                         <div class="row col-5 mt-2 contentEnd">
-                                            <span class="col-5">Date :</span>
+                                            <span class="col-5">ದಿನಾಂಕ:</span>
                                             <input class="col-7 requiredfield" type="date" id="admissionDate" />
                                         </div>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                           <tr>
                                 <input type="hidden" id="helperId" />
-                                <td><label for="candidateName">Name in full:</label></td>
+                                <td><label for="candidateName">ಪೂರ್ಣ ಹೆಸರು:</label></td>
                                 <td><input type="text" class="form-control inputFields requiredfield" id="candidateName"></td>
                             </tr>
                             <tr>
-                                <td><label for="parentName">Father's / Husband's Name:</label></td>
+                                <td><label for="parentName">ತಂದೆ / ಪತಿಯ ಹೆಸರು:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="parentName"></td>
                             </tr>
                             <tr>
-                                <td><label for="candidateDOB">Date of Birth:</label></td>
+                                <td><label for="candidateDOB">ಹುಟ್ಟಿದ ದಿನ:</label></td>
                                 <td><input type="date" class="form-control inputFields" id="candidateDOB"></td>
                             </tr>
                             <tr>
-                                <td><label for="maritalStatus">Marital Status:</label></td>
+                                <td><label for="maritalStatus">ವೈವಾಹಿಕ ಸ್ಥಿತಿ:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="maritalStatus"></td>
                             </tr>
                             <tr>
-                                <td><label for="permanentAddress">Permanent address & Contact No.:</label></td>
+                                <td><label for="permanentAddress">ಶಾಶ್ವತ ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="permanentAddress"></td>
                             </tr>
                             <tr>
-                                <td><label for="presentAddress">Present address & Contact No.:</label></td>
+                                <td><label for="presentAddress">ಪ್ರಸ್ತುತ ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="presentAddress"></td>
                             </tr>
                             <tr>
-                                <td><label for="education">Educational Qualification:</label></td>
+                                <td><label for="education">ಶೈಕ್ಷಣಿಕ ಅರ್ಹತೆ:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="education"></td>
                             </tr>
                             <tr>
-                                <td><label for="languages">Languages Known:</label></td>
+                                <td><label for="languages">ತಿಳಿದ ಭಾಷೆಗಳು:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="languages"></td>
                             </tr>
                             <tr>
-                                <td><label for="experience">Experience (Give Full details):</label></td>
+                                <td><label for="experience">ಅನುಭವ (ಸಂಪೂರ್ಣ ವಿವರ ನೀಡಿ):</label></td>
                                 <td><input type="text" class="form-control inputFields" id="experience"></td>
                             </tr>
                             <tr>
-                                <td><label for="idProof">Personal ID Proof:</label></td>
+                                <td><label for="idProof">ವೈಯಕ್ತಿಕ ಗುರುತಿನ ಪುರಾವೆ:</label></td>
                                 <td><input type="file" class="form-control inputFields" id="idProof"></td>
                             </tr>
                             <tr class="confidential">
-                                <td><label for="salary">Salary expected:</label></td>
+                                <td><label for="salary">ಕೇಟುಮಾಡಿದ ವೇತನ:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="salary"></td>
                             </tr>
                             <tr>
-                                <td><label for="referenceDetail">Reference (Give Name, Address & Contact No.):</label></td>
+                                <td><label for="referenceDetail">ಮಾಹಿತಿ (ಹೆಸರು, ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ):</label></td>
                                 <td><input type="text" class="form-control inputFields" id="referenceDetail"></td>
                             </tr>
                             <tr>
-                                <td><label for="famMembers">Family Particulars:</label></td>
+                                <td><label for="famMembers">ಕುಟುಂಬದ ವಿವರಗಳು:</label></td>
                                 <td><input type="text" class="form-control inputFields" id="famMembers"></td>
                             </tr>
 
-                            <tr>
-                                <td colspan="2">
-                                    <div>
-                                        <b class="contentCenter">Rules for patient:</b>
-                                        <b class="">There are few set of things that need to be followed before you take the nursing services.</b>
-                                        <div style="display: flex; flex-direction: column;">
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                <div style="flex: 1; text-align: left;">Create a personal contact list.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                <div style="flex: 1; text-align: left;">Keep the prescription and other reports ready.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                <div style="flex: 1; text-align: left;">Contact list of your doctor.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                <div style="flex: 1; text-align: left;">Make a list of task expected from the nurse.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </br>
-                                    </br>
-                                    </br>
-                                    </br>
-                                </td>
-
-                            </tr>
-
+                           
                             <tr>
                                 <td colspan="2">
 
-                                    <div>
-                                        <b class="contentCenter">For Care Givers</b>
-                                        <b>There are few set of things that need to be followed before you take the nursing services.</b>
-                                        <div style="display: flex; flex-direction: column;">
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                <div style="flex: 1; text-align: left;">Help with everyday activities like bathing and dressing, meal preparation and to enable independence and safety.</div>
-                                            </div>
+                                    <div class="row mt-2">
+                                        <!-- Kannada Rules -->
+                                        <div class="">
+                                            <h4 style="text-align: center; color: red;">ಸಂಬಳ ಅಭಿವೃದ್ಧಿ</h4>
+                                            <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
+                                                <li>ಸಿಬ್ಬಂದಿ ಯಾವುದೇ ರೋಗಿಯನ್ನು ಸೂಚಿಸಿದರೆ ಅವರಿಗೆ ಒಪ್ಪಿಗೆಯ ಶುಲ್ಕದ ಮೇಲೆ 10% ಕಮಿಷನ್ ನೀಡಲಾಗುತ್ತದೆ ಮತ್ತು ಅದನ್ನು ಸಂಬಳದ ಜೊತೆಗೆ ಪಾವತಿಸಲಾಗುತ್ತದೆ.</li>
+                                                <li>ಸಿಬ್ಬಂದಿ ಇತರ ಸಿಬ್ಬಂದಿಯನ್ನು ಉಲ್ಲೇಖಿಸಿದರೆ, ಮೊದಲು ಎರಡು ತಿಂಗಳಿಗೆ ನಿಮಗೆ 700/- ಪಾವತಿಸಲಾಗುವುದು ಎಲ್ಲಾ ಜವಾಬ್ದಾರಿಯನ್ನು ನೀವು ಹೊರಬೇಕು.</li>
+                                                <li>ವೇತನವನ್ನು ವರ್ಷಕೊಮ್ಮೆ ಹೆಚ್ಚಿಸಲಾಗುವುದು. ವೇತನ ಹೆಚ್ಚವುಳ್ಳ ವೈದಕೀಯ ಕ್ಷೇತ್ರದಲ್ಲಿ ಸರ್ಕಾರದ ಕಾನೂನಿನ ಪ್ರಕಾರ ಶೇಕಡವಾರು ಆಧಾರದ ಮೇಲೆ,</li>
+                                                <li>ಹೆಚ್ಚಳವು ಪ್ರಾಮಾಣಿತವಾಗಿ 7% ಆಗಿರುತ್ತದೆ.</li>
+                                            </ul>
+                                            </br>
+                                            </br>
+                                            </br>
+                                            </br>
+                                            </br>
+                                            <h4 style="text-align: center; color: red;">ಪಾಲಿಸಬೇಕಾದ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
+                                            <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
+                                                <li>ಸಿಬ್ಬಂದಿಯು ಕನಿಷ್ಠ 3 ತಿಂಗಳು ಯಾವುದೇ ರಜೆ ಇಲ್ಲದೆ ಕೆಲಸ ಮಾಡಬೇಕು ತುರ್ತು ಪರಿಸ್ಥಿತಿಗೆ ಅನುಮತಿ ನೀಡಲಾಗುವುದು ಆದರೆ ಅದನ್ನು ಸಿಬ್ಬಂದಿಯ ತಂದೆ ತಾಯಿ ಮಾತ್ರ ತಿಳಿಸಬೇಕು.</li>
+                                                <li>ಸಿಬ್ಬಂದಿಯ ಕುಟುಂಬಸ್ಥರ ಸಾವು ಆದಲ್ಲಿ ವಿಡಿಯೋ ಕಾಲ್ ಮುಖಾಂತರ ತಿಳಿಸಿ ಹೋಗತಕ್ಕದ್ದು.</li>
+                                                <li>ಒಂದು ವೇಳೆ ಸಿಬ್ಬಂದಿ 30 ದಿನಗಳ ಒಳಗೆ ಮನೆಗೆ ತೆರಳಲು ಬಯಸಿದರೆ ಸಂಬಳ ನೀಡಲಾಗುವುದಿಲ್ಲ.</li>
+                                                <li>ರಾಜೀನಾಮೆ ನೀಡಿದ ನಂತರ ಸಿಬ್ಬಂದಿಯು 1 ತಿಂಗಳು ಕೆಲಸ ಮಾಡಬೇಕು.</li>
+                                                <li>ರಜೆ ಪತ್ರ ಅಥವಾ ರಾಜೀನಾಮೆ ಪತ್ರ ನೀಡದೆ ಯಾವುದೇ ಸಿಬ್ಬಂದಿಯನ್ನು ಮನೆಗೆ ಕಳುಹಿಸುವುದಿಲ್ಲ. ಇಲ್ಲದೆ ಹೋದರೆ ಸಿಬ್ಬಂದಿ ಹೋದರು ಸಂಬಳ ನೀಡುವಂತಿಲ್ಲ. ರಜೆ ಪತ್ರಕ್ಕೆ ಸಂಬಳದ 70% ಪಾವತಿಸಲಾಗುವುದು ಮತ್ತು ಹಿಂತಿರುಗಿದ ನಂತರ ಉಳಿದ 30% ತಕ್ಷಣ ಪಾವತಿಸಲಾಗುವುದು.</li>
+                                                <li>ಕಛೇರಿಗೆ ಬರುವಾಗ ಸಿಬ್ಬಂದಿ ಗುರುತಿನ ಚೀಟಿ ಧರಿಸಬೇಕು.</li>
+                                                <li>ಸಂಬಳವನ್ನು ಖಾತೆಗೆ ಜಮಾ ಮಾಡಲಾಗುವುದು, ಸಿಬ್ಬಂದಿಗೆ ಯಾವುದೇ ಹಣವನ್ನು ನಗದಾಗಿ ಪಾವತಿಸುವುದಿಲ್ಲ.</li>
+                                                <li>ಲೆಕ್ಕ ಪರಿಶೋಧನೆಯ ಉದ್ದೇಶದಿಂದ ಸಿಬ್ಬಂದಿಗೆ ಮುಂಗಡ ಪಾವತಿ ಇಲ್ಲ, ನಾವು ಇಲ್ಲಿ ಅಸಯಾತರಾಗಿದ್ದೇವೆ.</li>
+                                                <li>ಸಂಬಳದ ದಿನಾಂಕವು ಪ್ರತಿ ತಿಂಗಳ 1 ರಿಂದ ಪ್ರತಿ ತಿಂಗಳ ಕೊನೆಯ ದಿನಾಂಕ 30ರವರೆಗೆ ಇರುತ್ತದೆ, ಮತ್ತು ಇದನ್ನು ಪ್ರತಿ ತಿಂಗಳ 10ನೇ ತಾರೀಖಿಗೆ ನೀಡಲಾಗುತ್ತದೆ.</li>
+                                                <li>ಸಿಬ್ಬಂದಿ ರಜೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಮ್ಯಾನೇಜರ್‌ಗೆ ಯಾವುದೇ ಬ್ಲಾಕ್ ಮೇಲ್ ಮಾಡಬೇಡಿ. ನಿಮ್ಮ ಕಡೆಯಿಂದ ಬ್ಲ್ಯಾಕ್ ಮೇಲ್‌ಗಳನ್ನು ನಾವು ಕಂಡುಕೊಂಡರೆ ನಿಮ್ಮ ಸಂಬಳದ 10% ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತದೆ. ಕೆಲಸ ನಷ್ಟದಲ್ಲಿ ಇರುತ್ತದೆ.</li>
+                                                <li>ಯಾವುದೇ ಪುರಾವೆಗಳಿಲ್ಲದೆ ಕಛೇರಿಯಲ್ಲಿ ಹಿಂಸೆ ಇಲ್ಲ. ಯವುದೇ ದೂರುಗಳನ್ನು ಆದ್ಯತೆಯಾಗಿ ತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದು.</li>
+                                                <li>ಯಾವುದೇ ಕಳ್ಳತನ / ಆತ್ಮಹತ್ಯೆಯ ಸಂದರ್ಭದಲ್ಲಿ ಕಂಪನಿಯು ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ. ಬದಲಿಗೆ ಪೋಲೀಸರ ಹತೋಟಿಗೆ ಬರುವುದು ಹಾಗೂ ಇದರ ಎಲ್ಲ ವೆಚ್ಚವನ್ನು ಸಿಬ್ಬಂದಿಯ ಕುಟುಂಬದವರೇ ಭರಿಸಬೇಕು.</li>
+                                                <li>ರೋಗಿಯ ಸ್ಥಳದ ಬಳಿ ಕುಟುಂಬದವರು, ನೆರೆಹೊರೆಯವರು, ಸ್ನೇಹಿತರು, ಗೆಳೆಯರು / ಗೆಳತಿಯರಿಗೆ ಅನುಮತಿ ಇರುವುದಿಲ್ಲ. ಒಂದು ವೇಳೆ ತಿಳಿಸಬೇಕಾದ ಪರಿಸ್ಥಿತಿ ಉದ್ಭವಿಸಿದರೆ, ಸಿಬ್ಬಂದಿಯು ಗ್ರಾಹಕರಿಗೆ ಮತ್ತು ಏಜೆನ್ಸಿಗೆ ತಿಳಿಸಬೇಕು, ಇಲ್ಲವಾದರೆ ಸಿಬ್ಬಂದಿಯನ್ನು ಕೆಲಸದ ದಿನಗಳಿಗೆ ಯಾವುದೇ ಸಂಬಳವಿಲ್ಲದೆ ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.</li>
+                                                <li>ಸಂಸ್ಥೆಯ ಮೊದಲ ತಿಂಗಳ ಸಿಬ್ಬಂದಿಯು ಪೋಲೀಸ್ ಪರಿಶೀಲನೆಯನ್ನು ಮಾಡಲಿದೆ ಹಾಗೂ ಸಂಸ್ಥೆಯು ರೂ. 1,000/- ಗಳನ್ನು ಕಡಿತಗೊಳಿಸಲಾಗುವುದು. ಅಲ್ಲದೇ ಇದನ್ನು 3 ತಿಂಗಳ ನಂತರ ಜಮಾ ಮಾಡಲಾಗುವುದು.</li>
+                                            </ul>
+                                            
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                <div style="flex: 1; text-align: left;">Long term, hourly nursing care at home for adults with chronic illness, injury or Disability.</div>
-                                            </div>
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                <div style="flex: 1; text-align: left;">Companionship an engaging in hobbies and activities.</div>
-                                            </div>
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                <div style="flex: 1; text-align: left;">Care provided on an ongoing basis on a schedule that meets a client's need to 24 hours a day, 7 days a week, including possible live-in-care.</div>
-                                            </div>
+                                            <h4 style="text-align: center; color: red;">ಸಂಸ್ಥೆಯ ವಸತಿಗೃಹದ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
+                                            <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
+                                                <li>ಸಿಬ್ಬಂದಿಯು ವಸತಿಗೃಹ ನೈರ್ಮಲ್ಯ ಕಾಪಾಡಬೇಕು ಮತ್ತು ವಸತಿಗೃಹವನ್ನು ಸ್ವಚ್ಚ ಮತ್ತು ಅಚ್ಚುಕಟ್ಟಾಗಿ ಇಡಬೇಕು.</li>
+                                                <li>ವಸತಿಗೃಹದಲ್ಲಿ ಯಾವುದೇ ಮಧ್ಯಪಾನ, ದೂಮಪಾನ, ಮತ್ತು ತಂಬಾಕು ಉಪಯೋಗಿಸುವಂತಿಲ್ಲ.</li>
+                                                <li>ರಾತ್ರಿ ಊಟದ ನಂತರ ಯಾರು ಹೊರಗೆ ಬರಬಾರದು. ಸಮಯದ ಮಿತಿ ರಾತ್ರಿ 10:00 ಗಂಟೆ.</li>
+                                                <li>ಅನುಮತಿಯಿಲ್ಲದೆ ಯಾರು ಶಾಪಿಂಗ್ ಮತ್ತು ಇತರೆ ವಿಷಯಗಳಿಗಾಗಿ ವಸತಿ ಗೃಹದಿಂದ ಹೊರ ಬರಬಾರದು.</li>
+                                                <li>ನಿಮ್ಮ ವಸ್ತುಗಳನ್ನು ನೀವೇ ಸುರಕ್ಷಿತವಾಗಿರಿಸಿಕೊಳ್ಳಬೇಕು. ಯಾವುದೇ ನಷ್ಟಕ್ಕೆ ನಾವು ಜವಾಬ್ದಾರರಲ್ಲ.</li>
+                                                <li>ವಸತಿಗೃಹ ಮತ್ತು ರೋಗಿಗಳ ಸ್ಥಳದಲ್ಲಿ ಆಹಾರವನ್ನು ವ್ಯರ್ಥ ಮಾಡಬೇಡಿ.</li>
+                                                <li>ವಿದ್ವಂಸತೆಯು ಬಹಳ ಗಂಭೀರವಾದ ಅಪರಾಧ. ಯಾವ ಸಂದರ್ಭದಲ್ಲಿ ವಸತಿಗೃಹದ ಸಿಬ್ಬಂದಿಯು ತಪ್ಪಿತಸ್ಥರೆಂದು ಕಂಡು ಬಂದರೆ, ನಿರ್ದಿಷ್ಟ ಸಿಬ್ಬಂದಿಯನ್ನು ಕಂಪನಿಯಿಂದ ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.</li>
+                                                <li>ರಾತ್ರಿ 7:30ರ ನಂತರ ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ಹೊರೆಗೆ ಹೋಗುವಂತಿಲ್ಲ.</li>
+                                            </ul>
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                <div style="flex: 1; text-align: left;">Without Office permission patient should not be taken out.</div>
-                                            </div>
-                                        </div>
 
-                                        <b class="contentCenter">Terms and Conditions</b>
-                                        <b>There are few set of things that need to be followed before you take the nursing services.</b>
-                                        <div style="display: flex; flex-direction: column;">
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">1.</div>
-                                                <div style="flex: 1; text-align: left;">You will be on probation for a period of six months, if your service is found satisfactory then you will be confirmed. During your probation period your service can be terminated at any time, without prior notice.</div>
-                                            </div>
 
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">2.</div>
-                                                <div style="flex: 1; text-align: left;">You should give prior notice before 30 days when you are leaving services, if not you are liable to lose the salary of 30 days.</div>
+                                            <div class="col-12 mt-4">
+                                                <h4 style="text-align: center; color: red;">ಕೆಲಸದ ಕಡೆಗೆ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
+                                                <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
+                                                    <li>ಸಿಬ್ಬಂದಿಯು ಗ್ರಾಹಕರ ಸ್ಥಳದಲ್ಲಿ ಸ್ವಚ್ಛತೆ ಕಾಪಾಡಬೇಕು.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿಯು ಮೊಬೈಲ್ ಫೋನ್ ಬಳಕೆಯ ಮೇಲೆ ನಿಯಂತ್ರಣ ಹೊಂದಿರಬೇಕು, ಒಂದು ವೇಳೆ ರೋಗಿಯಿಂದ ಈ ಬಗ್ಗೆ ದೂರುಗಳು ಬಂದರೆ, ಸಿಬ್ಬಂದಿಗೆ ಕಠಿಣ ಕ್ರಮ ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತದೆ.</li>
+                                                    <li>ಗ್ರಾಹಕರ ಸ್ಥಳದಲ್ಲಿ ಕಳ್ಳತನದ ಅಭ್ಯಾಸವು ಸಂಪೂರ್ಣವಾಗಿ ಕಾನೂನು ಬಾಹಿರ ಚಟುವಟಿಕೆಯಾಗಿದ್ದು, ಅದು ತೀವ್ರ ಹಾನಿಯನ್ನುಂಟು ಮಾಡುತ್ತದೆ. ಒಂದು ವೇಳೆ ನೀವು ತಪ್ಪಿತಸ್ಥರೆಂದು ಕಂಡುಬಂದರೆ ನಾವು ಪೋಲೀಸ್ ಠಾಣೆಗೆ ಹಸ್ತಾಂತರಿಸುತ್ತೇವೆ. ನಾವು ನಿಮಗೆ ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ. ನೀವೇ ಪರಿಹರಿಸಿಕೊಂಡು ಹೋಗಬೇಕು, ಸಂಬಳ ನೀಡುವುದಿಲ್ಲ.</li>
+                                                    <li>ಪಾಲನೆ / ಶುಕ್ರೂಷೆಯಾಗಿ ಸೇವೆಯನ್ನು ನಿರಾಕರಿಸುವುದಿಲ್ಲ ಗಂಡು ಮತ್ತು ಹೆಣ್ಣಿನ ಜೀವಕ್ಕೆ ನಾವು ಜವಾಬ್ದಾರರಾಗಿರುತ್ತೇವೆ. ರೋಗಿಗಳನ್ನು ಮಹಿಳಾ ಮತ್ತು ಪಾಲಕರಿಂದ ನಿರ್ವಹಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</li>
+                                                    <li>ನಾವು 10 ಗಂಟೆ ಮತ್ತು 24 ಗಂಟೆಗಳ ಸೇವೆ ಎರಡನ್ನೂ ಒದಗಿಸುತ್ತಿದ್ದೇವೆ. ಸಿಬ್ಬಂದಿ ಮಾಡಲು ಅರ್ಹರಾಗಬೇಕು. ನಿಮ್ಮ ಮೊದಲ ಆದ್ಯತೆ 24 ಗಂಟೆಗಳು.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿ ಒಂದು ಸಂಪೂರ್ಣ ಪ್ರೇರಣೆ ಅಂಶಗಳೊಂದಿಗೆ ರೋಗಿಯನ್ನು ತೊಡಗಿಸಿಕೊಳ್ಳಬೇಕು. ಪ್ರತಿ ತಿಂಗಳು ಗುಂಪಿನಲ್ಲಿ ಉತ್ತಮ ಆರೈಕೆದಾರರನ್ನು ಘೋಷಿಸಲಾಗುತ್ತದೆ.</li>
+                                                    <li>ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ನಿರ್ವಹಣೆಗೆ ತಿಳಿಸದೆ ರೋಗಿಯ ಸ್ಥಳದಿಂದ ಹೊರಹೋಗಬಾರದು. ಮರು ಪರಿಶೀಳನಾ ಅಭ್ಯರ್ಥಿ ಬರುವವರೆಗೆ ಕಾಯಬೇಕು, ಒಂದು ವೇಳೆ ನೀವು ಓಡಿ ಹೋದರೆ ನಾವು ನಿಮಗೆ ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿಯು 15 ದಿನಗಳ ಮೊದಲು ದೀರ್ಘ ರಜೆಯ ಪೂರ್ವ ಸೂಚನೆಯನ್ನು ನೀಡಬೇಕು.</li>
+                                                    <li>ಗ್ರಾಹಕರ ಸ್ಥಳದಿಂದ ನೀವು ಎದುರಿಸುತ್ತಿರುವ ಸಮಸ್ಯೆಯನ್ನು ತಕ್ಷಣವೇ ಸಮಸ್ಯೆಗಳನ್ನು ವಿಂಗಡಿಸಿರುವ ಕ್ಷೇತ್ರ ವ್ಯವಸ್ಥಾಪಕರಿಗೆ ವರದಿ ಮಾಡಬೇಕು.</li>
+                                                    <li>ಗ್ರಾಹಕರೊಂದಿಗೆ ಮತ್ತು ವ್ಯವಸ್ಥಾಪಕರೊಂದಿಗೆ ದುರ್ವತನೆ ತೋರಿಸಬಾರದು.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿ ಮ್ಯಾನೇಜರ್‌ಗೆ ಕರೆ ಮಾಡಿ ಯಾವುದೇ ವಿಷಯಕ್ಕಾಗಿ ತೊಂದರೆಗೊಳಿಸಲು ಅನುಮತಿ ಇಲ್ಲ.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿಯು ಕೆಲಸಕ್ಕೆ ಸೂಕ್ತವೆನಿಸದಿದ್ದಲ್ಲಿ ಯಾವುದೇ ಸೂಚನೆ ನೀಡದೆ ಅವನನ್ನು / ಅವಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುವುದು.</li>
+                                                    <li>ಯಾವುದೇ ಕಳ್ಳತನ / ಆತ್ಮಹತ್ಯೆಯ ಸಂಧರ್ಬದಲ್ಲಿ ಯಾವುದೇ ಸಂದರ್ಭದಲ್ಲಿ ಕಂಪನಿಯು ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ. ಇದನ್ನು ಪೋಲಿಸ್ ವಶಕ್ಕೆ ನೀಡಲಾಗುವುದು. ಎಲ್ಲಾ ವೆಚ್ಚವನ್ನು ಸಿಬ್ಬಂದಿಯ ಕುಟುಂಬದಿಂದ ಭರಿಸಬೇಕು.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿ ಗ್ರಾಹಕರೊಂದಿಗೆ ಸಂಬಳದ ಬಗ್ಗೆ ಚರ್ಚಿಸಬಾರದು.</li>
+                                                    <li>ಸಿಬ್ಬಂದಿಯು ಗ್ರಾಹಕರ ಕುಟುಂಬದ ವಿಷಯದಲ್ಲಿ ಭಾಗಿಯಾಗಬಾರದು ಮತ್ತು ಗ್ರಾಹಕರೊಂದಿಗೆ ತಮ್ಮ ವೈಯಕ್ತಿಕ ಕುಟುಂಬದ ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಬಾರದು.</li>
+                                                    <li>ಕರ್ತವ್ಯವನ್ನು ತೊರೆದ ನಂತರ, ಗ್ರಾಹಕ ಮತ್ತು ಸಿಬ್ಬಂದಿ ನಡುವೆ ಯಾವುದೇ ಸಂಪರ್ಕ ಅಥವಾ ಸಂಬಂಧ ಇರಬಾರದು.</li>
+                                                </ul>
                                             </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
-                                                <div style="flex: 1; text-align: left;">You will be offered a 6 month probation period after successful completion of the period you will be given a permanent employment in the company.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
-                                                <div style="flex: 1; text-align: left;">You cannot take leave without prior information, Unless in emergency you must inform and take clearance otherwise your salary will be deducted.</div>
-                                            </div>
-
-                                            <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
-                                                <div style="flex: 1; text-align: left;">You will not start a similar business or any firm which directly or indirectly affects the company, if found, you will be legally prosecuted.</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            <p style="font-size: 16px; text-align: justify; line-height: 1.6;">
+                                                ಈ ಮೇಲ್ಕಂಡ ಎಲ್ಲಾ ಅಂಶಗಳನ್ನು ನಾನು ಸಿಬ್ಬಂದಿಯಾಗಿ ಕೆಲಸಕ್ಕೆ ಸೇರುವ ಮುನ್ನ ನನಗೆ ವಿವರಿಸಿದ್ದಾರೆ ಮತ್ತು ನನ್ನ ..ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ಎಲ್ಲಾ ಸ್ವರೂಪದಲ್ಲಿ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣದ ಪರಿಣಾಮಗಳನ್ನು ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ನಾನು ಯಾವುದೇ ದೋಷವನ್ನು ಮಾಡುವುದಿಲ್ಲ ಮತ್ತು ಸಂಸ್ಥೆಯ ಅಭಿವೃದ್ಧಿಗಾಗಿ ಕೆಲಸ ಮಾಡುವ ಗುರಿಯನ್ನು ಹೊಂದಿದ್ದೇನೆ ಎಂದು ನಾನು ಖಚಿತಪಡಿಸುತ್ತೇನೆ. ನನ್ನಿಂದ ಯಾವುದಾದರೂ ತಪ್ಪು ಸಂಭವಿಸಿದ್ದಲ್ಲಿ ಸಂಸ್ಥೆಯು ನೀಡುವ ಶಿಕ್ಷೆಗೆ ಬದ್ಧನಾಗಿರುತ್ತೇನೆ.
+                                            </p>
                                     <div class="row mt-2">
                                         <div class="col-4">
                                             <div>
-                                                <p>Place :</p>
+                                                        <p>ಸ್ಥಳ :</p>
                                                 <input type="text" id="place" />
                                             </div>
                                             <div>
-                                                <p>Date :</p>
+                                                <p>ದಿನಾಂಕ :</p>
                                                 <input type="date" id="bottomDate" />
                                             </div>
                                         </div>
@@ -238,7 +217,7 @@
                                             <img id="clientSignatureImage" class="signatureContainerImage" hidden />
                                             <div class="row">
                                                 <div class="col-10">
-                                                    <p>Signature of the Candidate &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
+                                                    <p>ಸಹಿ: &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -287,7 +266,9 @@
     });
 
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+       
         const element = document.querySelector('.registrationFormContent');
+        // $('#siddhartname').text = "ಸಿದ್ಧಾರ್ಥ";
         element.style.transform = 'scale(1)';
         element.style.transformOrigin = 'top center';
         // Options for html2pdf
@@ -454,7 +435,9 @@
         $('#maritalStatus').val(data.maritalStatus);
         $('#permanentAddress').val(data.permanentAddress);
         $('#presentAddress').val(data.presentAddress);
-        $('#helperIdProof').val(data.idProof);
+       // $('#helperIdProof').val(data.idProof);
+       helperIdProof = data.idProof;
+        if(data.image != null) {$('#preview-image').attr('src', 'data:image/png;base64,' + data.image.split("~")[1])};
         $('#education').val(data.education);
         $('#languages').val(data.languagesKnown);
         $('#experience').val(data.experience);
@@ -505,6 +488,7 @@
         $('.inputFields').val('');
         candidateImage = "";
         helperIdProof = "";
+        $('#preview-image').attr('src','');
         $('#clientSignature').prop('hidden', false);
         $('#clientSignatureImage').prop('hidden', true);
         showPopup('helperModal');

@@ -21,8 +21,9 @@
             });
 
             let isface = await loginWithFace(response);
-            stopCamera();
+           
             if (isface) {
+                stopCamera();
                 Clearfields();
             }
         } catch (error) {
@@ -67,11 +68,11 @@
                 alertMessage('Face Verified!');
                 return true;
             } else {
-                alertMessage('Face not recognized. Please try again.');
+                alertMessage('Face not recognized. Please Click on add button again');
                 return false;
             }
         } else {
-            alertMessage('No face detected, please try again.');
+            alertMessage('No face detected, Please Click on add button again.');
             return false;
         }
     }
