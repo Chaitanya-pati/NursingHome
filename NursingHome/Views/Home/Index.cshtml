@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     /* Container styling */
     .container-fluid {
@@ -160,8 +161,24 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-6 col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
 
-       
+                <canvas id="oldAgeChart"></canvas>
+
+            </div>
+        </div>  
+        </div>
+        <div class="col-lg-6 col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+
+                <canvas id="nursingHomeChart"></canvas>
+
+            </div>
+        </div>
+        </div>
     </div>
 </div>
 
@@ -179,5 +196,108 @@
                 console.error(response);
             }
         });
+        fetchData();
     });
+
+    function fetchData() {
+        // Get today's date
+        // Get today's date
+        const today = new Date();
+
+        // Calculate the start date 30 days ago
+        const startDate1 = new Date(today);
+        startDate1.setDate(today.getDate() - 30);
+
+        // Set the value of the startDate input field
+        let startDate = startDate1.toISOString().slice(0, 10); // Format as YYYY-MM-DD
+        let endDate = today.toISOString().slice(0, 10); // Format as YYYY-MM-DD
+
+        // Set the value of the endDate input field to today's date
+       
+
+        $.ajax({
+            url: `/Home/GetAdmissionData`,
+            type: 'GET',
+            data: { startDate: startDate, endDate: endDate },
+            success: function (data) {
+                console.log(data); // Log the data to inspect its structure
+
+                // Extract data for each category
+                const oldAgeData = data.oldAge || {};
+                const nursingHomeData = data.nursingHome || {};
+                const helpersData = data.helpers || {};
+
+                // Prepare labels and counts for Old Age
+                const oldAgeLabels = Object.keys(oldAgeData);
+                const formattedOldAgeLabels = oldAgeLabels.map(dateStr => {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-GB'); // Format to dd/mm/yyyy
+                });
+                const oldAgeCounts = oldAgeLabels.map(date => oldAgeData[date] || 0);
+
+                // Create Old Age Chart
+                const ctxOldAge = document.getElementById('oldAgeChart').getContext('2d');
+                new Chart(ctxOldAge, {
+                    type: 'bar',
+                    data: {
+                        labels: formattedOldAgeLabels,
+                        datasets: [{
+                            label: 'Total Old Age Admissions',
+                            data: oldAgeCounts,
+                            backgroundColor: '#0080f2',
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Prepare labels and counts for Nursing Home
+                const nursingHomeLabels = Object.keys(nursingHomeData);
+                const formattedNursingHomeLabels = nursingHomeLabels.map(dateStr => {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-GB'); // Format to dd/mm/yyyy
+                });
+                const nursingHomeCounts = nursingHomeLabels.map(date => nursingHomeData[date] || 0);
+
+                // Create Nursing Home Chart
+                const ctxNursingHome = document.getElementById('nursingHomeChart').getContext('2d');
+                new Chart(ctxNursingHome, {
+                    type: 'bar',
+                    data: {
+                        labels: formattedNursingHomeLabels,
+                        datasets: [{
+                            label: 'Total Nursing Home Admissions',
+                            data: nursingHomeCounts,
+                            backgroundColor: '#ff3800',
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                
+               
+            },
+
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+
+
+
+
+
 </script>
