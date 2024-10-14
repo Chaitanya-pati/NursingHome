@@ -12,55 +12,113 @@ namespace NursingHome.Controllers
     {
         private readonly ILogger<CashMemoController> _logger;
         private readonly ICashMemo _DbConn;
-        public CashMemoController(ILogger<CashMemoController> logger, ICashMemo Db)
+        private readonly IHomeService _homeService; // Assuming this contains SaveLog method
+
+        public CashMemoController(ILogger<CashMemoController> logger, ICashMemo Db, IHomeService homeService)
         {
             _logger = logger;
             _DbConn = Db;
+            _homeService = homeService; // Inject the service that contains SaveLog
         }
 
         public IActionResult CashMemo()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(CashMemo), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult SaveOldAgeCashMemo(OldAgeCashMemo data)
         {
-            if (data.id == 0)
+            try
             {
-                return Json(_DbConn.AddOldAgeCashMemo(data));
+                if (data.id == 0)
+                {
+                    return Json(_DbConn.AddOldAgeCashMemo(data));
+                }
+                else
+                {
+                    return Json(_DbConn.UpdateOldAgeCashMemo(data));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Json(_DbConn.UpdateOldAgeCashMemo(data));
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(SaveOldAgeCashMemo), ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
+
         public IActionResult SaveNursingCashMemo(HomeNursingCashMemo data)
         {
-            if (data.id == 0)
+            try
             {
-                return Json(_DbConn.AddNursingCashMemo(data));
+                if (data.id == 0)
+                {
+                    return Json(_DbConn.AddNursingCashMemo(data));
+                }
+                else
+                {
+                    return Json(_DbConn.UpdateNursingCashMemo(data));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Json(_DbConn.UpdateNursingCashMemo(data));
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(SaveNursingCashMemo), ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
         public IActionResult GetCashMemoData(DateTime startDate, DateTime endDate)
         {
-            var oldAgeData = _DbConn.GetOldAgePaymentData(startDate, endDate);
-            var NursingData = _DbConn.GetNursingPaymentData(startDate, endDate);
-            return Json(new { oldAge = oldAgeData, nursing = NursingData });
+            try
+            {
+                var oldAgeData = _DbConn.GetOldAgePaymentData(startDate, endDate);
+                var NursingData = _DbConn.GetNursingPaymentData(startDate, endDate);
+                return Json(new { oldAge = oldAgeData, nursing = NursingData });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(GetCashMemoData), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult DeleteOldAgePayment(int id)
         {
-            return Json(_DbConn.DeleteOldAgeCashMemo(id));
-        }
-        public IActionResult DeleteNursingPayment(int id)
-        {
-            return Json(_DbConn.DeleteNursingCashMemo(id));
+            try
+            {
+                return Json(_DbConn.DeleteOldAgeCashMemo(id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(DeleteOldAgePayment), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
+        public IActionResult DeleteNursingPayment(int id)
+        {
+            try
+            {
+                return Json(_DbConn.DeleteNursingCashMemo(id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(CashMemoController), nameof(DeleteNursingPayment), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

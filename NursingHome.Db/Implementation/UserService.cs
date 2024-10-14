@@ -54,7 +54,7 @@ namespace NursingHome.Db.Implementation
                 GetData.ImageString = user.ImageString;
                 GetData.fkCity = user.fkCity;
                 GetData.fkCountry = user.fkCountry;
-                GetData.IsFaceAdded = user.faceDescriptor != null ? true : false;
+               // GetData.IsFaceAdded = GetData.faceDescriptor != null ? true : false;
                 GetData.MobileNo = user.MobileNo;
                 GetData.PinCode = user.PinCode;
                 GetData.HighestQualification = user.HighestQualification;

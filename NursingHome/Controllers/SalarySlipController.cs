@@ -6,10 +6,9 @@ namespace NursingHome.Controllers
     public class SalarySlipController : Controller
     {
         private readonly ISalarySlipService _DbConn;
-        
+        private readonly IHomeService _logger; // Changed to IHomeService for SaveLog functionality
 
-        private readonly ILogger<SalarySlipController> _logger;
-        public SalarySlipController(ILogger<SalarySlipController> logger, ISalarySlipService Db)
+        public SalarySlipController(IHomeService logger, ISalarySlipService Db)
         {
             _logger = logger;
             _DbConn = Db;
@@ -18,22 +17,36 @@ namespace NursingHome.Controllers
         [HttpGet]
         public IActionResult GetAttendanceAndNetSalary(int employeeId, int month, int year)
         {
-            var (totalDaysWorked, netSalary, basicSalary, totalDaysInMonth) = _DbConn.GetAttendanceAndNetSalary(employeeId, month, year);
-
-            return Json(new
+            try
             {
-               
-                totalDaysWorked,
-                netSalary,
-                basicSalary,
-                totalDaysInMonth
-            });
-        }
+                var (totalDaysWorked, netSalary, basicSalary, totalDaysInMonth) = _DbConn.GetAttendanceAndNetSalary(employeeId, month, year);
 
+                return Json(new
+                {
+                    totalDaysWorked,
+                    netSalary,
+                    basicSalary,
+                    totalDaysInMonth
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("SalarySlipController", "GetAttendanceAndNetSalary", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         public IActionResult SalarySlip()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("SalarySlipController", "SalarySlip", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

@@ -12,107 +12,186 @@ namespace NursingHome.Controllers
     {
         private readonly ILogger<ConfigurationController> _logger;
         private readonly IConfig _DbConn;
-        public ConfigurationController(ILogger<ConfigurationController> logger,IConfig Db)
+        private readonly IHomeService _homeService; // Assuming this contains SaveLog method
+
+        public ConfigurationController(ILogger<ConfigurationController> logger, IConfig Db, IHomeService homeService)
         {
             _logger = logger;
             _DbConn = Db;
+            _homeService = homeService; // Injecting homeService for logging errors
         }
 
         public IActionResult Configuration()
         {
-            return View();
-        } 
-       
-       public IActionResult AddCountry(string CountryName,int Id)
-
-       {
-            if(Id==0)
+            try
             {
-                var IsAdded = _DbConn.AddCountry(CountryName);
-                return Json(IsAdded);
-
+                return View();
             }
-            else
+            catch (Exception ex)
             {
-                var IsUpdated=_DbConn.UpdateCountry(Id,CountryName);
-                return Json(IsUpdated);
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(Configuration), ex.Message);
+                return StatusCode(500, "Internal server error");
             }
-       
-       }
+        }
+
+        public IActionResult AddCountry(string CountryName, int Id)
+        {
+            try
+            {
+                if (Id == 0)
+                {
+                    var IsAdded = _DbConn.AddCountry(CountryName);
+                    return Json(IsAdded);
+                }
+                else
+                {
+                    var IsUpdated = _DbConn.UpdateCountry(Id, CountryName);
+                    return Json(IsUpdated);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(AddCountry), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         public IActionResult GetCountryData()
         {
-            var data =_DbConn.GetCountryList();
-            return Json(new
+            try
             {
-                data=data,
-            });
+                var data = _DbConn.GetCountryList();
+                return Json(new { data = data });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(GetCountryData), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult GetStateData()
         {
-            var data = _DbConn.GetStateList();
-            return Json(new
+            try
             {
-                data=data,
-
-            });
+                var data = _DbConn.GetStateList();
+                return Json(new { data = data });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(GetStateData), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
-     
+
         public IActionResult AddOrEditCity(City model)
         {
-            if (model.Id==0)
+            try
             {
-                var IsAdded = _DbConn.AddCity(model);
-                return Json(IsAdded);
+                if (model.Id == 0)
+                {
+                    var IsAdded = _DbConn.AddCity(model);
+                    return Json(IsAdded);
+                }
+                else
+                {
+                    var IsUpdated = _DbConn.EditCity(model);
+                    return Json(IsUpdated);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var IsUpdated = _DbConn.EditCity(model);
-                return Json(IsUpdated);
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(AddOrEditCity), ex.Message);
+                return StatusCode(500, "Internal server error");
             }
-
         }
 
-
-        public IActionResult AddState(string StateName,int StateID)
+        public IActionResult AddState(string StateName, int StateID)
         {
-            if (StateID == 0)
+            try
             {
-                var Data = _DbConn.AddState(StateName);
-                return Json(Data);
+                if (StateID == 0)
+                {
+                    var Data = _DbConn.AddState(StateName);
+                    return Json(Data);
+                }
+                else
+                {
+                    var Result = _DbConn.UpdateState(StateName, StateID);
+                    return Json(Result);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var Result=_DbConn.UpdateState(StateName, StateID);
-                return Json(Result);
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(AddState), ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
+
         public IActionResult GetCityData()
         {
-            var data = _DbConn.GetCityData();
-            return Json(new
+            try
             {
-                data = data,
-
-            });
+                var data = _DbConn.GetCityData();
+                return Json(new { data = data });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(GetCityData), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
-
 
         public IActionResult DeleteCity(int id)
         {
-            var isDelete = _DbConn.DeleteCity(id);
-            return Json(isDelete);
+            try
+            {
+                var isDelete = _DbConn.DeleteCity(id);
+                return Json(isDelete);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(DeleteCity), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult CityDetails(string username)
         {
-            var data = _DbConn.GetCityDetails(username);
-            return Json(data);
+            try
+            {
+                var data = _DbConn.GetCityDetails(username);
+                return Json(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(CityDetails), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _homeService.SaveLog(nameof(ConfigurationController), nameof(Error), ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

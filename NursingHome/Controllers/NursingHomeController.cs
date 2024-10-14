@@ -8,9 +8,11 @@ namespace NursingHome.Controllers
 {
     public class NursingHomeController : Controller
     {
-        private readonly ILogger<NursingHomeController> _logger;
+        private readonly IHomeService _logger;
+        
         private readonly INursingHome _DbConn;
-        public NursingHomeController(ILogger<NursingHomeController> logger,INursingHome Db)
+
+        public NursingHomeController( IHomeService logger, INursingHome Db)
         {
             _logger = logger;
             _DbConn = Db;
@@ -18,26 +20,52 @@ namespace NursingHome.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "Index", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult NursingHome()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "NursingHome", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult AddorEditHomeNursing(Db.Models.HomeNursing homeNursing)
         {
-            if (homeNursing.Id == 0)
+            try
             {
-                var isAdded = _DbConn.AddData(homeNursing);
-                return Json(isAdded);
+                if (homeNursing.Id == 0)
+                {
+                    var isAdded = _DbConn.AddData(homeNursing);
+                    return Json(isAdded);
+                }
+                else
+                {
+                    var isUpdated = _DbConn.UpdateData(homeNursing);
+                    return Json(isUpdated);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var isUpdated = _DbConn.UpdateData(homeNursing);
-                return Json(isUpdated);
+                _logger.SaveLog("NursingHomeController", "AddorEditHomeNursing", ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
+
         public IActionResult GetData(DateTime startDate, DateTime endDate, string username)
         {
             try
@@ -45,24 +73,51 @@ namespace NursingHome.Controllers
                 var result = _DbConn.GetData(startDate, endDate, username);
                 return Json(new { data = result });
             }
-            catch
+            catch (Exception ex)
             {
-               return Json(null);
+                _logger.SaveLog("NursingHomeController", "GetData", ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
         public IActionResult Privacy()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "Privacy", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult GetLatestID()
         {
-            return Json(_DbConn.getLatestID());
+            try
+            {
+                return Json(_DbConn.getLatestID());
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "GetLatestID", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "Error", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

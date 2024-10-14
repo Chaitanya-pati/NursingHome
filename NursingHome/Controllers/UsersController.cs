@@ -4,15 +4,15 @@ using System.Diagnostics;
 using NursingHome.Db.Implementation;
 using NursingHome.Db.Interface;
 using NursingHome.Db.Models;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace NursingHome.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IHomeService _logger; // Changed to IHomeService for SaveLog functionality
         private readonly IUserService _DbConn;
-        public UsersController(ILogger<HomeController> logger, IUserService dbConn)
+
+        public UsersController(IHomeService logger, IUserService dbConn)
         {
             _logger = logger;
             _DbConn = dbConn;
@@ -20,73 +20,167 @@ namespace NursingHome.Controllers
 
         public IActionResult Privacy()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "Privacy", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult Users()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "Users", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
-       // [HttpPost]
+
         public IActionResult AddorEditUser([FromForm] Users userData)
         {
-            if (userData.Id == 0)
+            try
             {
-                var IsAdded = _DbConn.AddData(userData);
-                return Json(IsAdded);
+                if (userData.Id == 0)
+                {
+                    var IsAdded = _DbConn.AddData(userData);
+                    return Json(IsAdded);
+                }
+                else
+                {
+                    var IsUpdated = _DbConn.UpdateData(userData);
+                    return Json(IsUpdated);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var IsUpdated = _DbConn.UpdateData(userData);
-                return Json(IsUpdated);
+                _logger.SaveLog("UsersController", "AddorEditUser", ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
+
         public IActionResult GetData()
         {
-            var Data = _DbConn.GetData();
-            return Json(new { data = Data });
+            try
+            {
+                var Data = _DbConn.GetData();
+                return Json(new { data = Data });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "GetData", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult DeleteUser(int id)
         {
-            var IsDeleted = _DbConn.DeleteUser(id);
-            return Json(IsDeleted);
+            try
+            {
+                var IsDeleted = _DbConn.DeleteUser(id);
+                return Json(IsDeleted);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "DeleteUser", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         public IActionResult GetFaceData(string username)
         {
-            return Json(_DbConn.GetFaceDescriptor(username));
+            try
+            {
+                return Json(_DbConn.GetFaceDescriptor(username));
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "GetFaceData", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
-        public IActionResult SaveFaceDescriptor(string username,string face)
+
+        public IActionResult SaveFaceDescriptor(string username, string face)
         {
-            return Json(_DbConn.SaveFaceDescriptor(username, face));
+            try
+            {
+                return Json(_DbConn.SaveFaceDescriptor(username, face));
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "SaveFaceDescriptor", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult Login()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "Login", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         public IActionResult LoginUser(string userName, string password)
         {
-            var user = _DbConn.CheckValidUser(userName, password);
+            try
+            {
+                var user = _DbConn.CheckValidUser(userName, password);
 
-            if (user != null)
-            {
-                return Json(new { success = true, userID = user.Id,isFaceAdded = user.IsFaceAdded });
+                if (user != null)
+                {
+                    return Json(new { success = true, userID = user.Id, isFaceAdded = user.IsFaceAdded });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Invalid username or password." });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = "Invalid username or password." });
+                _logger.SaveLog("UsersController", "LoginUser", ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
         public IActionResult GetUserDataById(int id)
         {
-            var data = _DbConn.GetUserDataById(id);
-            return Json(data);
+            try
+            {
+                var data = _DbConn.GetUserDataById(id);
+                return Json(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "GetUserDataById", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "Error", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
