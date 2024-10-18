@@ -66,21 +66,7 @@ namespace NursingHome.Db.Implementation
         {
             using var Db = new TaskContext(_dbConn);
 
-            IQueryable<Models.Helpers> query;
-
-            if (string.IsNullOrEmpty(username))
-            {
-                // If username is empty, select all data
-                query = Db.Helpers;
-            }
-            else
-            {
-                // Filter by username
-                query = Db.Helpers.Where(h => h.suser == username); // Assuming Helpers has a Username field
-            }
-
-            // Execute the query and return the result
-            return query.ToList();
+            return username == "admin"?Db.Helpers.ToList():Db.Helpers.Where(h=>h.suser == username).ToList();
         }
 
         public bool DeleteData(int id)

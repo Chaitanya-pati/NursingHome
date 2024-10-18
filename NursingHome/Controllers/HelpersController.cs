@@ -52,7 +52,7 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetData(string UserName)
+        public IActionResult GetData(string UserName = "")
         {
             try
             {

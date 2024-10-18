@@ -66,8 +66,12 @@ namespace NursingHome.Db.Implementation
                     PaymentStatus = item.PaymentStatus,
                     PeriodFrom = item.PeriodFrom,
                     PeriodTo = item.PeriodTo,
-                    HelperName = Db.Helpers.Where(x => x.Id == item.fkHelperId).Select(x => x.Name).FirstOrDefault().ToString(),
-                    Age = item.Age,
+                    HelperName = item.fkHelperId.HasValue
+    ? Db.Helpers.Where(x => x.Id == item.fkHelperId.Value)
+                .Select(x => x.Name)
+                .FirstOrDefault().ToString()
+    : null,
+                Age = item.Age,
                     Condition= item.Condition,
                     fkHelperId = item.fkHelperId,
                     Address = item.Address,
@@ -78,6 +82,8 @@ namespace NursingHome.Db.Implementation
                     MobileNo = item.MobileNo,
                     SUser = item.SUser,
                     TypesofServices = item.TypesofServices,
+                    clientSign = item.clientSign,
+                    authorizedSign = item.authorizedSign,
                 };
                 data.Add(dt);
             }

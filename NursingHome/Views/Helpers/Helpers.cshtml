@@ -140,6 +140,7 @@
                                             </br>
                                             </br>
                                             </br>
+                                            </br>
                                           
                                          
                                             <h4 style="text-align: center; color: red;">ಪಾಲಿಸಬೇಕಾದ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
@@ -456,14 +457,14 @@
 
     function GetData() {
         var table = $('#tblHelpers').DataTable();
-        let UserName = '';
+        let UserName = 'admin';
         if (localStorage.getItem('userRole') != 'admin') {
             UserName = localStorage.getItem('username');
         }
 
         $.ajax({
             type: "POST",
-            data: UserName,
+            data: { UserName: UserName },
             url: '@Url.Action("GetData", "Helpers")',
             // data: data,
             success: function (response) {
@@ -489,6 +490,7 @@
         $('.inputFields').val('');
         candidateImage = "";
         helperIdProof = "";
+        $('#adminssionDate').val(formatDate(new Date()));
         $('#preview-image').attr('src','');
         $('#clientSignature').prop('hidden', false);
         $('#clientSignatureImage').prop('hidden', true);

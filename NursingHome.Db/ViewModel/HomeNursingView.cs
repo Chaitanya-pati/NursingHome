@@ -46,4 +46,9 @@ public partial class HomeNursingView
     public int? fkHelperId { get; set; }
 
     public string HelperName { get; set; }
+
+    public string clientSign { get; set; }
+
+    public string authorizedSign { get; set; }
+
 }
