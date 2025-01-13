@@ -440,9 +440,7 @@ namespace NursingHome.Controllers
                 var loginResponse = await _httpClient.PostAsync("https://rtc.karnataka.gov.in/Service78/RTC.aspx", loginContent);
                 loginResponse.EnsureSuccessStatusCode();
 
-                // Step 4: Wait for a few seconds before fetching the dropdown
-                await Task.Delay(5000); // Wait for 5 seconds
-
+             
                 // Fetch the HTML content again after login
                 var response = await _httpClient.GetAsync("https://rtc.karnataka.gov.in/Service78/RTC.aspx");
                 response.EnsureSuccessStatusCode();
