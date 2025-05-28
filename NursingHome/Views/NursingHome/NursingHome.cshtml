@@ -448,7 +448,7 @@
                     table.row.add([
                         item.patientName,
                         item.helperName,
-                        item.admissionDate.split("T")[0],
+                        item.admissionDate ? item.admissionDate.split("T")[0] : null,
                         item.paymentStatus,
                         item.periodFrom != null ? periodFrom.split("T")[0]:null,
                         item.periodTo != null ? periodTo.split("T")[0]:null,
