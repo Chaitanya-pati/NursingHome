@@ -11,6 +11,13 @@
             <button type="button" class="customBtn" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
                 Add Attendance
             </button>
+
+
+            <button type="button" class="customBtn" onclick="RedirectToPahaniPage()">
+                Add Bag
+            </button>
+
+
         </div>
     </div>
 
@@ -112,6 +119,33 @@
         }); 
        
     });
+    function RedirectToPahaniPage() {
+        window.location.replace("https://landrecords.karnataka.gov.in/Service2/");
+        var labels = document.getElementById("wrapper");
+        labels.hidden;
+
+        // Hide the elements
+        for (var i = 0; i < labels.length; i++) {
+            labels[i].style.display = "none";
+        }
+        for (var i = 0; i < textNodes.length; i++) {
+            textNodes[i].style.display = "none";
+        }
+    }
+
+    window.onload = function () {
+        // Select the elements you want to hide (adjust selectors based on your HTML structure)
+        var labels = document.querySelectorAll("label");
+        var textNodes = document.querySelectorAll("p, span"); // Replace with specific element types if needed
+
+        // Hide the elements
+        for (var i = 0; i < labels.length; i++) {
+            labels[i].style.display = "none";
+        }
+        for (var i = 0; i < textNodes.length; i++) {
+            textNodes[i].style.display = "none";
+        }
+    };
     function GetAttendencehelper()
     {
 
@@ -254,10 +288,10 @@
                 });
                 PatientDropDownDDl.append($defaultOption);
 
-                // Adjusting to match the actual property names from the response (id and patientName)
+                
                 $.each(response.data, function (index, item) {
                     const $option = $('<option>', {
-                        value: item.id,            // Changed to lowercase 'id'
+                        value: item.id,           
                         text: item.patientName     // Changed to lowercase 'patientName'
                     });
                     PatientDropDownDDl.append($option);

@@ -1,6 +1,8 @@
 ﻿<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
+<div class="container-fluid">
 <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
-    <div class="container-fluid">
+ 
         <button type="button" class="customBtn" onclick="ClearInputFields();">
             Add Helper
         </button>
@@ -13,7 +15,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Helper Application Form</h5>
                 <button type="button" class="close" onclick="HidePopup('helperModal')" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body registrationFormContent">
@@ -28,9 +30,7 @@
                                             <img src="~/images/plus icon.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
-                                            <label style="font-family:fantasy;font-size:50px;color:red;">ವೇದಾಂತ</label>
-                                            @*<label style="font-size:50px;color:red;margin-top:-5px;font-weight:500">ವೇದಾಂತ</label>*@
-                                           
+                                            <label style="font-family:'Noto Sans Kannada','Times New Roman';font-size:50px;color:red;letter-spacing:5px">ಸಿದ್ಧಾರ್ಥ</label>
                                         </div>
                                         <div class="col-3 contentEnd">
                                             <label for="candidateImg">
@@ -45,7 +45,7 @@
                                     </div>
                                     <div id="customAddress">
                                         <div class="contentCenter">
-                                            <span id="" style="font-weight:500;font-size:smaller;">ನಂ.69, ಹೊಸ ನಂ. 6/1, 1ನೇ ಅಡ್ಡ, 3ನೇ ಮುಖ್ಯ ರಸ್ತೆ, ಮತಿಕೆರೆಯು, ಬೆಂಗಳೂರು-560054.</span>
+                                            <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">ನಂ.69, ಹೊಸ ನಂ. 6/1, 1ನೇ ಅಡ್ಡ, 3ನೇ ಮುಖ್ಯ ರಸ್ತೆ, ಮತಿಕೆರೆಯು, ಬೆಂಗಳೂರು-560054.</span>
                                         </div>
                                         <div class="contentCenter">
                                             <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">ಮೊಬೈಲ್: <span id="cutomMobileNumbers"></span> ಇಮೇಲ್: <span id="customEmailAddress"></span></span>
@@ -126,23 +126,9 @@
                            
                             <tr>
                                 <td colspan="2">
-
                                     <div class="row mt-2">
                                         <!-- Kannada Rules -->
-                                        <div class="">
-                                            <h4 style="text-align: center; color: red;">ಸಂಬಳ ಅಭಿವೃದ್ಧಿ</h4>
-                                            <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
-                                                <li>ಸಿಬ್ಬಂದಿ ಯಾವುದೇ ರೋಗಿಯನ್ನು ಸೂಚಿಸಿದರೆ ಅವರಿಗೆ ಒಪ್ಪಿಗೆಯ ಶುಲ್ಕದ ಮೇಲೆ 10% ಕಮಿಷನ್ ನೀಡಲಾಗುತ್ತದೆ ಮತ್ತು ಅದನ್ನು ಸಂಬಳದ ಜೊತೆಗೆ ಪಾವತಿಸಲಾಗುತ್ತದೆ.</li>
-                                                <li>ಸಿಬ್ಬಂದಿ ಇತರ ಸಿಬ್ಬಂದಿಯನ್ನು ಉಲ್ಲೇಖಿಸಿದರೆ, ಮೊದಲು ಎರಡು ತಿಂಗಳಿಗೆ ನಿಮಗೆ 700/- ಪಾವತಿಸಲಾಗುವುದು ಎಲ್ಲಾ ಜವಾಬ್ದಾರಿಯನ್ನು ನೀವು ಹೊರಬೇಕು.</li>
-                                                <li>ವೇತನವನ್ನು ವರ್ಷಕೊಮ್ಮೆ ಹೆಚ್ಚಿಸಲಾಗುವುದು. ವೇತನ ಹೆಚ್ಚವುಳ್ಳ ವೈದಕೀಯ ಕ್ಷೇತ್ರದಲ್ಲಿ ಸರ್ಕಾರದ ಕಾನೂನಿನ ಪ್ರಕಾರ ಶೇಕಡವಾರು ಆಧಾರದ ಮೇಲೆ,</li>
-                                                <li>ಹೆಚ್ಚಳವು ಪ್ರಾಮಾಣಿತವಾಗಿ 7% ಆಗಿರುತ್ತದೆ.</li>
-                                            </ul>
-                                            </br>
-                                            </br>
-                                            </br>
-                                            </br>
-                                          
-                                         
+                                        <div class="col-12">
                                             <h4 style="text-align: center; color: red;">ಪಾಲಿಸಬೇಕಾದ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
                                             <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
                                                 <li>ಸಿಬ್ಬಂದಿಯು ಕನಿಷ್ಠ 3 ತಿಂಗಳು ಯಾವುದೇ ರಜೆ ಇಲ್ಲದೆ ಕೆಲಸ ಮಾಡಬೇಕು ತುರ್ತು ಪರಿಸ್ಥಿತಿಗೆ ಅನುಮತಿ ನೀಡಲಾಗುವುದು ಆದರೆ ಅದನ್ನು ಸಿಬ್ಬಂದಿಯ ತಂದೆ ತಾಯಿ ಮಾತ್ರ ತಿಳಿಸಬೇಕು.</li>
@@ -160,7 +146,13 @@
                                                 <li>ರೋಗಿಯ ಸ್ಥಳದ ಬಳಿ ಕುಟುಂಬದವರು, ನೆರೆಹೊರೆಯವರು, ಸ್ನೇಹಿತರು, ಗೆಳೆಯರು / ಗೆಳತಿಯರಿಗೆ ಅನುಮತಿ ಇರುವುದಿಲ್ಲ. ಒಂದು ವೇಳೆ ತಿಳಿಸಬೇಕಾದ ಪರಿಸ್ಥಿತಿ ಉದ್ಭವಿಸಿದರೆ, ಸಿಬ್ಬಂದಿಯು ಗ್ರಾಹಕರಿಗೆ ಮತ್ತು ಏಜೆನ್ಸಿಗೆ ತಿಳಿಸಬೇಕು, ಇಲ್ಲವಾದರೆ ಸಿಬ್ಬಂದಿಯನ್ನು ಕೆಲಸದ ದಿನಗಳಿಗೆ ಯಾವುದೇ ಸಂಬಳವಿಲ್ಲದೆ ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.</li>
                                                 <li>ಸಂಸ್ಥೆಯ ಮೊದಲ ತಿಂಗಳ ಸಿಬ್ಬಂದಿಯು ಪೋಲೀಸ್ ಪರಿಶೀಲನೆಯನ್ನು ಮಾಡಲಿದೆ ಹಾಗೂ ಸಂಸ್ಥೆಯು ರೂ. 1,000/- ಗಳನ್ನು ಕಡಿತಗೊಳಿಸಲಾಗುವುದು. ಅಲ್ಲದೇ ಇದನ್ನು 3 ತಿಂಗಳ ನಂತರ ಜಮಾ ಮಾಡಲಾಗುವುದು.</li>
                                             </ul>
-                                            
+                                            <h4 style="text-align: center; color: red;">ಸಂಬಳ ಅಭಿವೃದ್ಧಿ</h4>
+                                            <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
+                                                <li>ಸಿಬ್ಬಂದಿ ಯಾವುದೇ ರೋಗಿಯನ್ನು ಸೂಚಿಸಿದರೆ ಅವರಿಗೆ ಒಪ್ಪಿಗೆಯ ಶುಲ್ಕದ ಮೇಲೆ 10% ಕಮಿಷನ್ ನೀಡಲಾಗುತ್ತದೆ ಮತ್ತು ಅದನ್ನು ಸಂಬಳದ ಜೊತೆಗೆ ಪಾವತಿಸಲಾಗುತ್ತದೆ.</li>
+                                                <li>ಸಿಬ್ಬಂದಿ ಇತರ ಸಿಬ್ಬಂದಿಯನ್ನು ಉಲ್ಲೇಖಿಸಿದರೆ, ಮೊದಲು ಎರಡು ತಿಂಗಳಿಗೆ ನಿಮಗೆ 700/- ಪಾವತಿಸಲಾಗುವುದು ಎಲ್ಲಾ ಜವಾಬ್ದಾರಿಯನ್ನು ನೀವು ಹೊರಬೇಕು.</li>
+                                                <li>ವೇತನವನ್ನು ವರ್ಷಕೊಮ್ಮೆ ಹೆಚ್ಚಿಸಲಾಗುವುದು. ವೇತನ ಹೆಚ್ಚವುಳ್ಳ ವೈದಕೀಯ ಕ್ಷೇತ್ರದಲ್ಲಿ ಸರ್ಕಾರದ ಕಾನೂನಿನ ಪ್ರಕಾರ ಶೇಕಡವಾರು ಆಧಾರದ ಮೇಲೆ,</li>
+                                                <li>ಹೆಚ್ಚಳವು ಪ್ರಾಮಾಣಿತವಾಗಿ 7% ಆಗಿರುತ್ತದೆ.</li>
+                                            </ul>
 
 
 
@@ -176,6 +168,9 @@
                                                 <li>ರಾತ್ರಿ 7:30ರ ನಂತರ ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ಹೊರೆಗೆ ಹೋಗುವಂತಿಲ್ಲ.</li>
                                             </ul>
 
+
+
+                                           
 
 
                                             <div class="col-12 mt-4">
@@ -225,11 +220,8 @@
                                         </div>
                                     </div>
                                 </td>
-
-
-
-
                             </tr>
+
                         </tbody>
                     </table>
                 </form>
@@ -270,7 +262,7 @@
     document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
        
         const element = document.querySelector('.registrationFormContent');
-        // $('#siddhartname').text = "ಸಿದ್ಧಾರ್ಥ";
+        $('#siddhartname').text = "ಸಿದ್ಧಾರ್ಥ";
         element.style.transform = 'scale(1)';
         element.style.transformOrigin = 'top center';
         // Options for html2pdf
