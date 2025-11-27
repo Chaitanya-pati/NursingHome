@@ -47,6 +47,26 @@
         text-align: right;
     }
 
+    .loader {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loader .spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 @*<div class="container-fluid">
     <button class="customBtn" onclick="OpenOldAgePaymentPopup()">OldAgePayment</button>
@@ -239,6 +259,7 @@
         </div>
     </div>
 </div>
+<div id="cashMemoLoader" class="loader"><div class="spinner"></div></div>
 <script>
     var CashMode = '';
   
@@ -349,37 +370,39 @@
     function GetPaymentData() {
         var OAtable = $('#tblOldAgePayment').DataTable();
         var NHtable = $('#tblNursingPayment').DataTable();
-        $.get({
-            url: '@Url.Action("GetCashMemoData", "CashMemo")',
-            data: { startDate: $('#startDate').val(), endDate: $('#endDate').val() },
-            success: function (response) {
-                OAtable.clear().draw();
-                response.oldAge.forEach(function (item) {
-                    OAtable.row.add([
-                        item.patientName,
-                        item.date.split("T")[0],
-                        item.amount,
-                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-                    ]).draw();
-                });
-                NHtable.clear().draw();
-                response.nursing.forEach(function (item) {
-                    NHtable.row.add([
-                        item.patientName,
-                        item.date.split("T")[0],
-                        item.amount,
-                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-                    ]).draw();
-                });
-            },
-            error: function (response) {
-
-                console.error(response);
-            }
-        });
+$('#cashMemoLoader').show();
+    $.get({
+   url: '@Url.Action("GetCashMemoData", "CashMemo")',
+        data: { startDate: $('#startDate').val(), endDate: $('#endDate').val() },
+    success: function (response) {
+  OAtable.clear().draw();
+       response.oldAge.forEach(function (item) {
+       OAtable.row.add([
+     item.patientName,
+     item.date.split("T")[0],
+     item.amount,
+     '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+      ]).draw();
+      });
+  NHtable.clear().draw();
+   response.nursing.forEach(function (item) {
+       NHtable.row.add([
+ item.patientName,
+     item.date.split("T")[0],
+     item.amount,
+     '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+      ]).draw();
+ });
+      $('#cashMemoLoader').hide();
+   },
+    error: function (response) {
+  $('#cashMemoLoader').hide();
+      console.error(response);
     }
+    });
+}
     function ClearOldAgePaymentFields() {
         $('.OAInputField').val('');
         clearSignature('OAauthorizedSignature');

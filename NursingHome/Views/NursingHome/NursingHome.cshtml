@@ -2,6 +2,29 @@
 
     ViewData["Title"] = "Nursing Home";
 }
+<style>
+.loader {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loader .spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<div id="nursingHomeLoader" class="loader"><div class="spinner"></div></div>
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
@@ -261,6 +284,7 @@
 </div>
 
 <div class="col-md-12 container-fluid">
+    <div id="nursingHomeLoader" class="loader"><div class="spinner"></div></div>
     <table id="tblNursingHome" class="display table-bordered" style="width:100%">
         <thead>
             <tr>
@@ -438,30 +462,32 @@
         let startDate = $('#startDate').val();
         let endDate = $('#endDate').val();
         let user = $('#ddlUsers').val();
+        $('#nursingHomeLoader').show();
         $.ajax({
-            type: "POST",
-            url: '@Url.Action("GetData", "NursingHome")',
-            data: { startDate: startDate, endDate: endDate, username: user },
-            success: function (response) {
-                table.clear().draw();
-                response.data.forEach(function (item) {
-                    table.row.add([
-                        item.patientName,
-                        item.helperName,
-                        item.admissionDate ? item.admissionDate.split("T")[0] : null,
-                        item.paymentStatus,
-                        item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
-                        item.periodTo != null ? item.periodTo.split("T")[0]:null,
-                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-                    ]).draw();
-                });
-            },
-            error: function (response) {
-
-                console.error(response);
-            }
-        });
+   type: "POST",
+    url: '@Url.Action("GetData", "NursingHome")',
+    data: { startDate: startDate, endDate: endDate, username: user },
+    success: function (response) {
+      table.clear().draw();
+        response.data.forEach(function (item) {
+ table.row.add([
+     item.patientName,
+     item.helperName,
+     item.admissionDate ? item.admissionDate.split("T")[0] : null,
+item.paymentStatus,
+ item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
+     item.periodTo != null ? item.periodTo.split("T")[0]:null,
+     '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+      ]).draw();
+ });
+      $('#nursingHomeLoader').hide();
+        },
+   error: function (response) {
+        $('#nursingHomeLoader').hide();
+        console.error(response);
+   }
+});
     }
 
     function BindData(data) {

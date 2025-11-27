@@ -1,5 +1,28 @@
 ﻿<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
+<style>
+.loader {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loader .spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<div id="helpersLoader" class="loader"><div class="spinner"></div></div>
 <div class="container-fluid">
 <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
  
@@ -123,7 +146,6 @@
                                 <td><input type="text" class="form-control inputFields" id="famMembers"></td>
                             </tr>
 
-                           
                             <tr>
                                 <td colspan="2">
                                     <div class="row mt-2">
@@ -154,8 +176,6 @@
                                                 <li>ಹೆಚ್ಚಳವು ಪ್ರಾಮಾಣಿತವಾಗಿ 7% ಆಗಿರುತ್ತದೆ.</li>
                                             </ul>
 
-
-
                                             <h4 style="text-align: center; color: red;">ಸಂಸ್ಥೆಯ ವಸತಿಗೃಹದ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
                                             <ul style="font-size: 16px; list-style-type: disc; margin-left: 20px;">
                                                 <li>ಸಿಬ್ಬಂದಿಯು ವಸತಿಗೃಹ ನೈರ್ಮಲ್ಯ ಕಾಪಾಡಬೇಕು ಮತ್ತು ವಸತಿಗೃಹವನ್ನು ಸ್ವಚ್ಚ ಮತ್ತು ಅಚ್ಚುಕಟ್ಟಾಗಿ ಇಡಬೇಕು.</li>
@@ -167,11 +187,6 @@
                                                 <li>ವಿದ್ವಂಸತೆಯು ಬಹಳ ಗಂಭೀರವಾದ ಅಪರಾಧ. ಯಾವ ಸಂದರ್ಭದಲ್ಲಿ ವಸತಿಗೃಹದ ಸಿಬ್ಬಂದಿಯು ತಪ್ಪಿತಸ್ಥರೆಂದು ಕಂಡು ಬಂದರೆ, ನಿರ್ದಿಷ್ಟ ಸಿಬ್ಬಂದಿಯನ್ನು ಕಂಪನಿಯಿಂದ ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.</li>
                                                 <li>ರಾತ್ರಿ 7:30ರ ನಂತರ ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ಹೊರೆಗೆ ಹೋಗುವಂತಿಲ್ಲ.</li>
                                             </ul>
-
-
-
-                                           
-
 
                                             <div class="col-12 mt-4">
                                                 <h4 style="text-align: center; color: red;">ಕೆಲಸದ ಕಡೆಗೆ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ</h4>
@@ -451,31 +466,31 @@
         var table = $('#tblHelpers').DataTable();
         let UserName = 'admin';
         if (localStorage.getItem('userRole') != 'admin') {
-            UserName = localStorage.getItem('username');
-        }
-
-        $.ajax({
-            type: "POST",
-            data: { UserName: UserName },
-            url: '@Url.Action("GetData", "Helpers")',
-            // data: data,
-            success: function (response) {
-                table.clear().draw();
-                response.data.forEach(function (item) {
-                    table.row.add([
-                        item.name,
-                        item.permanentAddress,
-                        item.languagesKnown,
-                        '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                        '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
-                    ]).draw();
-                });
-            },
-            error: function (response) {
-
-                console.error(response);
-            }
-        });
+   UserName = localStorage.getItem('username');
+    }
+    $('#helpersLoader').show();
+    $.ajax({
+        type: "POST",
+   data: { UserName: UserName },
+        url: '@Url.Action("GetData", "Helpers")',
+        success: function (response) {
+   table.clear().draw();
+      response.data.forEach(function (item) {
+       table.row.add([
+     item.name,
+     item.permanentAddress,
+     item.languagesKnown,
+ '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+'<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+ ]).draw();
+   });
+   $('#helpersLoader').hide();
+        },
+  error: function (response) {
+   $('#helpersLoader').hide();
+        console.error(response);
+   }
+});
     }
 
     function ClearInputFields() {
