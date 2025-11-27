@@ -450,8 +450,8 @@
                         item.helperName,
                         item.admissionDate ? item.admissionDate.split("T")[0] : null,
                         item.paymentStatus,
-                        item.periodFrom != null ? periodFrom.split("T")[0]:null,
-                        item.periodTo != null ? periodTo.split("T")[0]:null,
+                        item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
+                        item.periodTo != null ? item.periodTo.split("T")[0]:null,
                         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
                     ]).draw();
@@ -530,4 +530,5 @@
             }
         });
     }
+
 </script>

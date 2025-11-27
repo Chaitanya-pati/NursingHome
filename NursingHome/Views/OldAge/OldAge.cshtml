@@ -387,8 +387,8 @@
         let startDate = $('#startDate').val();
         let endDate = $('#endDate').val();
         let user = $('#ddlUsers').val();
-        $.get({
-            //type: "POST",
+        $.ajax({
+            type: "POST",
             url: '@Url.Action("GetData", "OldAge")',
             data: { startDate: startDate, endDate: endDate, username: user },
             success: function (response) {

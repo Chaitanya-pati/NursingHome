@@ -94,7 +94,6 @@
         $.ajax({
             url: '/Users/GetData',
             type: 'GET',
-            dataType: 'json',
             success: function (response) {
                 BindUserDropdownSeachBar(response.data);
             },
