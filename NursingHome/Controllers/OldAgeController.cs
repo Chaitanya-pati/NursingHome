@@ -120,6 +120,21 @@ namespace NursingHome.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult UpdateClientSignature(int id, string signature)
+        {
+            try
+            {
+                var result = _DbConn.UpdateClientSignature(id, signature);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("OldAgeController", "UpdateClientSignature", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

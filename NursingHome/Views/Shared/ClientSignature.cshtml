@@ -1,0 +1,71 @@
+@{
+ ViewData["Title"] = "Client Signature";
+}
+<h2>Client Signature</h2>
+<div id="signatureContainer">
+ <canvas id="clientSignature" style="border:1px solid #ccc;width:400px;height:200px;"></canvas>
+ <br />
+ <button id="clearSignature" class="btn btn-warning">Clear</button>
+ <button id="submitSignature" class="btn btn-success">Submit Signature</button>
+</div>
+<script>
+let isDrawing = false;
+let x =0;
+let y =0;
+const canvas = document.getElementById('clientSignature');
+const context = canvas.getContext('2d');
+canvas.width =400;
+canvas.height =200;
+canvas.addEventListener('mousedown', e => {
+ isDrawing = true;
+ x = e.offsetX;
+ y = e.offsetY;
+});
+canvas.addEventListener('mousemove', e => {
+ if (isDrawing) {
+ context.beginPath();
+ context.moveTo(x, y);
+ context.lineTo(e.offsetX, e.offsetY);
+ context.stroke();
+ x = e.offsetX;
+ y = e.offsetY;
+ }
+});
+canvas.addEventListener('mouseup', () => {
+ isDrawing = false;
+});
+canvas.addEventListener('mouseout', () => {
+ isDrawing = false;
+});
+document.getElementById('clearSignature').onclick = function() {
+ context.clearRect(0,0, canvas.width, canvas.height);
+};
+document.getElementById('submitSignature').onclick = function() {
+ const signatureData = canvas.toDataURL('image/png');
+ const urlParams = new URLSearchParams(window.location.search);
+ const id = urlParams.get('id');
+ const type = urlParams.get('type');
+ let postUrl = '';
+ if(type === 'oldage') {
+ postUrl = '/OldAge/UpdateClientSignature';
+ } else if(type === 'homenursing') {
+ postUrl = '/NursingHome/UpdateClientSignature';
+ }
+ if(postUrl && id) {
+ $.ajax({
+ type: 'POST',
+ url: postUrl,
+ data: { id: id, signature: signatureData },
+ success: function(response) {
+ alert('Signature submitted successfully!');
+ },
+ error: function() {
+ alert('Error submitting signature.');
+ }
+ });
+ } else {
+ alert('Invalid link or missing parameters.');
+ }
+};
+</script>
+<p>Thank you for submitting your signature.</p>

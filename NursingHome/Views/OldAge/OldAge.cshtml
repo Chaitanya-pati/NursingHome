@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
     ViewData["Title"] = "OldAge";
 }
 <div class="col-md-12">
@@ -392,6 +394,13 @@
                         HidePopup('oldAgePopup');
                         msgPopup("success", msg);
                         GetData();
+
+                        // Show client signature link
+                        var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                        var id = $('#oldAgePatientId').val() || 'NEW';
+                        var link = baseUrl + '?type=oldage&id=' + id;
+                        $('#clientSignatureLink').val(link);
+                        $('#clientSignatureLinkContainer').show();
                     } else {
                         msgPopup("error", "Error! Please Try Again");
                     }
@@ -402,6 +411,14 @@
                 }
             });
         }
+    }
+
+    function copySignatureLink() {
+        var copyText = document.getElementById('clientSignatureLink');
+        copyText.select();
+        copyText.setSelectionRange(0,99999);
+        document.execCommand('copy');
+        msgPopup('success', 'Link copied to clipboard!');
     }
 
     function GetData() {
@@ -508,3 +525,8 @@ item.periodTo ? item.periodTo.split("T")[0] : null,
     }
 
 </script>
+<div id="clientSignatureLinkContainer" style="margin-top:10px;display:none;">
+ <label>Share this link with the client to capture their signature:</label>
+ <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
+ <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
+</div>

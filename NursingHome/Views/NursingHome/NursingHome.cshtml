@@ -304,6 +304,12 @@
     @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
 </div>
 
+<div id="clientSignatureLinkContainer" style="margin-top:10px;display:none;">
+ <label>Share this link with the client to capture their signature:</label>
+ <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
+ <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
+</div>
+
 <script>
     var HomeNursingIdproof = "";
     $(document).ready(function () {
@@ -446,6 +452,12 @@
                         HidePopup('homeNursingModal');
                         msgPopup("success", msg);
                         GetData();
+                        // Show client signature link
+ var baseUrl = '@Microsoft.Extensions.Configuration.ConfigurationExtensions.GetValue<string>(this.Context.RequestServices.GetService(typeof(Microsoft.Extensions.Configuration.IConfiguration)), "ClientSignatureBaseUrl")';
+ var id = $('#homeNursingPatientId').val() || 'NEW';
+ var link = baseUrl + '?type=homenursing&id=' + id;
+ $('#clientSignatureLink').val(link);
+ $('#clientSignatureLinkContainer').show();
                     } else {
                         msgPopup("error", "Error! Please Try Again");
                     }
@@ -456,6 +468,13 @@
             });
         }
     }
+    function copySignatureLink() {
+ var copyText = document.getElementById('clientSignatureLink');
+ copyText.select();
+ copyText.setSelectionRange(0,99999);
+ document.execCommand('copy');
+ msgPopup('success', 'Link copied to clipboard!');
+}
 
     function GetData() {
         var table = $('#tblNursingHome').DataTable();

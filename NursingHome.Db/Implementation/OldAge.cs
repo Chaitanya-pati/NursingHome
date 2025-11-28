@@ -114,6 +114,18 @@ namespace NursingHome.Db.Implementation
             return maxId == 0 ? 1 : maxId+1;
         }
 
+        public bool UpdateClientSignature(int id, string signature)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var record = Db.OldAge.FirstOrDefault(x => x.Id == id);
+            if (record != null)
+            {
+                record.clientSign = signature;
+                Db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
     }
 
 

@@ -140,5 +140,18 @@ namespace NursingHome.Db.Implementation
             int maxId = Db.HomeNursing.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
             return maxId == 0 ? 1 : maxId + 1;
         }
+
+        public bool UpdateClientSignature(int id, string signature)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var record = Db.HomeNursing.FirstOrDefault(x => x.Id == id);
+            if (record != null)
+            {
+                record.clientSign = signature;
+                Db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
     }
 }
