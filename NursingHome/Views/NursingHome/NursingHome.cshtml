@@ -4,26 +4,33 @@
     ViewData["Title"] = "Nursing Home";
 }
 <style>
-.loader {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.loader .spinner {
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-}
-@@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    .loader {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loader .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 <div id="nursingHomeLoader" class="loader"><div class="spinner"></div></div>
 <div class="col-md-12">
@@ -183,7 +190,7 @@
                                                 <div style="width: 50px; font-weight: bold, text-align: center;">4.</div>
                                                 <div style="flex: 1; text-align: left;">In case the home nurse needs to be absent due to a personal emergency, VEDHANTH Home Nursing Services will provide a replacement who has received sufficient training to handle the patient.</div>
                                             </div>
-                                           </br>
+                                            </br>
                                             <div style="display: flex; margin-top: 10px;">
                                                 <div style="width: 50px; font-weight: bold; text-align: center;">5.</div>
                                                 <div style="flex: 1; text-align: left;">If the nursing staff experiences any uncomfortable situation or we receive complaints, VEDHANTH Home Nursing Services will cease providing services to that home.</div>
@@ -306,275 +313,280 @@
 </div>
 
 <div id="clientSignatureLinkContainer" style="margin-top:10px;display:none;">
- <label>Share this link with the client to capture their signature:</label>
- <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
- <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
+    <label>Share this link with the client to capture their signature:</label>
+    <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
+    <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
 </div>
 
 <script>
-    var HomeNursingIdproof = "";
-    $(document).ready(function () {
-        GetData();
-        GetHelperData();
-
-    });
-
-    $('#tblNursingHome').on('click', '.btn-edit', function () {
-        var fullData = JSON.parse($(this).attr('data-full-data'));
-        BindData(fullData);
-    });
-    $('#tblNursingHome').on('click', '.btn-delete', function () {
-        var ID = JSON.parse($(this).attr('dataId'));
-        confirmDelete(ID);
-    });
-    $('#idProof').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            HomeNursingIdproof = base64;
-        });
-    });
-    $('#search').on('click', function () {
+        var HomeNursingIdproof = "";
+        $(document).ready(function () {
             GetData();
+            GetHelperData();
+
         });
-    document.getElementById('downloadIdProof').addEventListener('click', function () {
-        if (HomeNursingIdproof) {
-            const mimeType = HomeNursingIdproof.split("~")[0];
-            const fileName = $('#patientName').val() + "_IdProof.";
 
-            downloadFile(HomeNursingIdproof.split("~")[1], mimeType, fileName);
-        } else {
-            alert('No file available to download');
-        }
-    });
-    function downloadFile(base64String, fileType, fileName) {
-        const link = document.createElement('a');
-        link.href = `data:${fileType};base64,${base64String}`;
-        link.download = fileName + fileType.split("/")[1];
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-        $('#helperRow').attr('hidden', 'hidden');
-        const element = document.querySelector('.registrationFormContent');
-        element.style.transform = 'scale(1)';
-        element.style.transformOrigin = 'top center';
-        const options = {
-            margin: 0,
-            filename: $('#patientName').val() + '.pdf',
-            image: { type: 'jpeg', quality: 3 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().from(element).set(options).save().finally(() => {
-            $('#helperRow').prop('hidden', false);
-            element.style.transform = '';
-            element.style.transformOrigin = '';
+        $('#tblNursingHome').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindData(fullData);
         });
-    });
-    function GetHelperData() {
-        let UserName = 'admin';
-        if (localStorage.getItem('userRole') != 'admin') {
-            UserName = localStorage.getItem('username');
-        }
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("GetData", "Helpers")',
-           data:{ UserName: UserName },
-            // data: data,
-            success: function (response) {
-                let option = "";
-                $('#helperDropdown').empty();
+        $('#tblNursingHome').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            confirmDelete(ID);
+        });
+        $('#idProof').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                HomeNursingIdproof = base64;
+            });
+        });
+        $('#search').on('click', function () {
+                GetData();
+            });
+        document.getElementById('downloadIdProof').addEventListener('click', function () {
+            if (HomeNursingIdproof) {
+                const mimeType = HomeNursingIdproof.split("~")[0];
+                const fileName = $('#patientName').val() + "_IdProof.";
 
-                $.each(response.data, function (index, item) {
-                    option += `<option value="${item.id}">${item.name}</option>`;
-                });
-
-                $('#helperDropdown').append(option);
-
-            },
-            error: function (response) {
-
+                downloadFile(HomeNursingIdproof.split("~")[1], mimeType, fileName);
+            } else {
+                alert('No file available to download');
             }
         });
-    }
+        function downloadFile(base64String, fileType, fileName) {
+            const link = document.createElement('a');
+            link.href = `data:${fileType};base64,${base64String}`;
+            link.download = fileName + fileType.split("/")[1];
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-    function Clearfields() {
-        $('.NursingHomeIpfields').val('');
-        clearSignature('authorizedSignature');
-        clearSignature('clientSignature');
-        $('#authorizedSignatureImage').prop('hidden', true);
-        $('#authorizedSignature').prop('hidden', false);
-        $('#clientSignature').prop('hidden', false);
-        $('#clientSignatureImage').prop('hidden', true);
-        GetSerialNo();
-        showPopup('homeNursingModal');
-    }
-    function GetSerialNo() {
-        $.get({
-            url: '@Url.Action("GetLatestID", "NursingHome")',
-            success: function (response) {
-                $('#serialNo').val(response);
-            },
-            error: function (response) {
-            }
+        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+            $('#helperRow').attr('hidden', 'hidden');
+            const element = document.querySelector('.registrationFormContent');
+            element.style.transform = 'scale(1)';
+            element.style.transformOrigin = 'top center';
+            const options = {
+                margin: 0,
+                filename: $('#patientName').val() + '.pdf',
+                image: { type: 'jpeg', quality: 3 },
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(options).save().finally(() => {
+                $('#helperRow').prop('hidden', false);
+                element.style.transform = '';
+                element.style.transformOrigin = '';
+            });
         });
-    }
-    function AddHomeNursing() {
-        if (CheckEmptyFields()) {
-            var data = {};
-            data.Id = $('#homeNursingPatientId').val();
-            data.PatientName = $('#patientName').val();
-            data.Address = $('#address').val();
-            data.Age = $('#patientAge').val();
-            data.Condition = $('#patientCondition').val();
-            data.CustomerName = $('#customerName').val();
-            data.MobileNo = $('#mobileNo').val();
-            data.TypesofServices = $('#typesOfService').val();
-            data.IdProof = HomeNursingIdproof;
-            data.PaymentStatus = "Pending";
-            data.PeriodFrom = $('#periodFrom').val();
-            data.PeriodTo = $('#periodTo').val();
-            data.AdmissionDate = $('#adminssionDate').val();
-            data.MonthlyPayment = $('#monthlyPayment').val();
-            data.RegistrationCharges = $('#registrationCharges').val();
-            data.fkHelperId = $('#helperDropdown').val();
-            data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-            data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-            data.SUser = localStorage.getItem('username');
+        function GetHelperData() {
+            let UserName = 'admin';
+            if (localStorage.getItem('userRole') != 'admin') {
+                UserName = localStorage.getItem('username');
+            }
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("AddorEditHomeNursing", "NursingHome")',
-                data: data,
+                url: '@Url.Action("GetData", "Helpers")',
+               data:{ UserName: UserName },
+                // data: data,
                 success: function (response) {
-                    if (response) {
-                        let msg = $('#homeNursingPatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                        HidePopup('homeNursingModal');
-                        msgPopup("success", msg);
-                        GetData();
-                        // Show client signature link
-                       var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
-                       var id = $('#homeNursingPatientId').val() == '' ? response : $('#homeNursingPatientId').val();
-                       var link = baseUrl + '/NursingHome/ClientSignature?id=' + id;
-                       $('#clientSignatureLink').val(link);
-                       $('#clientSignatureLinkContainer').show();
-                    } else {
-                        msgPopup("error", "Error! Please Try Again");
-                    }
+                    let option = "";
+                    $('#helperDropdown').empty();
+
+                    $.each(response.data, function (index, item) {
+                        option += `<option value="${item.id}">${item.name}</option>`;
+                    });
+
+                    $('#helperDropdown').append(option);
+
                 },
                 error: function (response) {
 
                 }
             });
         }
-    }
-    function copySignatureLink() {
- var copyText = document.getElementById('clientSignatureLink');
- copyText.select();
- copyText.setSelectionRange(0,99999);
- document.execCommand('copy');
- msgPopup('success', 'Link copied to clipboard!');
-}
 
-    function GetData() {
-        var table = $('#tblNursingHome').DataTable();
-        let startDate = $('#startDate').val();
-        let endDate = $('#endDate').val();
-        let user = $('#ddlUsers').val();
-        $('#nursingHomeLoader').show();
-        $.ajax({
-   type: "POST",
-    url: '@Url.Action("GetData", "NursingHome")',
-    data: { startDate: startDate, endDate: endDate, username: user },
-    success: function (response) {
-      table.clear().draw();
-        response.data.forEach(function (item) {
- table.row.add([
-     item.patientName,
-     item.helperName,
-     item.admissionDate ? item.admissionDate.split("T")[0] : null,
-item.paymentStatus,
- item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
-     item.periodTo != null ? item.periodTo.split("T")[0]:null,
-     '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-      ]).draw();
- });
-      $('#nursingHomeLoader').hide();
-        },
-   error: function (response) {
-        $('#nursingHomeLoader').hide();
-        console.error(response);
-   }
-});
-    }
-
-    function BindData(data) {
-        $('#homeNursingPatientId').val(data.id);
-        $('#patientName').val(data.patientName);
-        $('#address').val(data.address);
-        $('#patientAge').val(data.age);
-        $('#patientCondition').val(data.condition);
-        $('#customerName').val(data.customerName);
-        $('#mobileNo').val(data.mobileNo);
-        $('#typesOfService').val(data.typesofServices);
-        HomeNursingIdproof = data.idProof;
-        //  data.PaymentStatus = "Pending";
-        $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
-        $('#periodTo').val(formatDate(new Date(data.periodTo)));
-        $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
-        $('#monthlyPayment').val(data.monthlyPayment);
-        $('#registrationCharges').val(data.registrationCharges);
-        $('#clientSignatureImage').prop('hidden', false);
-        $('#clientSignature').prop('hidden', true);
-        $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
-        $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-        $('#authorizedSignatureImage').prop('hidden', false);
-        $('#authorizedSignature').prop('hidden', true);
-        showPopup('homeNursingModal');
-    }
-
-    function confirmDelete(id) {
-        $.alert({
-            title: 'Alert',
-            content: 'Are you sure want to delete ?',
-            typeAnimated: true,
-            backgroundDismiss: false,
-            backgroundDismissAnimation: 'glow',
-            boxWidth: '30%',
-            useBootstrap: false,
-            buttons: {
-                Yes: {
-                    text: 'Yes',
-                    btnClass: 'btn btn-success',
-                    action: function () {
-                        deleteData(id);
-                    },
+        function Clearfields() {
+            $('.NursingHomeIpfields').val('');
+            clearSignature('authorizedSignature');
+            clearSignature('clientSignature');
+            $('#authorizedSignatureImage').prop('hidden', true);
+            $('#authorizedSignature').prop('hidden', false);
+            $('#clientSignature').prop('hidden', false);
+            $('#clientSignatureImage').prop('hidden', true);
+            GetSerialNo();
+            showPopup('homeNursingModal');
+        }
+        function GetSerialNo() {
+            $.get({
+                url: '@Url.Action("GetLatestID", "NursingHome")',
+                success: function (response) {
+                    $('#serialNo').val(response);
                 },
-                No: {
-                    text: 'No',
-                    btnClass: 'btn btn-warning',
-                    action: function () {
-                        return;
+                error: function (response) {
+                }
+            });
+        }
+        function AddHomeNursing() {
+            if (CheckEmptyFields()) {
+                var data = {};
+                data.Id = $('#homeNursingPatientId').val();
+                data.PatientName = $('#patientName').val();
+                data.Address = $('#address').val();
+                data.Age = $('#patientAge').val();
+                data.Condition = $('#patientCondition').val();
+                data.CustomerName = $('#customerName').val();
+                data.MobileNo = $('#mobileNo').val();
+                data.TypesofServices = $('#typesOfService').val();
+                data.IdProof = HomeNursingIdproof;
+                data.PaymentStatus = "Pending";
+                data.PeriodFrom = $('#periodFrom').val();
+                data.PeriodTo = $('#periodTo').val();
+                data.AdmissionDate = $('#adminssionDate').val();
+                data.MonthlyPayment = $('#monthlyPayment').val();
+                data.RegistrationCharges = $('#registrationCharges').val();
+                data.fkHelperId = $('#helperDropdown').val();
+                data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                data.SUser = localStorage.getItem('username');
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddorEditHomeNursing", "NursingHome")',
+                    data: data,
+                    success: function (response) {
+                        if (response) {
+                            let msg = $('#homeNursingPatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                            HidePopup('homeNursingModal');
+                            msgPopup("success", msg);
+                            GetData();
+                            // Show client signature link
+                           var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                           var id = $('#homeNursingPatientId').val() == '' ? response : $('#homeNursingPatientId').val();
+                           var link = baseUrl + '/NursingHome/ClientSignature?id=' + id;
+                           $('#clientSignatureLink').val(link);
+                           $('#clientSignatureLinkContainer').show();
+                        } else {
+                            msgPopup("error", "Error! Please Try Again");
+                        }
                     },
-                },
-            },
-        });
-    }
-    function deleteData(id) {
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("DeleteData", "NursingHome")',
-            data: { id: id },
-            success: function (response) {
+                    error: function (response) {
 
-            },
-            error: function (response) {
-
-                console.error(response);
+                    }
+                });
             }
-        });
+        }
+        function copySignatureLink() {
+     var copyText = document.getElementById('clientSignatureLink');
+     copyText.select();
+     copyText.setSelectionRange(0,99999);
+     document.execCommand('copy');
+     msgPopup('success', 'Link copied to clipboard!');
     }
+
+        function GetData() {
+            var table = $('#tblNursingHome').DataTable();
+            let startDate = $('#startDate').val();
+            let endDate = $('#endDate').val();
+            let user = $('#ddlUsers').val();
+            $('#nursingHomeLoader').show();
+            $.ajax({
+       type: "POST",
+        url: '@Url.Action("GetData", "NursingHome")',
+        data: { startDate: startDate, endDate: endDate, username: user },
+        success: function (response) {
+          table.clear().draw();
+            response.data.forEach(function (item) {
+     table.row.add([
+         item.patientName,
+         item.helperName,
+         item.admissionDate ? item.admissionDate.split("T")[0] : null,
+    item.paymentStatus,
+     item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
+         item.periodTo != null ? item.periodTo.split("T")[0]:null,
+         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+          ]).draw();
+     });
+          $('#nursingHomeLoader').hide();
+            },
+       error: function (response) {
+            $('#nursingHomeLoader').hide();
+            console.error(response);
+       }
+    });
+        }
+
+        function BindData(data) {
+            $('#homeNursingPatientId').val(data.id);
+            $('#patientName').val(data.patientName);
+            $('#address').val(data.address);
+            $('#patientAge').val(data.age);
+            $('#patientCondition').val(data.condition);
+            $('#customerName').val(data.customerName);
+            $('#mobileNo').val(data.mobileNo);
+            $('#typesOfService').val(data.typesofServices);
+            HomeNursingIdproof = data.idProof;
+            //  data.PaymentStatus = "Pending";
+            $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
+            $('#periodTo').val(formatDate(new Date(data.periodTo)));
+            $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
+            $('#monthlyPayment').val(data.monthlyPayment);
+            $('#registrationCharges').val(data.registrationCharges);
+            $('#clientSignatureImage').prop('hidden', false);
+            $('#clientSignature').prop('hidden', true);
+            $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
+            $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
+            $('#authorizedSignatureImage').prop('hidden', false);
+            $('#authorizedSignature').prop('hidden', true);
+            showPopup('homeNursingModal');
+        }
+
+        function confirmDelete(id) {
+            $.alert({
+                title: 'Alert',
+                content: 'Are you sure want to delete ?',
+                typeAnimated: true,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: 'glow',
+                boxWidth: '30%',
+                useBootstrap: false,
+                buttons: {
+                    Yes: {
+                        text: 'Yes',
+                        btnClass: 'btn btn-success',
+                        action: function () {
+                            deleteData(id);
+                        },
+                    },
+                    No: {
+                        text: 'No',
+                        btnClass: 'btn btn-warning',
+                        action: function () {
+                            return;
+                        },
+                    },
+                },
+            });
+        }
+        function deleteData(id) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteData", "NursingHome")',
+                data: { id: id },
+                success: function (response) {
+                         if (response) {
+                                msgPopup("success", "Data Deleted Successfully");
+                                GetData();
+                            } else {
+                                msgPopup("error", "Error! Please Try Again");
+                            }
+                },
+                error: function (response) {
+
+                    console.error(response);
+                }
+            });
+        }
 
 </script>

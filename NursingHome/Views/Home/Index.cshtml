@@ -3,194 +3,378 @@
 }
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    /* Global Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
     /* Container styling */
     .container-fluid {
-        padding: 20px;
+        padding: 40px 5px;
+        max-width: 1400px;
+        margin: 0 auto;
     }
+
+    /* Dashboard Header */
+    .dashboard-header {
+        margin-bottom: 40px;
+        animation: fadeInDown 0.8s ease;
+        display: none;
+    }
+
+        .dashboard-header h1 {
+            color: #1e293b;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
 
     /* Card styling */
     .card {
         border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        min-height: 200px; /* Ensuring cards are taller */
+        border-radius: 20px;
+        background: white;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        position: relative;
     }
 
-        .card:hover {
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-            transform: translateY(-5px);
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
         }
 
-    /* Header styling */
-    .card-header {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        padding: 20px;
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Stats Cards */
+    .stats-card {
+        --card-color-1: #4CAF50;
+        --card-color-2: #66BB6A;
+    }
+
+        .stats-card.orange {
+            --card-color-1: #FF9800;
+            --card-color-2: #FFA726;
+        }
+
+        .stats-card.blue {
+            --card-color-1: #2196F3;
+            --card-color-2: #42A5F5;
+        }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .stats-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stats-info h6 {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .stats-info h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+
+    .stats-info p {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .stats-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #fff;
-    }
-
-    .card-body {
-        padding: 20px;
-        text-align: center;
-    }
-
-    /* Color Schemes */
-    .green-header {
-        background-image: linear-gradient(45deg, #4CAF50, #66BB6A);
-    }
-
-    .green-body {
-        background-color: #E8F5E9;
-    }
-
-    .blue-header {
-        background-image: linear-gradient(45deg, #2196F3, #42A5F5);
-    }
-
-    .blue-body {
-        background-color: #E3F2FD;
-    }
-
-    .orange-header {
-        background-image: linear-gradient(45deg, #FF9800, #FFA726);
-    }
-
-    .orange-body {
-        background-color: #FFF3E0;
-    }
-
-    /* Data styling */
-    h2 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin: 0;
-        color: #333;
-    }
-
-    p.text-sm {
-        font-size: 0.9rem;
-        color: #777;
-    }
-
-    /* Button */
-    .btn-view {
-        margin-top: 15px;
-        padding: 10px 20px;
-        background-color: #007BFF;
+        font-size: 2rem;
         color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: 0.3s;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
-        .btn-view:hover {
-            background-color: #0056b3;
-        }
-
-    /* Charts/Graphs styling */
-    .chart-section {
-        margin-top: 30px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* Chart Cards */
+    .chart-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
     }
 
-        .chart-section h3 {
-            text-align: center;
-            margin-bottom: 20px;
+        .chart-card:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
 
-    /* Responsiveness */
+    .chart-header {
+        display: none;
+    }
+
+    canvas {
+        max-height: 300px;
+    }
+
+    /* Animations */
+    @@keyframes fadeInDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    @@keyframes fadeInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease;
+    }
+
+    /* Stat card animation delays */
+    .col-lg-4:nth-child(1) .card {
+        animation: fadeInUp 0.8s ease 0.1s both;
+    }
+
+    .col-lg-4:nth-child(2) .card {
+        animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .col-lg-4:nth-child(3) .card {
+        animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    .col-lg-6:nth-child(4) .chart-card {
+        animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    .col-lg-6:nth-child(5) .chart-card {
+        animation: fadeInUp 0.8s ease 0.5s both;
+    }
+
+    /* Responsive Design */
     @@media (max-width: 768px) {
-        h2 {
-            font-size: 2rem;
-        }
+        .container-fluid
 
-        p.text-sm {
-            font-size: 0.85rem;
-        }
+    {
+        padding: 20px 15px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .stats-info h2 {
+        font-size: 2.2rem;
+    }
+
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .chart-card {
+        padding: 20px;
+    }
+
+    canvas {
+        max-height: 250px;
+    }
+
+    }
+
+    /* Loading Animation */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @@keyframes spin {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
     }
 </style>
 
 <div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1><i class="fa-solid fa-chart-line me-3"></i>Healthcare Dashboard</h1>
+        <p>Real-time insights and admissions overview</p>
+    </div>
+
     <div class="row">
         <!-- Green Card: Old Age Admission -->
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
-            <div class="card">
-                <div class="card-header green-header">
-                    <h4 class="contentCenter"><i class="fa-solid fa-person-walking-with-cane me-2 mt-1"></i> Old Age Admission</h4>
-                </div>
-                <div class="card-body green-body">
-                    <p class="text-sm">Total old age patients admitted in last 30 days</p>
-                    <h2 id="oldAgeCount">0</h2>
-                    
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <h6>Old Age Admission</h6>
+                            <h2 id="oldAgeCount">0</h2>
+                            <p>Last 30 days</p>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fa-solid fa-person-walking-with-cane"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- Orange Card: Helper Admission -->
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
-            <div class="card">
-                <div class="card-header orange-header">
-                    <h4 class="contentCenter"><i class="fa-solid fa-user-doctor me-2 mt-1"></i> Helper Admission</h4>
-                </div>
-                <div class="card-body orange-body">
-                    <p class="text-sm">Total Helpers Joined Till Today</p>
-                    <h2 id="HelpersCount">0</h2>
-
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card stats-card orange">
+                <div class="card-body">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <h6>Helper Admission</h6>
+                            <h2 id="HelpersCount">0</h2>
+                            <p>Total joined</p>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- Blue Card: Nursing Home Admission -->
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mt-4">
-            <div class="card">
-                <div class="card-header blue-header">
-                    <h4 class="contentCenter"><i class="fa-solid fa-hand-holding-medical me-2 mt-1"></i> Nursing Home Admission</h4>
-                </div>
-                <div class="card-body blue-body">
-                    <p class="text-sm">Total Nursing Home patients admitted in last 30 days</p>
-                    <h2 id="NursingCount">0</h2>
-                   
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card stats-card blue">
+                <div class="card-body">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <h6>Nursing Home</h6>
+                            <h2 id="NursingCount">0</h2>
+                            <p>Last 30 days</p>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fa-solid fa-hand-holding-medical"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-12 mt-4">
-        <div class="card">
-            <div class="card-body">
 
+        <!-- Old Age Chart -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <h3>Old Age Admissions Trend</h3>
+                </div>
                 <canvas id="oldAgeChart"></canvas>
-
             </div>
-        </div>  
         </div>
-        <div class="col-lg-6 col-md-12 mt-4">
-        <div class="card">
-            <div class="card-body">
 
+        <!-- Nursing Home Chart -->
+        <div class="col-lg-6 col-md-12 mb-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <h3>Nursing Home Admissions Trend</h3>
+                </div>
                 <canvas id="nursingHomeChart"></canvas>
-
             </div>
-        </div>
         </div>
     </div>
 </div>
 
 <script>
     $(document).ready(function () {
+        // Counter animation function
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            let currentValue = 0;
+            const increment = targetValue / 50;
+            const duration = 1000;
+            const stepTime = duration / 50;
+
+            const counter = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    element.textContent = targetValue;
+                    clearInterval(counter);
+                } else {
+                    element.textContent = Math.floor(currentValue);
+                }
+            }, stepTime);
+        }
+
         $.ajax({
             type: "GET",
             url: '/Home/GetLast30DaysRecords',
             success: function (response) {
-                $('#oldAgeCount').text(response.oldeAge);
-                $('#NursingCount').text(response.nursingHome);
-                $('#HelpersCount').text(response.helper);
+                animateCounter('oldAgeCount', response.oldeAge);
+                animateCounter('NursingCount', response.nursingHome);
+                animateCounter('HelpersCount', response.helper);
             },
             error: function (response) {
                 console.error(response);
@@ -200,42 +384,31 @@
     });
 
     function fetchData() {
-        // Get today's date
-        // Get today's date
         const today = new Date();
-
-        // Calculate the start date 30 days ago
         const startDate1 = new Date(today);
         startDate1.setDate(today.getDate() - 30);
 
-        // Set the value of the startDate input field
-        let startDate = startDate1.toISOString().slice(0, 10); // Format as YYYY-MM-DD
-        let endDate = today.toISOString().slice(0, 10); // Format as YYYY-MM-DD
-
-        // Set the value of the endDate input field to today's date
-       
+        let startDate = startDate1.toISOString().slice(0, 10);
+        let endDate = today.toISOString().slice(0, 10);
 
         $.ajax({
             url: `/Home/GetAdmissionData`,
             type: 'GET',
             data: { startDate: startDate, endDate: endDate },
             success: function (data) {
-                console.log(data); // Log the data to inspect its structure
+                console.log(data);
 
-                // Extract data for each category
                 const oldAgeData = data.oldAge || {};
                 const nursingHomeData = data.nursingHome || {};
-                const helpersData = data.helpers || {};
 
-                // Prepare labels and counts for Old Age
+                // Old Age Chart
                 const oldAgeLabels = Object.keys(oldAgeData);
                 const formattedOldAgeLabels = oldAgeLabels.map(dateStr => {
                     const date = new Date(dateStr);
-                    return date.toLocaleDateString('en-GB'); // Format to dd/mm/yyyy
+                    return date.toLocaleDateString('en-GB');
                 });
                 const oldAgeCounts = oldAgeLabels.map(date => oldAgeData[date] || 0);
 
-                // Create Old Age Chart
                 const ctxOldAge = document.getElementById('oldAgeChart').getContext('2d');
                 new Chart(ctxOldAge, {
                     type: 'bar',
@@ -245,59 +418,106 @@
                             label: 'Total Old Age Admissions',
                             data: oldAgeCounts,
                             backgroundColor: '#0080f2',
+                            borderColor: '#0080f2',
+                            borderWidth: 1
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
                             }
                         }
                     }
                 });
 
-                // Prepare labels and counts for Nursing Home
+                // Nursing Home Chart
                 const nursingHomeLabels = Object.keys(nursingHomeData);
                 const formattedNursingHomeLabels = nursingHomeLabels.map(dateStr => {
                     const date = new Date(dateStr);
-                    return date.toLocaleDateString('en-GB'); // Format to dd/mm/yyyy
+                    return date.toLocaleDateString('en-GB');
                 });
                 const nursingHomeCounts = nursingHomeLabels.map(date => nursingHomeData[date] || 0);
 
-                // Create Nursing Home Chart
                 const ctxNursingHome = document.getElementById('nursingHomeChart').getContext('2d');
                 new Chart(ctxNursingHome, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
                         labels: formattedNursingHomeLabels,
                         datasets: [{
-                            label: 'Total Nursing Home Admissions',
+                            label: 'Nursing Home Admissions',
                             data: nursingHomeCounts,
-                            backgroundColor: '#ff3800',
+                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                            borderColor: '#2196F3',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#2196F3',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
                             }
                         }
                     }
                 });
-
-                
-               
             },
-
             error: function (xhr, status, error) {
                 console.error('Error fetching data:', error);
             }
         });
     }
-
-
-
-
-
-
 </script>

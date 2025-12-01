@@ -79,6 +79,19 @@ namespace NursingHome.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        public IActionResult DeleteData(int id)
+        {
+            try
+            {
+                var isDelete = _DbConn.DeleteData(id);
+                return Json(isDelete);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "DeleteData", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         public IActionResult Privacy()
         {

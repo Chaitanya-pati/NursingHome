@@ -34,11 +34,11 @@ namespace NursingHome.Db.Implementation
 
                 Db.Add(oldAge);
                 Db.SaveChanges();
-                return true;
+                return oldAge.Id;
             }
             catch (Exception ex)
             {
-                return false;
+                return 0;
             }
         }
         public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate, string username)
