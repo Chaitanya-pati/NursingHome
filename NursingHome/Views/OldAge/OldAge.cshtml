@@ -79,7 +79,7 @@
                                 <td><label for="address">Address:</label></td>
                                 <td><input type="text" class="form-control  OldAgeIpfields" id="address"></td>
                             </tr>
-                            <tr>         
+                            <tr>
                                 <td><label for="patientAge">Patient Age:</label></td>
                                 <td><input type="text" class="form-control  OldAgeIpfields" id="patientAge"></td>
                             </tr>
@@ -144,7 +144,7 @@
                                             </div>
 
                                             <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">3.</div>
+                                                <div style="width: 50px; font-weight: bold, text-align: center;">3.</div>
                                                 <div style="flex: 1; text-align: left;">We don't allow outside food and we don't provide any event foods for patients.</div>
                                             </div>
 
@@ -239,168 +239,287 @@
     @Html.Partial("~/Partialviews/_VerifyFace.cshtml")
 </div>
 <style>
-.loader {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.loader .spinner {
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-}
-@@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    .loader {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loader .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 <div id="oldAgeLoader" class="loader"><div class="spinner"></div></div>
 <script>
 
-    var OldAgeIdProof;
-    $(document).ready(function () {
+        var OldAgeIdProof;
+        $(document).ready(function () {
 
-        $('#tblOldAge').on('click', '.btn-edit', function () {
-            var fullData = JSON.parse($(this).attr('data-full-data'));
-            BindData(fullData);
+            $('#tblOldAge').on('click', '.btn-edit', function () {
+                var fullData = JSON.parse($(this).attr('data-full-data'));
+                BindData(fullData);
+            });
+            $('#tblOldAge').on('click', '.btn-delete', function () {
+                var ID = JSON.parse($(this).attr('dataId'));
+                confirmDelete(ID);
+            });
+            $('#tblOldAgePayment').on('click', '.btn-edit', function () {
+                var fullData = JSON.parse($(this).attr('data-full-data'));
+                BindPaymentData(fullData);
+            });
+            $('#tblOldAgePayment').on('click', '.btn-delete', function () {
+                var ID = JSON.parse($(this).attr('dataId'));
+                confirmDelete(ID);
+            });
+            $('#search').on('click', function () {
+                GetData();
+            });
+
+        })
+
+        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+            const element = document.querySelector('.registrationFormContent');
+            element.style.transform = 'scale(0.8)';
+            element.style.transformOrigin = 'top center';
+            // Options for html2pdf
+            const options = {
+                margin: 0,
+                filename: $('#patientName').val() + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Generate PDF
+            html2pdf().from(element).set(options).save().finally(() => {
+
+                element.style.transform = '';
+                element.style.transformOrigin = '';
+            });
         });
-        $('#tblOldAge').on('click', '.btn-delete', function () {
-            var ID = JSON.parse($(this).attr('dataId'));
-            confirmDelete(ID);
-        });
-        $('#tblOldAgePayment').on('click', '.btn-edit', function () {
-            var fullData = JSON.parse($(this).attr('data-full-data'));
-            BindPaymentData(fullData);
-        });
-        $('#tblOldAgePayment').on('click', '.btn-delete', function () {
-            var ID = JSON.parse($(this).attr('dataId'));
-            confirmDelete(ID);
-        });
-        $('#search').on('click', function () {
-            GetData();
+
+        $('#idProof').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                OldAgeIdProof = base64;
+            });
         });
 
-    })
+        document.getElementById('downloadIdProof').addEventListener('click', function () {
+            if (OldAgeIdProof) {
+                const mimeType = OldAgeIdProof.split("~")[0];
+                const fileName = $('#patientName').val() + "_IdProof.";
 
-    document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-        const element = document.querySelector('.registrationFormContent');
-        element.style.transform = 'scale(0.8)';
-        element.style.transformOrigin = 'top center';
-        // Options for html2pdf
-        const options = {
-            margin: 0,
-            filename: $('#patientName').val() + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        // Generate PDF
-        html2pdf().from(element).set(options).save().finally(() => {
-
-            element.style.transform = '';
-            element.style.transformOrigin = '';
-        });
-    });
-
-    $('#idProof').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            OldAgeIdProof = base64;
-        });
-    });
-
-    document.getElementById('downloadIdProof').addEventListener('click', function () {
-        if (OldAgeIdProof) {
-            const mimeType = OldAgeIdProof.split("~")[0];
-            const fileName = $('#patientName').val() + "_IdProof.";
-
-            downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
-        } else {
-            alertMessage('No file available to download');
-        }
-    });
-    function downloadFile(base64String, fileType, fileName) {
-        const link = document.createElement('a');
-        link.href = `data:${fileType};base64,${base64String}`;
-        link.download = fileName + fileType.split("/")[1];
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function Clearfields() {
-        $('.OldAgeIpfields').val('');
-        clearSignature('authorizedSignature');
-        clearSignature('clientSignature');
-        $('#authorizedSignatureImage').prop('hidden', true);
-        $('#authorizedSignature').prop('hidden', false);
-        $('#clientSignature').prop('hidden', false);
-        $('#clientSignatureImage').prop('hidden', true);
-        OldAgeIdProof = '';
-        GetSerialNo();
-        $('#adminssionDate').val(formatDate(new Date()));
-        $('#periodTo').val(formatDate(new Date()));
-        $('#periodFrom').val(formatDate(new Date()));
-        showPopup('oldAgePopup');
-        // $('#oldAgePopup').modal('toggle');
-    }
-
-    function GetSerialNo() {
-        $.get({
-            url: '@Url.Action("GetLatestID", "OldAge")',
-            success: function (response) {
-                $('#serialNo').val(response);
-            },
-            error: function (response) {
+                downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
+            } else {
+                alertMessage('No file available to download');
             }
         });
-    }
+        function downloadFile(base64String, fileType, fileName) {
+            const link = document.createElement('a');
+            link.href = `data:${fileType};base64,${base64String}`;
+            link.download = fileName + fileType.split("/")[1];
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-    function AddOldAge() {
-        if (CheckEmptyFields()) {
-            var data = {};
-            data.Id = $('#oldAgePatientId').val();
-            data.PatientName = $('#patientName').val();
-            data.Address = $('#address').val();
-            data.Age = $('#patientAge').val();
-            data.Condition = $('#patientCondition').val();
-            data.CustomerName = $('#customerName').val();
-            data.MobileNo = $('#mobileNo').val();
-            data.TypesofServices = $('#typesOfService').val();
-            data.IdProof = OldAgeIdProof;
-            data.PaymentStatus = "Pending";
-            data.PeriodFrom = $('#periodFrom').val();
-            data.PeriodTo = $('#periodTo').val();
-            data.AdmissionDate = $('#adminssionDate').val();
-            data.MonthlyPayment = $('#monthlyPayment').val();
-            data.RegistrationCharges = $('#registrationCharges').val();
-            data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-            data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-            data.SUser = localStorage.getItem('username');
+        function Clearfields() {
+            $('.OldAgeIpfields').val('');
+            clearSignature('authorizedSignature');
+            clearSignature('clientSignature');
+            $('#authorizedSignatureImage').prop('hidden', true);
+            $('#authorizedSignature').prop('hidden', false);
+            $('#clientSignature').prop('hidden', false);
+            $('#clientSignatureImage').prop('hidden', true);
+            OldAgeIdProof = '';
+            GetSerialNo();
+            $('#adminssionDate').val(formatDate(new Date()));
+            $('#periodTo').val(formatDate(new Date()));
+            $('#periodFrom').val(formatDate(new Date()));
+            showPopup('oldAgePopup');
+            // $('#oldAgePopup').modal('toggle');
+        }
+
+        function GetSerialNo() {
+            $.get({
+                url: '@Url.Action("GetLatestID", "OldAge")',
+                success: function (response) {
+                    $('#serialNo').val(response);
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+        function AddOldAge() {
+            if (CheckEmptyFields()) {
+                var data = {};
+                data.Id = $('#oldAgePatientId').val();
+                data.PatientName = $('#patientName').val();
+                data.Address = $('#address').val();
+                data.Age = $('#patientAge').val();
+                data.Condition = $('#patientCondition').val();
+                data.CustomerName = $('#customerName').val();
+                data.MobileNo = $('#mobileNo').val();
+                data.TypesofServices = $('#typesOfService').val();
+                data.IdProof = OldAgeIdProof;
+                data.PaymentStatus = "Pending";
+                data.PeriodFrom = $('#periodFrom').val();
+                data.PeriodTo = $('#periodTo').val();
+                data.AdmissionDate = $('#adminssionDate').val();
+                data.MonthlyPayment = $('#monthlyPayment').val();
+                data.RegistrationCharges = $('#registrationCharges').val();
+                data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                data.SUser = localStorage.getItem('username');
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddorEditOldAge", "OldAge")',
+                    data: data,
+                    success: function (response) {
+                        if (response) {
+                            let msg = $('#oldAgePatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                            // $('#oldAgePopup').modal('toggle');
+                            HidePopup('oldAgePopup');
+                            msgPopup("success", msg);
+                            GetData();
+
+                            // Show client signature link
+                            var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                             var id = $('#oldAgePatientId').val() == '' ? response : $('#oldAgePatientId').val();
+                            var link = baseUrl + '/OldAge/ClientSignature?id=' + id;
+                            $('#clientSignatureLink').val(link);
+                            $('#clientSignatureLinkContainer').show();
+                        } else {
+                            msgPopup("error", "Error! Please Try Again");
+                        }
+                    },
+                    error: function (response) {
+
+                        console.error(response);
+                    }
+                });
+            }
+        }
+
+        function copySignatureLink() {
+            var copyText = document.getElementById('clientSignatureLink');
+            copyText.select();
+            copyText.setSelectionRange(0,99999);
+            document.execCommand('copy');
+            msgPopup('success', 'Link copied to clipboard!');
+        }
+
+        function GetData() {
+            var table = $('#tblOldAge').DataTable();
+            let startDate = $('#startDate').val();
+            let endDate = $('#endDate').val();
+            let user = $('#ddlUsers').val();
+            $('#oldAgeLoader').show();
+            $.get({
+                url: '@Url.Action("GetData", "OldAge")',
+        data: { startDate: startDate, endDate: endDate, username: user },
+        success: function (response) {
+            table.clear().draw();
+       response.data.forEach(function (item) {
+     table.row.add([
+         item.patientName,
+         item.admissionDate ? item.admissionDate.split("T")[0] : null,
+     item.periodFrom ? item.periodFrom.split("T")[0] : null,
+    item.periodTo ? item.periodTo.split("T")[0] : null,
+    '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+     ]).draw();
+      });
+      $('#oldAgeLoader').hide();
+       },
+       error: function (response) {
+      $('#oldAgeLoader').hide();
+     console.error(response);
+        }
+        });
+        }
+
+
+        function BindData(data) {
+            $('#oldAgePatientId').val(data.id);
+            $('#patientName').val(data.patientName);
+            $('#address').val(data.address);
+            $('#patientAge').val(data.age);
+            $('#patientCondition').val(data.condition);
+            $('#customerName').val(data.customerName);
+            $('#mobileNo').val(data.mobileNo);
+            $('#typesOfService').val(data.typesofServices);
+            OldAgeIdProof = data.idProof;
+            //  data.PaymentStatus = "Pending";
+            $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
+            $('#periodTo').val(formatDate(new Date(data.periodTo)));
+            $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
+            $('#monthlyPayment').val(data.monthlyPayment);
+            $('#registrationCharges').val(data.registrationCharges);
+            $('#clientSignatureImage').prop('hidden', false);
+            $('#clientSignature').prop('hidden', true);
+            $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
+            $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
+            $('#authorizedSignatureImage').prop('hidden', false);
+            $('#authorizedSignature').prop('hidden', true);
+            showPopup('oldAgePopup');
+        }
+
+        function confirmDelete(id) {
+            $.alert({
+                title: 'Alert',
+                content: 'Are you sure want to delete ?',
+                typeAnimated: true,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: 'glow',
+                boxWidth: '30%',
+                useBootstrap: false,
+                buttons: {
+                    Yes: {
+                        text: 'Yes',
+                        btnClass: 'btn btn-success',
+                        action: function () {
+                            deleteData(id);
+                        },
+                    },
+                    No: {
+                        text: 'No',
+                        btnClass: 'btn btn-warning',
+                        action: function () {
+                            return;
+                        },
+                    },
+                },
+            });
+        }
+        function deleteData(id) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("AddorEditOldAge", "OldAge")',
-                data: data,
+                url: '@Url.Action("DeleteData", "OldAge")',
+                data: { id: id },
                 success: function (response) {
                     if (response) {
-                        let msg = $('#oldAgePatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                        // $('#oldAgePopup').modal('toggle');
-                        HidePopup('oldAgePopup');
-                        msgPopup("success", msg);
+                        msgPopup("success", "Data Deleted Successfully");
                         GetData();
-
-                        // Show client signature link
-                        var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
-                        var id = $('#oldAgePatientId').val() || 'NEW';
-                        var link = baseUrl + '?type=oldage&id=' + id;
-                        $('#clientSignatureLink').val(link);
-                        $('#clientSignatureLinkContainer').show();
                     } else {
                         msgPopup("error", "Error! Please Try Again");
                     }
@@ -411,122 +530,10 @@
                 }
             });
         }
-    }
-
-    function copySignatureLink() {
-        var copyText = document.getElementById('clientSignatureLink');
-        copyText.select();
-        copyText.setSelectionRange(0,99999);
-        document.execCommand('copy');
-        msgPopup('success', 'Link copied to clipboard!');
-    }
-
-    function GetData() {
-        var table = $('#tblOldAge').DataTable();
-        let startDate = $('#startDate').val();
-        let endDate = $('#endDate').val();
-        let user = $('#ddlUsers').val();
-        $('#oldAgeLoader').show();
-        $.get({
-            url: '@Url.Action("GetData", "OldAge")',
-    data: { startDate: startDate, endDate: endDate, username: user },
-    success: function (response) {
-        table.clear().draw();
-   response.data.forEach(function (item) {
- table.row.add([
-     item.patientName,
-     item.admissionDate ? item.admissionDate.split("T")[0] : null,
- item.periodFrom ? item.periodFrom.split("T")[0] : null,
-item.periodTo ? item.periodTo.split("T")[0] : null,
-'<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
- ]).draw();
-  });
-  $('#oldAgeLoader').hide();
-   },
-   error: function (response) {
-  $('#oldAgeLoader').hide();
- console.error(response);
-    }
-    });
-    }
-
-
-    function BindData(data) {
-        $('#oldAgePatientId').val(data.id);
-        $('#patientName').val(data.patientName);
-        $('#address').val(data.address);
-        $('#patientAge').val(data.age);
-        $('#patientCondition').val(data.condition);
-        $('#customerName').val(data.customerName);
-        $('#mobileNo').val(data.mobileNo);
-        $('#typesOfService').val(data.typesofServices);
-        OldAgeIdProof = data.idProof;
-        //  data.PaymentStatus = "Pending";
-        $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
-        $('#periodTo').val(formatDate(new Date(data.periodTo)));
-        $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
-        $('#monthlyPayment').val(data.monthlyPayment);
-        $('#registrationCharges').val(data.registrationCharges);
-        $('#clientSignatureImage').prop('hidden', false);
-        $('#clientSignature').prop('hidden', true);
-        $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
-        $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-        $('#authorizedSignatureImage').prop('hidden', false);
-        $('#authorizedSignature').prop('hidden', true);
-        showPopup('oldAgePopup');
-    }
-
-    function confirmDelete(id) {
-        $.alert({
-            title: 'Alert',
-            content: 'Are you sure want to delete ?',
-            typeAnimated: true,
-            backgroundDismiss: false,
-            backgroundDismissAnimation: 'glow',
-            boxWidth: '30%',
-            useBootstrap: false,
-            buttons: {
-                Yes: {
-                    text: 'Yes',
-                    btnClass: 'btn btn-success',
-                    action: function () {
-                        deleteData(id);
-                    },
-                },
-                No: {
-                    text: 'No',
-                    btnClass: 'btn btn-warning',
-                    action: function () {
-                        return;
-                    },
-                },
-            },
-        });
-    }
-    function deleteData(id) {
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("DeleteData", "OldAge")',
-            data: { id: id },
-            success: function (response) {
-                if (response) {
-                    msgPopup("success", "Data Deleted Successfully");
-                    GetData();
-                } else {
-                    msgPopup("error", "Error! Please Try Again");
-                }
-            },
-            error: function (response) {
-
-                console.error(response);
-            }
-        });
-    }
 
 </script>
 <div id="clientSignatureLinkContainer" style="margin-top:10px;display:none;">
- <label>Share this link with the client to capture their signature:</label>
- <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
- <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
+    <label>Share this link with the client to capture their signature:</label>
+    <input type="text" id="clientSignatureLink" readonly style="width:80%;" />
+    <button onclick="copySignatureLink()" class="btn btn-info">Copy Link</button>
 </div>

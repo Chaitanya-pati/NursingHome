@@ -24,7 +24,7 @@ namespace NursingHome.Db.Implementation
             _dbConn = new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
 
-        public bool AddData(Models.OldAge oldAge)
+        public int AddData(Models.OldAge oldAge)
         {
             try
             {

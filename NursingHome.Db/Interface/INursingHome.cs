@@ -10,7 +10,7 @@ namespace NursingHome.Db.Interface
 {
     public interface INursingHome
     {
-        bool AddData(Models.HomeNursing homeNursing);
+        int AddData(Models.HomeNursing homeNursing);
 
         List<HomeNursingView> GetData(DateTime startDate, DateTime endDate, string username);
 

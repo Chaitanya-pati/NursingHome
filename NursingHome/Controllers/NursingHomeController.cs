@@ -126,8 +126,7 @@ namespace NursingHome.Controllers
         {
             try
             {
-                var data = _DbConn.GetData(DateTime.MinValue, DateTime.MaxValue, "")
-                   .FirstOrDefault(x => x.Id == id);
+                var data = _DbConn.GetPatientData(id);
                if (data == null)
                return NotFound();
                return View("ClientSignatureDetails", data);

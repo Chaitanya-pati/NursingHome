@@ -1,5 +1,6 @@
-﻿@{
-
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
     ViewData["Title"] = "Nursing Home";
 }
 <style>
@@ -179,7 +180,7 @@
                                             </div>
 
                                             <div style="display: flex; margin-top: 10px;">
-                                                <div style="width: 50px; font-weight: bold; text-align: center;">4.</div>
+                                                <div style="width: 50px; font-weight: bold, text-align: center;">4.</div>
                                                 <div style="flex: 1; text-align: left;">In case the home nurse needs to be absent due to a personal emergency, VEDHANTH Home Nursing Services will provide a replacement who has received sufficient training to handle the patient.</div>
                                             </div>
                                            </br>
@@ -453,11 +454,11 @@
                         msgPopup("success", msg);
                         GetData();
                         // Show client signature link
- var baseUrl ='';
- var id = $('#homeNursingPatientId').val() || 'NEW';
- var link = baseUrl + '?type=homenursing&id=' + id;
- $('#clientSignatureLink').val(link);
- $('#clientSignatureLinkContainer').show();
+                       var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                       var id = $('#homeNursingPatientId').val() == '' ? response : $('#homeNursingPatientId').val();
+                       var link = baseUrl + '/NursingHome/ClientSignature?id=' + id;
+                       $('#clientSignatureLink').val(link);
+                       $('#clientSignatureLinkContainer').show();
                     } else {
                         msgPopup("error", "Error! Please Try Again");
                     }

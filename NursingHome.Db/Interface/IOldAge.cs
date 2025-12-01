@@ -9,7 +9,7 @@ namespace NursingHome.Db.Interface
 {
     public interface IOldAge
     {
-        bool AddData(OldAge oldAge);
+        int AddData(OldAge oldAge);
 
         List<Models.OldAge> GetData(DateTime startDate, DateTime endDate, string username);
 

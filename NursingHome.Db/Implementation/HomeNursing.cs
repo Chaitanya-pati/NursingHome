@@ -22,7 +22,7 @@ namespace NursingHome.Db.Implementation
             _dbConn = new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
 
-        public bool AddData(Models.HomeNursing homeNursing)
+        public int AddData(Models.HomeNursing homeNursing)
         {
             try
             {
@@ -32,11 +32,11 @@ namespace NursingHome.Db.Implementation
 
                 Db.Add(homeNursing);
                 Db.SaveChanges();
-                return true;
+                return homeNursing.Id;
             }
             catch (Exception ex)
             {
-                return false;
+                return 0;
             }
         }
         public List<HomeNursingView> GetData(DateTime startDate, DateTime endDate,string username)
