@@ -1,0 +1,220 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Client Signature Details";
+    Layout = null;
+}
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table-bordered {
+            border: none;
+        }
+
+            .table-bordered td {
+                border: none;
+                border-bottom: 1px solid #f1f3f5;
+                padding: 16px 20px;
+                vertical-align: middle;
+            }
+
+            .table-bordered tr:last-child td {
+                border-bottom: none;
+            }
+
+            .table-bordered td:first-child {
+                font-weight: 600;
+                color: #495057;
+                width: 220px;
+                background: #f8f9fa;
+            }
+
+            .table-bordered td:last-child {
+                color: #6c757d;
+            }
+
+        #clientSignature {
+            border: 2px dashed #dee2e6 !important;
+            border-radius: 10px;
+            cursor: crosshair;
+            width: 100% !important;
+            max-width: 500px !important;
+            height: 200px !important;
+            background: white;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-warning {
+            background: #6c757d;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+                color: white;
+            }
+
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .btn-success:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                color: white;
+            }
+
+        img {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+            width: 200px !important;
+            height: 100px !important;
+        }
+
+        @@media (max-width: 768px) {
+            .table-container
+
+        {
+            padding: 20px;
+        }
+
+        .table-bordered td:first-child {
+            width: 150px;
+            font-size: 14px;
+        }
+
+        .table-bordered td {
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+        #clientSignature {
+            max-width: 100% !important;
+        }
+
+        .btn {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        }
+    </style>
+
+    <h2>Client Signature Details</h2>
+    <div class="table-container">
+        <table class="table table-bordered">
+            <tr><td>Patient Name</td><td>@Model.PatientName</td></tr>
+            <tr><td>Address</td><td>@Model.Address</td></tr>
+            <tr><td>Age</td><td>@Model.Age</td></tr>
+            <tr><td>Condition</td><td>@Model.Condition</td></tr>
+            <tr><td>Customer Name</td><td>@Model.CustomerName</td></tr>
+            <tr><td>Mobile No</td><td>@Model.MobileNo</td></tr>
+            <tr><td>Types of Services</td><td>@Model.TypesofServices</td></tr>
+            <tr><td>Registration Charges</td><td>@Model.RegistrationCharges</td></tr>
+            <tr><td>Monthly Payment</td><td>@Model.MonthlyPayment</td></tr>
+            <tr><td>Period From</td><td>@Model.PeriodFrom</td></tr>
+            <tr><td>Period To</td><td>@Model.PeriodTo</td></tr>
+            <tr><td>ID Proof</td><td>@Model.IdProof</td></tr>
+            <tr><td>Payment Status</td><td>@Model.PaymentStatus</td></tr>
+            <tr><td>Created Date</td><td>@Model.CreatedDate</td></tr>
+            <tr><td>Updated Date</td><td>@Model.UpdatedDate</td></tr>
+            <tr><td>SUser</td><td>@Model.SUser</td></tr>
+            <tr>
+                <td>Client Signature</td>
+                <td>
+                <canvas id="clientSignature" class="signatureContainer" style="border:1px solid #ccc;width:400px;height:200px;"></canvas>
+                    <br />
+                    <button id="clearSignature" class="btn btn-warning">Clear</button>
+                    <button id="submitSignature" class="btn btn-success">Submit Signature</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Authorized Signature</td>
+                <td>
+                    <img src="data:image/png;base64,@Model.authorizedSign" style="width:200px;height:100px;" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/common.js"></script>
+    <script>
+        
+        const canvasSign = document.getElementById('clientSignature');
+        const context = canvasSign.getContext('2d');
+        
+        document.getElementById('clearSignature').onclick = function() {
+    context.clearRect(0,0, canvasSign.width, canvasSign.height);
+        };
+        document.getElementById('submitSignature').onclick = function() {
+                     const signatureData = document.getElementById('clientSignature').toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+         const urlParams = new URLSearchParams(window.location.search);
+         const id = urlParams.get('id');
+         let postUrl = window.location.pathname.startsWith('/OldAge') ? '/OldAge/UpdateClientSignature' : '/NursingHome/UpdateClientSignature';
+         if(postUrl && id) {
+         $.ajax({
+         type: 'POST',
+         url: postUrl,
+         data: { id: id, signature: signatureData },
+         success: function(response) {
+         alert('Signature submitted successfully!');
+         },
+         error: function() {
+         alert('Error submitting signature.');
+         }
+         });
+         } else {
+         alert('Invalid link or missing parameters.');
+         }
+        };
+    </script>

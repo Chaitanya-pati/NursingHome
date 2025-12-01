@@ -18,6 +18,9 @@ namespace NursingHome.Db.Interface
         bool DeleteData(int id);
 
         int getLatestID();
+        bool UpdateClientSignature(int id, string signature);
+
+        Models.OldAge GetPatientData(int patientId);
 
     }
 }

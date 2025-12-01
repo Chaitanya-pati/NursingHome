@@ -453,7 +453,7 @@
                         msgPopup("success", msg);
                         GetData();
                         // Show client signature link
- var baseUrl = '@Microsoft.Extensions.Configuration.ConfigurationExtensions.GetValue<string>(this.Context.RequestServices.GetService(typeof(Microsoft.Extensions.Configuration.IConfiguration)), "ClientSignatureBaseUrl")';
+ var baseUrl ='';
  var id = $('#homeNursingPatientId').val() || 'NEW';
  var link = baseUrl + '?type=homenursing&id=' + id;
  $('#clientSignatureLink').val(link);

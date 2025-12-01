@@ -153,5 +153,13 @@ namespace NursingHome.Db.Implementation
             }
             return false;
         }
+
+        public Models.HomeNursing GetPatientData(int patientId)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var data = Db.HomeNursing.Where(x => x.Id == patientId).FirstOrDefault();
+
+            return data;
+        }
     }
 }

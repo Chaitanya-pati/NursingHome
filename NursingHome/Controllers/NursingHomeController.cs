@@ -121,6 +121,24 @@ namespace NursingHome.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ClientSignature(int id)
+        {
+            try
+            {
+                var data = _DbConn.GetData(DateTime.MinValue, DateTime.MaxValue, "")
+                   .FirstOrDefault(x => x.Id == id);
+               if (data == null)
+               return NotFound();
+               return View("ClientSignatureDetails", data);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("NursingHomeController", "ClientSignature", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

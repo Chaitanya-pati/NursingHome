@@ -41,7 +41,7 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
-        public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate,string username)
+        public List<Models.OldAge> GetData(DateTime startDate, DateTime endDate, string username)
         {
             using var Db = new TaskContext(_dbConn);
 
@@ -111,7 +111,7 @@ namespace NursingHome.Db.Implementation
         {
             var Db = new TaskContext(_dbConn);
             int maxId = Db.OldAge.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
-            return maxId == 0 ? 1 : maxId+1;
+            return maxId == 0 ? 1 : maxId + 1;
         }
 
         public bool UpdateClientSignature(int id, string signature)
@@ -126,7 +126,14 @@ namespace NursingHome.Db.Implementation
             }
             return false;
         }
+
+
+        public Models.OldAge GetPatientData(int patientId)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var data = Db.OldAge.Where(x => x.Id == patientId).FirstOrDefault();
+
+            return data;
+        }
     }
-
-
 }
