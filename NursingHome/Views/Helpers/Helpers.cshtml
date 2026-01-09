@@ -1,31 +1,38 @@
 ﻿<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
 <style>
-.loader {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.loader .spinner {
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-}
-@@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    .loader {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loader .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 <div id="helpersLoader" class="loader"><div class="spinner"></div></div>
 <div class="container-fluid">
-<div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
- 
+    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
+
         <button type="button" class="customBtn" onclick="ClearInputFields();">
             Add Helper
         </button>
@@ -45,15 +52,16 @@
                 <form>
                     <table class="table table-bordered">
                         <tbody>
-                            
+
                             <tr>
                                 <td colspan="2">
                                     <div class="row mt-2">
                                         <div class="col-3">
-                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                            <img src="~/images/SubramanyaLogo.png" style="height:90px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
-                                            <label style="font-family:'Noto Sans Kannada','Times New Roman';font-size:50px;color:red;letter-spacing:5px">ಸುಬ್ರಹ್ಮಣ್ಯ</label>
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">SUBRAMANYA</label>
+
                                         </div>
                                         <div class="col-3 contentEnd">
                                             <label for="candidateImg">
@@ -63,7 +71,7 @@
                                         </div>
                                         <div class="col-2"></div>
                                         <div class="col-8 contentCenter" style="margin-top:-20px">
-                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">ಹೋಮ್ ನರ್ಸಿಂಗ್ ಹೆಲ್ಪ್‌ಲೈನ್</label>
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
                                         </div>
                                     </div>
                                     <div id="customAddress">
@@ -71,7 +79,7 @@
                                             <span id="customAdreesLine1" style="font-weight:500;font-size:smaller;">ನಂ.69, ಹೊಸ ನಂ. 6/1, 1ನೇ ಅಡ್ಡ, 3ನೇ ಮುಖ್ಯ ರಸ್ತೆ, ಮತಿಕೆರೆಯು, ಬೆಂಗಳೂರು-560054.</span>
                                         </div>
                                         <div class="contentCenter">
-                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">ಮೊಬೈಲ್: <span id="cutomMobileNumbers"></span> ಇಮೇಲ್: <span id="customEmailAddress"></span></span>
+                                            <span id="customAdreesLine2" style="font-weight:500;font-size:smaller;">Mobile: <span id="cutomMobileNumbers"></span> Email: <span id="customEmailAddress"></span></span>
                                         </div>
                                     </div>
                                 </td>
@@ -92,7 +100,7 @@
                                     </div>
                                 </td>
                             </tr>
-                           <tr>
+                            <tr>
                                 <input type="hidden" id="helperId" />
                                 <td><label for="candidateName">ಪೂರ್ಣ ಹೆಸರು:</label></td>
                                 <td><input type="text" class="form-control inputFields requiredfield" id="candidateName"></td>
@@ -212,28 +220,28 @@
                                             <p style="font-size: 16px; text-align: justify; line-height: 1.6;">
                                                 ಈ ಮೇಲ್ಕಂಡ ಎಲ್ಲಾ ಅಂಶಗಳನ್ನು ನಾನು ಸಿಬ್ಬಂದಿಯಾಗಿ ಕೆಲಸಕ್ಕೆ ಸೇರುವ ಮುನ್ನ ನನಗೆ ವಿವರಿಸಿದ್ದಾರೆ ಮತ್ತು ನನ್ನ ..ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ಎಲ್ಲಾ ಸ್ವರೂಪದಲ್ಲಿ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣದ ಪರಿಣಾಮಗಳನ್ನು ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ನಾನು ಯಾವುದೇ ದೋಷವನ್ನು ಮಾಡುವುದಿಲ್ಲ ಮತ್ತು ಸಂಸ್ಥೆಯ ಅಭಿವೃದ್ಧಿಗಾಗಿ ಕೆಲಸ ಮಾಡುವ ಗುರಿಯನ್ನು ಹೊಂದಿದ್ದೇನೆ ಎಂದು ನಾನು ಖಚಿತಪಡಿಸುತ್ತೇನೆ. ನನ್ನಿಂದ ಯಾವುದಾದರೂ ತಪ್ಪು ಸಂಭವಿಸಿದ್ದಲ್ಲಿ ಸಂಸ್ಥೆಯು ನೀಡುವ ಶಿಕ್ಷೆಗೆ ಬದ್ಧನಾಗಿರುತ್ತೇನೆ.
                                             </p>
-                                    <div class="row mt-2">
-                                        <div class="col-4">
-                                            <div>
+                                            <div class="row mt-2">
+                                                <div class="col-4">
+                                                    <div>
                                                         <p>ಸ್ಥಳ :</p>
-                                                <input type="text" id="place" />
-                                            </div>
-                                            <div>
-                                                <p>ದಿನಾಂಕ :</p>
-                                                <input type="date" id="bottomDate" />
-                                            </div>
-                                        </div>
-                                        <div class="col-4"></div>
-                                        <div class="signature-box col-4 text-right">
-                                            <canvas id="clientSignature" class="signatureContainer"></canvas>
-                                            <img id="clientSignatureImage" class="signatureContainerImage" hidden />
-                                            <div class="row">
-                                                <div class="col-10">
-                                                    <p>ಸಹಿ: &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
+                                                        <input type="text" id="place" />
+                                                    </div>
+                                                    <div>
+                                                        <p>ದಿನಾಂಕ :</p>
+                                                        <input type="date" id="bottomDate" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-4"></div>
+                                                <div class="signature-box col-4 text-right">
+                                                    <canvas id="clientSignature" class="signatureContainer"></canvas>
+                                                    <img id="clientSignatureImage" class="signatureContainerImage" hidden />
+                                                    <div class="row">
+                                                        <div class="col-10">
+                                                            <p>ಸಹಿ: &nbsp;&nbsp;&nbsp;   <i class="fa-solid fa-arrows-rotate refreshSign" onclick="clearSignature('clientSignature')"></i></p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
 
@@ -266,162 +274,280 @@
 </div>
 
 <script>
-    var candidateImage = "";
-    var helperIdProof = "";
+        var candidateImage = "";
+        var helperIdProof = "";
 
-    $(document).ready(function () {
-        GetData();
-        GetCityDetails();
-    });
-
-    document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-       
-        const element = document.querySelector('.registrationFormContent');
-        $('#siddhartname').text = "ಸುಬ್ರಹ್ಮಣ್ಯ";
-        element.style.transform = 'scale(1)';
-        element.style.transformOrigin = 'top center';
-        // Options for html2pdf
-        const options = {
-            margin: 0,
-            filename: $('#candidateName').val() + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().from(element).set(options).save().finally(() => {
-
-            element.style.transform = '';
-            element.style.transformOrigin = '';
+        $(document).ready(function () {
+            GetData();
+            GetCityDetails();
         });
-    });
-    function chooseOption() {
-        $.alert({
-            content: 'Do you want to Upload an Image or Capture the face',
-            typeAnimated: true,
-            backgroundDismiss: false,
-            backgroundDismissAnimation: 'glow',
-            boxWidth: '30%',
-            useBootstrap: false,
-            buttons: {
-                Yes: {
-                    text: 'Upload from Device',
-                    btnClass: 'btn btn-info',
-                    action: function () {
-                        document.getElementById('candidateImg').click();
 
-                    },
-                },
-                No: {
-                    text: 'Capture Image',
-                    btnClass: 'btn btn-warning',
-                    action: function () {
-                        captureImage();
-                    },
-                },
-            },
-        });
-    }
+        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
 
-    function captureImage() {
-        var constraints = {
-            video: true
-        };
+            const element = document.querySelector('.registrationFormContent');
+            $('#siddhartname').text = "ಸುಬ್ರಹ್ಮಣ್ಯ";
+            element.style.transform = 'scale(1)';
+            element.style.transformOrigin = 'top center';
+            // Options for html2pdf
+            const options = {
+                margin: 0,
+                filename: $('#candidateName').val() + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
 
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(function (stream) {
-                var video = document.createElement('video');
-                video.autoplay = true;
-                video.srcObject = stream;
+            html2pdf().from(element).set(options).save().finally(() => {
 
-                var canvas = document.createElement('canvas');
-                var context = canvas.getContext('2d');
-
-                video.onloadedmetadata = function () {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    var imageDataURL = canvas.toDataURL('image/png');
-
-                    var output = document.getElementById('preview-image');
-                    output.src = imageDataURL;
-
-                    video.srcObject.getTracks().forEach(track => track.stop());
-                };
-            })
-            .catch(function (error) {
-                console.log('Error accessing camera: ', error);
+                element.style.transform = '';
+                element.style.transformOrigin = '';
             });
-    }
-
-    $('#idProof').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            helperIdProof = base64;
         });
-    });
+        function chooseOption() {
+            $.alert({
+                content: 'Do you want to Upload an Image or Capture the face',
+                typeAnimated: true,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: 'glow',
+                boxWidth: '30%',
+                useBootstrap: false,
+                buttons: {
+                    Yes: {
+                        text: 'Upload from Device',
+                        btnClass: 'btn btn-info',
+                        action: function () {
+                            document.getElementById('candidateImg').click();
 
-    $('#candidateImg').on('change', function (event) {
-        ConvertToBase64(event.target).then(base64 => {
-            candidateImage = base64;
-        });
-    });
-
-    $('#tblHelpers').on('click', '.btn-edit', function () {
-        var fullData = JSON.parse($(this).attr('data-full-data'));
-        BindData(fullData);
-    });
-    $('#tblHelpers').on('click', '.btn-delete', function () {
-        var ID = JSON.parse($(this).attr('dataId'));
-        confirmDelete(ID);
-    });
-
-    function previewImage(event) {
-        var input = event.target;
-        var reader = new FileReader();
-
-        if (input.files && input.files[0]) {
-            reader.onload = function (e) {
-                var output = document.getElementById('preview-image');
-                output.src = e.target.result;
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            alert("Failed to load file");
+                        },
+                    },
+                    No: {
+                        text: 'Capture Image',
+                        btnClass: 'btn btn-warning',
+                        action: function () {
+                            captureImage();
+                        },
+                    },
+                },
+            });
         }
-    }
-    // CRUD Operation
-    function AddHelper() {
-        if (CheckEmptyFields()) {
-            var data = {};
-            data.Id = $('#helperId').val();
-            data.Name = $('#candidateName').val();
-            data.ParentName = $('#parentName').val();
-            data.Image = candidateImage;
-            data.DateOfBirth = $('#candidateDOB').val();
-            data.MaritalStatus = $('#maritalStatus').val();
-            data.PermanentAddress = $('#permanentAddress').val();
-            data.PresentAddress = $('#presentAddress').val();
-            data.IdProof = helperIdProof;
-            data.Education = $('#education').val();
-            data.LanguagesKnown = $('#languages').val();
-            data.Experience = $('#experience').val();
-            data.Salary = $('#salary').val();
-            data.Reference = $('#referenceDetail').val();
-            data.FamilyMembers = $('#famMembers').val();
-            data.suser = localStorage.getItem('username');
-            data.candidateSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-            data.Place = $('#place').val();
-            data.admissionDate = $('#admissionDate').val();
+
+        function captureImage() {
+            var constraints = {
+                video: true
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function (stream) {
+                    var video = document.createElement('video');
+                    video.autoplay = true;
+                    video.srcObject = stream;
+
+                    var canvas = document.createElement('canvas');
+                    var context = canvas.getContext('2d');
+
+                    video.onloadedmetadata = function () {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var imageDataURL = canvas.toDataURL('image/png');
+
+                        var output = document.getElementById('preview-image');
+                        output.src = imageDataURL;
+
+                        video.srcObject.getTracks().forEach(track => track.stop());
+                    };
+                })
+                .catch(function (error) {
+                    console.log('Error accessing camera: ', error);
+                });
+        }
+
+        $('#idProof').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                helperIdProof = base64;
+            });
+        });
+
+        $('#candidateImg').on('change', function (event) {
+            ConvertToBase64(event.target).then(base64 => {
+                candidateImage = base64;
+            });
+        });
+
+        $('#tblHelpers').on('click', '.btn-edit', function () {
+            var fullData = JSON.parse($(this).attr('data-full-data'));
+            BindData(fullData);
+        });
+        $('#tblHelpers').on('click', '.btn-delete', function () {
+            var ID = JSON.parse($(this).attr('dataId'));
+            confirmDelete(ID);
+        });
+
+        function previewImage(event) {
+            var input = event.target;
+            var reader = new FileReader();
+
+            if (input.files && input.files[0]) {
+                reader.onload = function (e) {
+                    var output = document.getElementById('preview-image');
+                    output.src = e.target.result;
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                alert("Failed to load file");
+            }
+        }
+        // CRUD Operation
+        function AddHelper() {
+            if (CheckEmptyFields()) {
+                var data = {};
+                data.Id = $('#helperId').val();
+                data.Name = $('#candidateName').val();
+                data.ParentName = $('#parentName').val();
+                data.Image = candidateImage;
+                data.DateOfBirth = $('#candidateDOB').val();
+                data.MaritalStatus = $('#maritalStatus').val();
+                data.PermanentAddress = $('#permanentAddress').val();
+                data.PresentAddress = $('#presentAddress').val();
+                data.IdProof = helperIdProof;
+                data.Education = $('#education').val();
+                data.LanguagesKnown = $('#languages').val();
+                data.Experience = $('#experience').val();
+                data.Salary = $('#salary').val();
+                data.Reference = $('#referenceDetail').val();
+                data.FamilyMembers = $('#famMembers').val();
+                data.suser = localStorage.getItem('username');
+                data.candidateSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                data.Place = $('#place').val();
+                data.admissionDate = $('#admissionDate').val();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddorEditHelper", "Helpers")',
+                    data: data,
+                    success: function (response) {
+                        if (response) {
+                            let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                            HidePopup('helperModal');
+                            msgPopup("success", msg);
+                            GetData();
+                        } else {
+                            msgPopup("error", "Error! Please Try Again");
+                        }
+                    },
+                    error: function (response) {
+
+                        console.error(response);
+                    }
+                });
+            }
+        }
+
+        function BindData(data) {
+            $('#helperId').val(data.id);
+            $('#candidateName').val(data.name);
+            $('#parentName').val(data.parentName);
+            $('#candidateImage').val(data.image);
+            $('#candidateDOB').val(formatDate(new Date(data.dateOfBirth)));
+            $('#maritalStatus').val(data.maritalStatus);
+            $('#permanentAddress').val(data.permanentAddress);
+            $('#presentAddress').val(data.presentAddress);
+           // $('#helperIdProof').val(data.idProof);
+           helperIdProof = data.idProof;
+            if(data.image != null) {$('#preview-image').attr('src', 'data:image/png;base64,' + data.image.split("~")[1])};
+            $('#education').val(data.education);
+            $('#languages').val(data.languagesKnown);
+            $('#experience').val(data.experience);
+            $('#salary').val(data.salary);
+            $('#referenceDetail').val(data.reference);
+            $('#famMembers').val(data.familyMembers);
+            $('#admissionDate').val(formatDate(new Date(data.admissionDate)));
+            $('#bottomDate').val(formatDate(new Date(data.admissionDate)));
+            $('#place').val(data.place);
+            $('#clientSignatureImage').prop('hidden', false);
+            $('#clientSignature').prop('hidden', true);
+            $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.candidateSign);
+            showPopup('helperModal');
+        }
+
+        function GetData() {
+            var table = $('#tblHelpers').DataTable();
+            let UserName = 'admin';
+            if (localStorage.getItem('userRole') != 'admin') {
+       UserName = localStorage.getItem('username');
+        }
+        $('#helpersLoader').show();
+        $.ajax({
+            type: "POST",
+       data: { UserName: UserName },
+            url: '@Url.Action("GetData", "Helpers")',
+            success: function (response) {
+       table.clear().draw();
+          response.data.forEach(function (item) {
+           table.row.add([
+         item.name,
+         item.permanentAddress,
+         item.languagesKnown,
+     '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+     ]).draw();
+       });
+       $('#helpersLoader').hide();
+            },
+      error: function (response) {
+       $('#helpersLoader').hide();
+            console.error(response);
+       }
+    });
+        }
+
+        function ClearInputFields() {
+            $('.inputFields').val('');
+            candidateImage = "";
+            helperIdProof = "";
+            $('#adminssionDate').val(formatDate(new Date()));
+            $('#preview-image').attr('src','');
+            $('#clientSignature').prop('hidden', false);
+            $('#clientSignatureImage').prop('hidden', true);
+            showPopup('helperModal');
+        }
+
+        function confirmDelete(id) {
+            $.alert({
+                title: 'Alert',
+                content: 'Are you sure want to delete ?',
+                typeAnimated: true,
+                backgroundDismiss: false,
+                backgroundDismissAnimation: 'glow',
+                boxWidth: '30%',
+                useBootstrap: false,
+                buttons: {
+                    Yes: {
+                        text: 'Yes',
+                        btnClass: 'btn btn-success',
+                        action: function () {
+                            deleteData(id);
+                        },
+                    },
+                    No: {
+                        text: 'No',
+                        btnClass: 'btn btn-warning',
+                        action: function () {
+                            return;
+                        },
+                    },
+                },
+            });
+        }
+
+        function deleteData(id) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("AddorEditHelper", "Helpers")',
-                data: data,
+                url: '@Url.Action("DeleteData", "Helpers")',
+                data: { id: id },
                 success: function (response) {
                     if (response) {
-                        let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                        HidePopup('helperModal');
-                        msgPopup("success", msg);
+                        msgPopup("success", "Data Deleted Successfully");
                         GetData();
                     } else {
                         msgPopup("error", "Error! Please Try Again");
@@ -429,144 +555,26 @@
                 },
                 error: function (response) {
 
-                    console.error(response);
                 }
             });
         }
-    }
 
-    function BindData(data) {
-        $('#helperId').val(data.id);
-        $('#candidateName').val(data.name);
-        $('#parentName').val(data.parentName);
-        $('#candidateImage').val(data.image);
-        $('#candidateDOB').val(formatDate(new Date(data.dateOfBirth)));
-        $('#maritalStatus').val(data.maritalStatus);
-        $('#permanentAddress').val(data.permanentAddress);
-        $('#presentAddress').val(data.presentAddress);
-       // $('#helperIdProof').val(data.idProof);
-       helperIdProof = data.idProof;
-        if(data.image != null) {$('#preview-image').attr('src', 'data:image/png;base64,' + data.image.split("~")[1])};
-        $('#education').val(data.education);
-        $('#languages').val(data.languagesKnown);
-        $('#experience').val(data.experience);
-        $('#salary').val(data.salary);
-        $('#referenceDetail').val(data.reference);
-        $('#famMembers').val(data.familyMembers);
-        $('#admissionDate').val(formatDate(new Date(data.admissionDate)));
-        $('#bottomDate').val(formatDate(new Date(data.admissionDate)));
-        $('#place').val(data.place);
-        $('#clientSignatureImage').prop('hidden', false);
-        $('#clientSignature').prop('hidden', true);
-        $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.candidateSign);
-        showPopup('helperModal');
-    }
-
-    function GetData() {
-        var table = $('#tblHelpers').DataTable();
-        let UserName = 'admin';
-        if (localStorage.getItem('userRole') != 'admin') {
-   UserName = localStorage.getItem('username');
-    }
-    $('#helpersLoader').show();
-    $.ajax({
-        type: "POST",
-   data: { UserName: UserName },
-        url: '@Url.Action("GetData", "Helpers")',
-        success: function (response) {
-   table.clear().draw();
-      response.data.forEach(function (item) {
-       table.row.add([
-     item.name,
-     item.permanentAddress,
-     item.languagesKnown,
- '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-'<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
- ]).draw();
-   });
-   $('#helpersLoader').hide();
-        },
-  error: function (response) {
-   $('#helpersLoader').hide();
-        console.error(response);
-   }
-});
-    }
-
-    function ClearInputFields() {
-        $('.inputFields').val('');
-        candidateImage = "";
-        helperIdProof = "";
-        $('#adminssionDate').val(formatDate(new Date()));
-        $('#preview-image').attr('src','');
-        $('#clientSignature').prop('hidden', false);
-        $('#clientSignatureImage').prop('hidden', true);
-        showPopup('helperModal');
-    }
-
-    function confirmDelete(id) {
-        $.alert({
-            title: 'Alert',
-            content: 'Are you sure want to delete ?',
-            typeAnimated: true,
-            backgroundDismiss: false,
-            backgroundDismissAnimation: 'glow',
-            boxWidth: '30%',
-            useBootstrap: false,
-            buttons: {
-                Yes: {
-                    text: 'Yes',
-                    btnClass: 'btn btn-success',
-                    action: function () {
-                        deleteData(id);
-                    },
+        function GetCityDetails() {
+            let username = localStorage.getItem('username');
+            $.ajax({
+                url: '/Configuration/CityDetails',
+                type: 'GET',
+                dataType: 'json',
+                data: { username: username },
+                success: function (response) {
+                    $('#customAdreesLine1').text(response.officeAddress);
+                    $('#cutomMobileNumbers').text(response.mobileNumbers);
+                    $('#customEmailAddress').text(response.email);
                 },
-                No: {
-                    text: 'No',
-                    btnClass: 'btn btn-warning',
-                    action: function () {
-                        return;
-                    },
-                },
-            },
-        });
-    }
-
-    function deleteData(id) {
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("DeleteData", "Helpers")',
-            data: { id: id },
-            success: function (response) {
-                if (response) {
-                    msgPopup("success", "Data Deleted Successfully");
-                    GetData();
-                } else {
-                    msgPopup("error", "Error! Please Try Again");
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
                 }
-            },
-            error: function (response) {
-
-            }
-        });
-    }
-
-    function GetCityDetails() {
-        let username = localStorage.getItem('username');
-        $.ajax({
-            url: '/Configuration/CityDetails',
-            type: 'GET',
-            dataType: 'json',
-            data: { username: username },
-            success: function (response) {
-                $('#customAdreesLine1').text(response.officeAddress);
-                $('#cutomMobileNumbers').text(response.mobileNumbers);
-                $('#customEmailAddress').text(response.email);
-            },
-            error: function (xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-    }
+            });
+        }
 </script>
 
