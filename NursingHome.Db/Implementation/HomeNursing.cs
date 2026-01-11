@@ -113,6 +113,8 @@ namespace NursingHome.Db.Implementation
                 GetData.TypesofServices = obj.TypesofServices;
                 GetData.MobileNo = obj.MobileNo;
                 GetData.fkHelperId = obj.fkHelperId;
+                GetData.clientSign = obj.clientSign;
+                GetData.authorizedSign = obj.authorizedSign;
                 Db.SaveChanges();
                 return true;
             }
