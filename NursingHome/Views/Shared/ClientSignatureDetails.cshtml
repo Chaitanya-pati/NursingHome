@@ -3,7 +3,9 @@
     ViewData["Title"] = "Client Signature Details";
     Layout = null;
 }
-
+<!DOCTYPE html>
+<html>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
@@ -64,7 +66,7 @@
                 color: #6c757d;
             }
 
-        #clientSignature {
+        .signatureContainer {
             border: 2px dashed #dee2e6 !important;
             border-radius: 10px;
             cursor: crosshair;
@@ -74,6 +76,7 @@
             background: white;
             display: block;
             margin-bottom: 15px;
+            touch-action: none;
         }
 
         .btn {
@@ -118,9 +121,13 @@
         }
 
         @@media (max-width: 768px) {
-            .table-container
+            body
 
         {
+            padding: 20px 10px;
+        }
+
+        .table-container {
             padding: 20px;
         }
 
@@ -134,22 +141,74 @@
             font-size: 14px;
         }
 
-        #clientSignature {
+        .signatureContainer {
             max-width: 100% !important;
+            height: 180px !important;
         }
 
         .btn {
             margin-bottom: 10px;
-            width: 100%;
+            margin-right: 5px;
+            padding: 12px 20px;
         }
 
         h2 {
             font-size: 24px;
         }
 
+        img {
+            width: 150px !important;
+            height: 75px !important;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            body
+
+        {
+            padding: 15px 5px;
+        }
+
+        .table-container {
+            padding: 15px;
+        }
+
+        .table-bordered td:first-child {
+            width: 120px;
+            font-size: 13px;
+            padding: 10px 8px;
+        }
+
+        .table-bordered td {
+            padding: 10px 8px;
+            font-size: 13px;
+        }
+
+        .signatureContainer {
+            height: 160px !important;
+        }
+
+        .btn {
+            width: calc(50% - 5px);
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        img {
+            width: 120px !important;
+            height: 60px !important;
+        }
+
         }
     </style>
-
+</head>
+<body>
     <h2>Client Signature Details</h2>
     <div class="table-container">
         <table class="table table-bordered">
@@ -164,7 +223,6 @@
             <tr><td>Monthly Payment</td><td>@Model.MonthlyPayment</td></tr>
             <tr><td>Period From</td><td>@Model.PeriodFrom</td></tr>
             <tr><td>Period To</td><td>@Model.PeriodTo</td></tr>
-            <tr><td>ID Proof</td><td>@Model.IdProof</td></tr>
             <tr><td>Payment Status</td><td>@Model.PaymentStatus</td></tr>
             <tr><td>Created Date</td><td>@Model.CreatedDate</td></tr>
             <tr><td>Updated Date</td><td>@Model.UpdatedDate</td></tr>
@@ -172,7 +230,7 @@
             <tr>
                 <td>Client Signature</td>
                 <td>
-                <canvas id="clientSignature" class="signatureContainer" style="border:1px solid #ccc;width:400px;height:200px;"></canvas>
+                    <canvas id="clientSignature" class="signatureContainer" style="border:1px solid #ccc;width:400px;height:200px;"></canvas>
                     <br />
                     <button id="clearSignature" class="btn btn-warning">Clear</button>
                     <button id="submitSignature" class="btn btn-success">Submit Signature</button>
@@ -187,34 +245,36 @@
         </table>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/js/common.js"></script>
+    <script src="~/js/common.js"></script>
     <script>
-        
         const canvasSign = document.getElementById('clientSignature');
         const context = canvasSign.getContext('2d');
-        
+
         document.getElementById('clearSignature').onclick = function() {
-    context.clearRect(0,0, canvasSign.width, canvasSign.height);
+            context.clearRect(0, 0, canvasSign.width, canvasSign.height);
         };
+
         document.getElementById('submitSignature').onclick = function() {
-                     const signatureData = document.getElementById('clientSignature').toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-         const urlParams = new URLSearchParams(window.location.search);
-         const id = urlParams.get('id');
-         let postUrl = window.location.pathname.startsWith('/OldAge') ? '/OldAge/UpdateClientSignature' : '/NursingHome/UpdateClientSignature';
-         if(postUrl && id) {
-         $.ajax({
-         type: 'POST',
-         url: postUrl,
-         data: { id: id, signature: signatureData },
-         success: function(response) {
-         alert('Signature submitted successfully!');
-         },
-         error: function() {
-         alert('Error submitting signature.');
-         }
-         });
-         } else {
-         alert('Invalid link or missing parameters.');
-         }
+            const signatureData = document.getElementById('clientSignature').toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            let postUrl = window.location.pathname.startsWith('/OldAge') ? '/OldAge/UpdateClientSignature' : '/NursingHome/UpdateClientSignature';
+            if(postUrl && id) {
+                $.ajax({
+                    type: 'POST',
+                    url: postUrl,
+                    data: { id: id, signature: signatureData },
+                    success: function(response) {
+                        alert('Signature submitted successfully!');
+                    },
+                    error: function() {
+                        alert('Error submitting signature.');
+                    }
+                });
+            } else {
+                alert('Invalid link or missing parameters.');
+            }
         };
     </script>
+</body>
+</html>

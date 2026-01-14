@@ -428,6 +428,13 @@
                 }
             });
         }
+        function isCanvasBlank(canvas) {
+    const context = canvas.getContext('2d');
+    const pixelBuffer = new Uint32Array(
+        context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+    return !pixelBuffer.some(color => color !== 0);
+}
         function AddHomeNursing() {
             if (CheckEmptyFields()) {
                 var data = {};
@@ -447,8 +454,23 @@
                 data.MonthlyPayment = $('#monthlyPayment').val();
                 data.RegistrationCharges = $('#registrationCharges').val();
                 data.fkHelperId = $('#helperDropdown').val();
-                data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-                data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                var authorizedCanvas = $('#authorizedSignature')[0];
+                var clientCanvas = $('#clientSignature')[0];
+                // Only update signature if canvas is not blank, else keep previous value (from hidden img src)
+                if (!isCanvasBlank(authorizedCanvas)) {
+                    data.authorizedSign = authorizedCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                } else if ($('#authorizedSignatureImage').attr('src')) {
+                    data.authorizedSign = $('#authorizedSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
+                } else {
+                    data.authorizedSign = "";
+                }
+                if (!isCanvasBlank(clientCanvas)) {
+                    data.clientSign = clientCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                } else if ($('#clientSignatureImage').attr('src')) {
+                    data.clientSign = $('#clientSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
+                } else {
+                    data.clientSign = "";
+                }
                 data.SUser = localStorage.getItem('username');
                 $.ajax({
                     type: "POST",
@@ -527,18 +549,35 @@
             $('#mobileNo').val(data.mobileNo);
             $('#typesOfService').val(data.typesofServices);
             HomeNursingIdproof = data.idProof;
-            //  data.PaymentStatus = "Pending";
+            // data.PaymentStatus = "Pending";
             $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
             $('#periodTo').val(formatDate(new Date(data.periodTo)));
             $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
             $('#monthlyPayment').val(data.monthlyPayment);
             $('#registrationCharges').val(data.registrationCharges);
-            $('#clientSignatureImage').prop('hidden', false);
-            $('#clientSignature').prop('hidden', true);
-            $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
-            $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-            $('#authorizedSignatureImage').prop('hidden', false);
-            $('#authorizedSignature').prop('hidden', true);
+
+            // Client Signature
+            if (data.clientSign && data.clientSign.trim() !== "") {
+                $('#clientSignatureImage').prop('hidden', false);
+                $('#clientSignature').prop('hidden', true);
+                $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
+            } else {
+                $('#clientSignatureImage').prop('hidden', true);
+                $('#clientSignature').prop('hidden', false);
+                $('#clientSignatureImage').attr('src', '');
+            }
+
+            // Authorized Signature
+            if (data.authorizedSign && data.authorizedSign.trim() !== "") {
+                $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
+                $('#authorizedSignatureImage').prop('hidden', false);
+                $('#authorizedSignature').prop('hidden', true);
+            } else {
+                $('#authorizedSignatureImage').prop('hidden', true);
+                $('#authorizedSignature').prop('hidden', false);
+                $('#authorizedSignatureImage').attr('src', '');
+            }
+
             showPopup('homeNursingModal');
         }
 

@@ -84,6 +84,8 @@ namespace NursingHome.Db.Implementation
                 GetData.SUser = oldAge.SUser;
                 GetData.TypesofServices = oldAge.TypesofServices;
                 GetData.MobileNo = oldAge.MobileNo;
+                GetData.clientSign = oldAge.clientSign;
+                GetData.authorizedSign = oldAge.authorizedSign;
                 Db.SaveChanges();
                 return true;
             }

@@ -369,6 +369,15 @@
             });
         }
 
+        function isCanvasBlank(canvas) {
+            const context = canvas.getContext('2d');
+            const pixelBuffer = new Uint32Array(
+                context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+            );
+            return !pixelBuffer.some(color => color !== 0);
+        }
+
+
         function AddOldAge() {
             if (CheckEmptyFields()) {
                 var data = {};
@@ -387,8 +396,23 @@
                 data.AdmissionDate = $('#adminssionDate').val();
                 data.MonthlyPayment = $('#monthlyPayment').val();
                 data.RegistrationCharges = $('#registrationCharges').val();
-                data.authorizedSign = $('#authorizedSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-                data.clientSign = $('#clientSignature')[0].toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                var authorizedCanvas = $('#authorizedSignature')[0];
+                var clientCanvas = $('#clientSignature')[0];
+                // Only update signature if canvas is not blank, else keep previous value (from hidden img src)
+                if (!isCanvasBlank(authorizedCanvas)) {
+                    data.authorizedSign = authorizedCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                } else if ($('#authorizedSignatureImage').attr('src')) {
+                    data.authorizedSign = $('#authorizedSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
+                } else {
+                    data.authorizedSign = "";
+                }
+                if (!isCanvasBlank(clientCanvas)) {
+                    data.clientSign = clientCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
+                } else if ($('#clientSignatureImage').attr('src')) {
+                    data.clientSign = $('#clientSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
+                } else {
+                    data.clientSign = "";
+                }
                 data.SUser = localStorage.getItem('username');
                 $.ajax({
                     type: "POST",
@@ -397,14 +421,13 @@
                     success: function (response) {
                         if (response) {
                             let msg = $('#oldAgePatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                            // $('#oldAgePopup').modal('toggle');
                             HidePopup('oldAgePopup');
                             msgPopup("success", msg);
                             GetData();
 
                             // Show client signature link
                             var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
-                             var id = $('#oldAgePatientId').val() == '' ? response : $('#oldAgePatientId').val();
+                            var id = $('#oldAgePatientId').val() == '' ? response : $('#oldAgePatientId').val();
                             var link = baseUrl + '/OldAge/ClientSignature?id=' + id;
                             $('#clientSignatureLink').val(link);
                             $('#clientSignatureLinkContainer').show();
@@ -413,51 +436,11 @@
                         }
                     },
                     error: function (response) {
-
                         console.error(response);
                     }
                 });
             }
         }
-
-        function copySignatureLink() {
-            var copyText = document.getElementById('clientSignatureLink');
-            copyText.select();
-            copyText.setSelectionRange(0,99999);
-            document.execCommand('copy');
-            msgPopup('success', 'Link copied to clipboard!');
-        }
-
-        function GetData() {
-            var table = $('#tblOldAge').DataTable();
-            let startDate = $('#startDate').val();
-            let endDate = $('#endDate').val();
-            let user = $('#ddlUsers').val();
-            $('#oldAgeLoader').show();
-            $.get({
-                url: '@Url.Action("GetData", "OldAge")',
-        data: { startDate: startDate, endDate: endDate, username: user },
-        success: function (response) {
-            table.clear().draw();
-       response.data.forEach(function (item) {
-     table.row.add([
-         item.patientName,
-         item.admissionDate ? item.admissionDate.split("T")[0] : null,
-     item.periodFrom ? item.periodFrom.split("T")[0] : null,
-    item.periodTo ? item.periodTo.split("T")[0] : null,
-    '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-     ]).draw();
-      });
-      $('#oldAgeLoader').hide();
-       },
-       error: function (response) {
-      $('#oldAgeLoader').hide();
-     console.error(response);
-        }
-        });
-        }
-
 
         function BindData(data) {
             $('#oldAgePatientId').val(data.id);
@@ -469,18 +452,32 @@
             $('#mobileNo').val(data.mobileNo);
             $('#typesOfService').val(data.typesofServices);
             OldAgeIdProof = data.idProof;
-            //  data.PaymentStatus = "Pending";
+            // data.PaymentStatus = "Pending";
             $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
             $('#periodTo').val(formatDate(new Date(data.periodTo)));
             $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
             $('#monthlyPayment').val(data.monthlyPayment);
             $('#registrationCharges').val(data.registrationCharges);
-            $('#clientSignatureImage').prop('hidden', false);
-            $('#clientSignature').prop('hidden', true);
-            $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
-            $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-            $('#authorizedSignatureImage').prop('hidden', false);
-            $('#authorizedSignature').prop('hidden', true);
+            // Client Signature
+            if (data.clientSign && data.clientSign.trim() !== "") {
+                $('#clientSignatureImage').prop('hidden', false);
+                $('#clientSignature').prop('hidden', true);
+                $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
+            } else {
+                $('#clientSignatureImage').prop('hidden', true);
+                $('#clientSignature').prop('hidden', false);
+                $('#clientSignatureImage').attr('src', '');
+            }
+            // Authorized Signature
+            if (data.authorizedSign && data.authorizedSign.trim() !== "") {
+                $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
+                $('#authorizedSignatureImage').prop('hidden', false);
+                $('#authorizedSignature').prop('hidden', true);
+            } else {
+                $('#authorizedSignatureImage').prop('hidden', true);
+                $('#authorizedSignature').prop('hidden', false);
+                $('#authorizedSignatureImage').attr('src', '');
+            }
             showPopup('oldAgePopup');
         }
 
@@ -528,6 +525,43 @@
 
                     console.error(response);
                 }
+            });
+        }
+         function copySignatureLink() {
+            var copyText = document.getElementById('clientSignatureLink');
+            copyText.select();
+            copyText.setSelectionRange(0,99999);
+            document.execCommand('copy');
+            msgPopup('success', 'Link copied to clipboard!');
+        }
+
+        function GetData() {
+            var table = $('#tblOldAge').DataTable();
+            let startDate = $('#startDate').val();
+            let endDate = $('#endDate').val();
+            let user = $('#ddlUsers').val();
+            $('#oldAgeLoader').show();
+            $.get({
+                url: '@Url.Action("GetData", "OldAge")',
+                data: { startDate: startDate, endDate: endDate, username: user },
+                success: function (response) {
+                    table.clear().draw();
+                    response.data.forEach(function (item) {
+                    table.row.add([
+                        item.patientName,
+                        item.admissionDate ? item.admissionDate.split("T")[0] : null,
+                            item.periodFrom ? item.periodFrom.split("T")[0] : null,
+                        item.periodTo ? item.periodTo.split("T")[0] : null,
+                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                                '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                            ]).draw();
+                    });
+                    $('#oldAgeLoader').hide();
+                    },
+                    error: function (response) {
+                    $('#oldAgeLoader').hide();
+                    console.error(response);
+                    }
             });
         }
 
