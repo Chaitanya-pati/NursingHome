@@ -1,7 +1,9 @@
+@using Azure.Core
 @model dynamic
 @{
     ViewData["Title"] = "Client Signature Details";
     Layout = null;
+    bool isHomeNursing = Model.GetType().GetProperty("fkHelperId") != null;
 }
 <!DOCTYPE html>
 <html>
@@ -206,6 +208,33 @@
         }
 
         }
+
+       
+        .terms-box {
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .terms-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .terms-list {
+            padding-left: 20px;
+        }
+
+            .terms-list li {
+                margin-bottom: 8px;
+            }
+
+        .declaration {
+            margin-top: 15px;
+            font-weight: 500;
+        }
+   
     </style>
 </head>
 <body>
@@ -227,6 +256,63 @@
             <tr><td>Created Date</td><td>@Model.CreatedDate</td></tr>
             <tr><td>Updated Date</td><td>@Model.UpdatedDate</td></tr>
             <tr><td>SUser</td><td>@Model.SUser</td></tr>
+            <!-- Terms and Conditions Section -->
+            <tr>
+                <td colspan="2">
+                    <div class="terms-box">
+                        @if (isHomeNursing)
+                        {
+                            <div class="terms-title">VEDHANTH Home Nursing Services – Terms and Conditions</div>
+                            <ol class="terms-list">
+                                <li>VEDHANTH Home Nursing Services requires a one-time registration with a non-refundable deposit.</li>
+                                <li>VEDHANTH Home Nursing Services reserves the right to take action for any violation.</li>
+                                <li>If services are canceled directly with staff without informing us, action will be taken.</li>
+                                <li>Replacement nurse will be provided in case of emergency leave.</li>
+                                <li>If staff feels unsafe or complaints arise, service will be stopped.</li>
+                                <li>Nurse will only provide nursing services, not household work.</li>
+                                <li>Extra work is between family and nurse only.</li>
+                                <li>Family must ensure safety of valuables.</li>
+                                <li>Do not share banking or personal passwords.</li>
+                                <li>Continuing service with same staff without consent is not allowed.</li>
+                                <li>We are responsible only for nursing service.</li>
+                                <li>Death within 15 days – advance is non-refundable.</li>
+                                <li>Staff must be treated respectfully.</li>
+                                <li>Staff will not do household work.</li>
+                                <li>Replacement will be provided for leave.</li>
+                            </ol>
+
+                            <div class="terms-title">Declaration</div>
+                            <div class="declaration">
+                                I hereby read and understood all the above terms and conditions and agree to sign up with
+                                VEDHANTH Home Care for my service requirement.
+                            </div>
+                        }
+                        else if (!isHomeNursing)
+                        {
+                            <div class="terms-title">Terms and Conditions for Client</div>
+                            <ol class="terms-list">
+                                <li>We provide attender, nursing staff, and emergency doctor visit.</li>
+                                <li>Three times food with tea/coffee (menu changes daily).</li>
+                                <li>Outside food is not allowed.</li>
+                                <li>Personal medicines and supplies are not provided.</li>
+                                <li>Unused advance will be refunded on early discharge.</li>
+                                <li>In case of death, advance is non-refundable.</li>
+                            </ol>
+
+                            <div class="terms-title">Declaration</div>
+                            <div class="declaration">
+                                I hereby read and understood all the above terms and conditions and agree to sign up with
+                                VEDHANTH Home Care for my service requirement.
+                            </div>
+                        }
+                        else
+                        {
+                            <p>No specific terms and conditions available for this service.</p>
+                        }
+                    </div>
+                </td>
+            </tr>
+
             <tr>
                 <td>Client Signature</td>
                 <td>
@@ -243,6 +329,7 @@
                 </td>
             </tr>
         </table>
+       
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/common.js"></script>
