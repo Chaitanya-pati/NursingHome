@@ -521,13 +521,26 @@
     <script>
         let sidebar = document.querySelector(".sidebar");
         let closeBtn = document.querySelector("#btn");
+        let mobileMenuBtn = document.querySelector("#mobileMenuBtn");
+        let sidebarOverlay = document.querySelector("#sidebarOverlay");
 
-
+        // Desktop sidebar toggle
         closeBtn.addEventListener("click", () => {
             sidebar.classList.toggle("open");
             menuBtnChange();
         });
 
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("mobile-open");
+            sidebarOverlay.classList.toggle("active");
+        });
+
+        // Close mobile menu when clicking overlay
+        sidebarOverlay.addEventListener("click", () => {
+            sidebar.classList.remove("mobile-open");
+            sidebarOverlay.classList.remove("active");
+        });
 
         function menuBtnChange() {
             if (sidebar.classList.contains("open")) {
