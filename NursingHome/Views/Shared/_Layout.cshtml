@@ -359,6 +359,54 @@
             margin: 18px;
         }
 
+        /* Responsive Design for Mobile and Tablets */
+        @media screen and (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                left: -250px;
+                width: 250px;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+                width: 250px;
+            }
+
+            .home-section {
+                left: 0 !important;
+                width: 100% !important;
+                margin-left: 0;
+            }
+
+            .sidebar .logo-details #btn {
+                display: none;
+            }
+
+            .sidebar .logo-details .icon,
+            .sidebar .logo-details .logo_name {
+                opacity: 1;
+            }
+
+            .sidebar li a .links_name {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .sidebar li.profile {
+                width: 250px;
+            }
+        }
+
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .home-section {
+                left: 78px;
+                width: calc(100% - 78px);
+            }
+        }
+
     </style>
 }
 <body style="background-color:#f7f7fa">
