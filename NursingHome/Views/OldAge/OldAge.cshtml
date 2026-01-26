@@ -669,14 +669,22 @@
                 success: function (response) {
                     table.clear().draw();
                     response.data.forEach(function (item) {
-                    table.row.add([
-                        item.patientName,
-                        item.admissionDate ? item.admissionDate.split("T")[0] : null,
+                        var row = table.row.add([
+                            item.patientName,
+                            item.admissionDate ? item.admissionDate.split("T")[0] : null,
                             item.periodFrom ? item.periodFrom.split("T")[0] : null,
-                        item.periodTo ? item.periodTo.split("T")[0] : null,
-                        '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                                '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-                            ]).draw();
+                            item.periodTo ? item.periodTo.split("T")[0] : null,
+                            '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                                    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                        ]).draw();
+                        
+                        // Add data-label attributes for responsive card view
+                        var rowNode = row.node();
+                        $(rowNode).find('td').eq(0).attr('data-label', 'Patient Name');
+                        $(rowNode).find('td').eq(1).attr('data-label', 'Admission Date');
+                        $(rowNode).find('td').eq(2).attr('data-label', 'Period From');
+                        $(rowNode).find('td').eq(3).attr('data-label', 'Period To');
+                        $(rowNode).find('td').eq(4).attr('data-label', 'Action');
                     });
                     $('#oldAgeLoader').hide();
                     },
