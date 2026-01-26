@@ -658,7 +658,16 @@
         }
 
         function GetData() {
-            var table = $('#tblOldAge').DataTable();
+            var table = $('#tblOldAge').DataTable({
+                responsive: true,
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 }, // Patient Name
+                    { responsivePriority: 2, targets: -1 }, // Action column
+                    { responsivePriority: 3, targets: 1 }, // Admission Date
+                    { responsivePriority: 4, targets: 2 }, // Period From
+                    { responsivePriority: 5, targets: 3 }  // Period To
+                ]
+            });
             let startDate = $('#startDate').val();
             let endDate = $('#endDate').val();
             let user = $('#ddlUsers').val();
