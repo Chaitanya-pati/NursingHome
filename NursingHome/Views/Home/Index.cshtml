@@ -210,34 +210,114 @@
 
     /* Responsive Design */
     @@media (max-width: 768px) {
-        .container-fluid
+        .container-fluid {
+            padding: 20px 15px;
+        }
 
-    {
-        padding: 20px 15px;
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .stats-info h2 {
+            font-size: 2.2rem;
+        }
+
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .chart-card {
+            padding: 20px;
+        }
+
+        canvas {
+            max-height: 250px;
+        }
     }
 
-    .dashboard-header h1 {
-        font-size: 1.8rem;
+    /* Additional responsive breakpoints for better mobile experience */
+    @@media (max-width: 576px) {
+        .container-fluid {
+            padding: 15px 10px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .stats-info h6 {
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        .stats-info h2 {
+            font-size: 1.8rem;
+        }
+
+        .stats-info p {
+            font-size: 0.8rem;
+        }
+
+        .stats-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        .stats-content {
+            flex-direction: row;
+            gap: 15px;
+        }
+
+        .chart-card {
+            padding: 15px;
+        }
+
+        canvas {
+            max-height: 200px;
+        }
+
+        .col-lg-4, .col-md-6 {
+            margin-bottom: 15px !important;
+        }
     }
 
-    .stats-info h2 {
-        font-size: 2.2rem;
+    @@media (min-width: 576px) and (max-width: 768px) {
+        .stats-info h2 {
+            font-size: 2rem;
+        }
+
+        .stats-icon {
+            width: 55px;
+            height: 55px;
+            font-size: 1.3rem;
+        }
     }
 
-    .stats-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-    }
+    @@media (min-width: 769px) and (max-width: 992px) {
+        .container-fluid {
+            padding: 30px 20px;
+        }
 
-    .chart-card {
-        padding: 20px;
-    }
+        .stats-info h2 {
+            font-size: 2.5rem;
+        }
 
-    canvas {
-        max-height: 250px;
-    }
-
+        .stats-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.7rem;
+        }
     }
 
     /* Loading Animation */
