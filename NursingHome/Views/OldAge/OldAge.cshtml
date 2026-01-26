@@ -266,6 +266,128 @@
             transform: rotate(360deg);
         }
     }
+
+    /* Responsive Card View for Mobile */
+    @@media screen and (max-width: 768px) {
+        #tblOldAge thead {
+            display: none;
+        }
+
+        #tblOldAge,
+        #tblOldAge tbody,
+        #tblOldAge tr,
+        #tblOldAge td {
+            display: block;
+            width: 100%;
+        }
+
+        #tblOldAge tr {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #tblOldAge td {
+            text-align: left;
+            padding: 10px;
+            border: none;
+            position: relative;
+            padding-left: 50%;
+        }
+
+        #tblOldAge td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            width: 45%;
+            padding-right: 10px;
+            font-weight: bold;
+            text-align: left;
+            color: #333;
+        }
+
+        #tblOldAge td:last-child {
+            text-align: center;
+            padding-left: 10px;
+        }
+
+        #tblOldAge td:last-child:before {
+            content: none;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 10px;
+            text-align: center;
+        }
+    }
+
+    /* Modal responsiveness */
+    @@media screen and (max-width: 768px) {
+        .custom-modal-dialog {
+            width: 95% !important;
+            margin: 1rem auto !important;
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        .modal-body table tr td:first-child {
+            display: block;
+            width: 100%;
+            font-weight: bold;
+            padding-bottom: 5px;
+        }
+
+        .modal-body table tr td:last-child {
+            display: block;
+            width: 100%;
+            padding-top: 5px;
+        }
+
+        .signature-section {
+            flex-direction: column !important;
+        }
+
+        .signature-box {
+            width: 100% !important;
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .modal-footer button {
+            flex: 1 1 45%;
+            margin: 2px;
+        }
+    }
+
+    @@media screen and (max-width: 576px) {
+        .container-fluid {
+            padding: 10px;
+        }
+
+        .customBtn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .modal-footer button {
+            flex: 1 1 100%;
+        }
+    }
 </style>
 <div id="oldAgeLoader" class="loader"><div class="spinner"></div></div>
 <script>
