@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IUserService,UserService>(provider =>
 {
-    return new UserService(builder.Configuration.GetConnectionString("NursingHome"));
+    return new UserService(builder.Configuration.GetConnectionString("NursingHome"),builder.Configuration.GetConnectionString("DestnDb"));
 });
 builder.Services.AddTransient<IConfig,Config>(provider =>
 {
