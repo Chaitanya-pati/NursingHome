@@ -134,7 +134,8 @@
                                 <td>
                                     <div class="row col-12">
                                         <div class="col-10">
-                                            <input type="file" class="form-control" id="idProof" onchange="">
+                                            <input type="file" class="form-control" id="idProof" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            <div id="idProofStatus" class="mt-1 small" style="display:none;"></div>
                                         </div>
                                         <div class="col-2 contentEnd">
                                             <i id="downloadIdProof" class="fa-solid fa-download fa-lg  mt-3 "></i>
@@ -335,8 +336,24 @@
             confirmDelete(ID);
         });
         $('#idProof').on('change', function (event) {
-            ConvertToBase64(event.target).then(base64 => {
+            var $input = $(this);
+            var $status = $('#idProofStatus');
+            HomeNursingIdproof = '';
+            $status.html('<span class="text-muted"><i class="fa-solid fa-spinner fa-spin"></i> Processing file, please wait...</span>');
+            $status.show();
+            $input.prop('disabled', true);
+
+            ConvertToBase64(event.target).then(function (base64) {
                 HomeNursingIdproof = base64;
+                var originalSizeMB = (event.target.files[0].size / (1024 * 1024)).toFixed(2);
+                $status.html('<span class="text-success"><i class="fa-solid fa-check"></i> File ready (' + originalSizeMB + ' MB)</span>');
+                $input.prop('disabled', false);
+            }).catch(function (err) {
+                HomeNursingIdproof = '';
+                $input.val('');
+                $input.prop('disabled', false);
+                $status.html('<span class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ' + err + '</span>');
+                alertMessage(typeof err === 'string' ? err : 'Failed to process file. Please try again.');
             });
         });
         $('#search').on('click', function () {
@@ -415,6 +432,9 @@
             $('#authorizedSignature').prop('hidden', false);
             $('#clientSignature').prop('hidden', false);
             $('#clientSignatureImage').prop('hidden', true);
+            HomeNursingIdproof = '';
+            $('#idProof').val('');
+            $('#idProofStatus').hide().html('');
             GetSerialNo();
             showPopup('homeNursingModal');
         }

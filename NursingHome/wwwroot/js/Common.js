@@ -92,22 +92,79 @@ function formatDate(date) {
     return `${year}-${month}-${day}`;
 }
 
+var FILE_MAX_SIZE_MB = 5;
+var IMAGE_MAX_DIMENSION = 1200;
+var IMAGE_QUALITY = 0.75;
+
 function ConvertToBase64(input) {
-    return new Promise((resolve, reject) => {
-        if (input.files && input.files[0]) {
+    return new Promise(function (resolve, reject) {
+        if (!input.files || !input.files[0]) {
+            reject("No file selected");
+            return;
+        }
+
+        var file = input.files[0];
+        var maxBytes = FILE_MAX_SIZE_MB * 1024 * 1024;
+
+        if (file.size > maxBytes) {
+            reject("File is too large (" + (file.size / (1024 * 1024)).toFixed(1) + " MB). Maximum allowed size is " + FILE_MAX_SIZE_MB + " MB.");
+            return;
+        }
+
+        if (file.type.startsWith("image/")) {
+            _compressImage(file).then(resolve).catch(reject);
+        } else {
             var reader = new FileReader();
             reader.onload = function (e) {
-                var base64String = input.files[0].type + "~" + e.target.result.replace(/^data:.+\/(.+);base64,/, "");
-
+                var base64String = file.type + "~" + e.target.result.replace(/^data:[^;]+;base64,/, "");
                 resolve(base64String);
-            }
-            reader.onerror = function (error) {
-                reject(error);
-            }
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            reject("No file selected");
+            };
+            reader.onerror = function () {
+                reject("Failed to read file. Please try again.");
+            };
+            reader.readAsDataURL(file);
         }
+    });
+}
+
+function _compressImage(file) {
+    return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var img = new Image();
+            img.onload = function () {
+                var width = img.width;
+                var height = img.height;
+
+                if (width > IMAGE_MAX_DIMENSION || height > IMAGE_MAX_DIMENSION) {
+                    if (width >= height) {
+                        height = Math.round(height * IMAGE_MAX_DIMENSION / width);
+                        width = IMAGE_MAX_DIMENSION;
+                    } else {
+                        width = Math.round(width * IMAGE_MAX_DIMENSION / height);
+                        height = IMAGE_MAX_DIMENSION;
+                    }
+                }
+
+                var canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                var compressedDataUrl = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+                var base64String = "image/jpeg~" + compressedDataUrl.replace(/^data:image\/jpeg;base64,/, "");
+                resolve(base64String);
+            };
+            img.onerror = function () {
+                reject("Failed to process image. Please try a different file.");
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = function () {
+            reject("Failed to read file. Please try again.");
+        };
+        reader.readAsDataURL(file);
     });
 }
 
