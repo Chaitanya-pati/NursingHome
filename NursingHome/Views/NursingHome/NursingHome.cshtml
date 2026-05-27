@@ -31,13 +31,44 @@
             transform: rotate(360deg);
         }
     }
+
+    /* Card-view column labels for NursingHome grid (mobile) */
+    @@media (max-width: 767px) {
+        #tblNursingHome td:nth-child(1)::before { content: "Patient Name"; }
+        #tblNursingHome td:nth-child(2)::before { content: "Helper Name"; }
+        #tblNursingHome td:nth-child(3)::before { content: "Admission Date"; }
+        #tblNursingHome td:nth-child(4)::before { content: "Payment Status"; }
+        #tblNursingHome td:nth-child(5)::before { content: "Period From"; }
+        #tblNursingHome td:nth-child(6)::before { content: "Period To"; }
+        #tblNursingHome td:nth-child(7)::before { content: none; }
+
+        /* Modal responsiveness */
+        .custom-modal-dialog {
+            width: 95% !important;
+            margin: 1rem auto !important;
+        }
+        .modal-footer {
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .modal-footer button {
+            flex: 1 1 45%;
+            margin: 2px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .modal-footer button {
+            flex: 1 1 100%;
+        }
+    }
 </style>
 <div id="nursingHomeLoader" class="loader"><div class="spinner"></div></div>
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 <!-- Button to trigger modal -->
-<div class="col-md-2">
+<div class="col-md-2 page-add-btn">
     <div class="container-fluid mt-2 mb-2">
         <button type="button" class="customBtn" onclick="verifyFace()">
             <i class="fa fa-add me-1"></i> Add
@@ -293,8 +324,7 @@
 </div>
 
 <div class="col-md-12 container-fluid">
-    <div id="nursingHomeLoader" class="loader"><div class="spinner"></div></div>
-    <table id="tblNursingHome" class="display table-bordered" style="width:100%">
+    <table id="tblNursingHome" class="display table-bordered rct-table" style="width:100%">
         <thead>
             <tr>
                 <th>Patient Name</th>
@@ -533,30 +563,39 @@
             let user = $('#ddlUsers').val();
             $('#nursingHomeLoader').show();
             $.ajax({
-       type: "POST",
-        url: '@Url.Action("GetData", "NursingHome")',
-        data: { startDate: startDate, endDate: endDate, username: user },
-        success: function (response) {
-          table.clear().draw();
-            response.data.forEach(function (item) {
-     table.row.add([
-         item.patientName,
-         item.helperName,
-         item.admissionDate ? item.admissionDate.split("T")[0] : null,
-    item.paymentStatus,
-     item.periodFrom != null ? item.periodFrom.split("T")[0]:null,
-         item.periodTo != null ? item.periodTo.split("T")[0]:null,
-         '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-         '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
-          ]).draw();
-     });
-          $('#nursingHomeLoader').hide();
-            },
-       error: function (response) {
-            $('#nursingHomeLoader').hide();
-            console.error(response);
-       }
-    });
+                type: "POST",
+                url: '@Url.Action("GetData", "NursingHome")',
+                data: { startDate: startDate, endDate: endDate, username: user },
+                success: function (response) {
+                    table.clear().draw();
+                    response.data.forEach(function (item) {
+                        var row = table.row.add([
+                            item.patientName,
+                            item.helperName,
+                            item.admissionDate ? item.admissionDate.split("T")[0] : null,
+                            item.paymentStatus,
+                            item.periodFrom != null ? item.periodFrom.split("T")[0] : null,
+                            item.periodTo != null ? item.periodTo.split("T")[0] : null,
+                            '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                            '<i class="fa fa-trash ml-2 btn-delete" style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                        ]).draw(false);
+                        var rowNode = row.node();
+                        if (rowNode) {
+                            $(rowNode).find('td').eq(0).attr('data-label', 'Patient Name');
+                            $(rowNode).find('td').eq(1).attr('data-label', 'Helper Name');
+                            $(rowNode).find('td').eq(2).attr('data-label', 'Admission Date');
+                            $(rowNode).find('td').eq(3).attr('data-label', 'Payment Status');
+                            $(rowNode).find('td').eq(4).attr('data-label', 'Period From');
+                            $(rowNode).find('td').eq(5).attr('data-label', 'Period To');
+                        }
+                    });
+                    $('#nursingHomeLoader').hide();
+                },
+                error: function (response) {
+                    $('#nursingHomeLoader').hide();
+                    console.error(response);
+                }
+            });
         }
 
         function BindData(data) {

@@ -131,3 +131,121 @@ table.dataTable{
         margin: 2rem auto;
     }
 }
+
+/* =============================================
+   RESPONSIVE PAGE CONTROLS (non-popup)
+   ============================================= */
+@media (max-width: 767px) {
+
+    /* Add / action button full-width on mobile */
+    .page-add-btn {
+        width: 100% !important;
+        max-width: none !important;
+        flex: none !important;
+    }
+    .page-add-btn .customBtn {
+        width: 100%;
+    }
+
+    /* Search bar button */
+    #search.customBtn {
+        width: 100%;
+    }
+
+    /* DataTables controls — stack vertically */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        float: none !important;
+        text-align: left;
+        margin-bottom: 8px;
+    }
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        float: none !important;
+        text-align: center;
+        margin-top: 10px;
+    }
+    .dataTables_paginate .paginate_button {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+    }
+
+    /* Client signature link area — stack vertically */
+    #clientSignatureLinkContainer {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px;
+        padding: 0 4px;
+        margin-top: 10px;
+    }
+    #clientSignatureLinkContainer label {
+        margin-bottom: 0;
+    }
+    #clientSignatureLinkContainer input[type="text"] {
+        width: 100% !important;
+    }
+    #clientSignatureLinkContainer button {
+        width: 100%;
+    }
+}
+
+/* =============================================
+   RESPONSIVE CARD VIEW — add class rct-table
+   ============================================= */
+@media (max-width: 767px) {
+    .rct-table thead {
+        display: none;
+    }
+    .rct-table,
+    .rct-table tbody,
+    .rct-table tr,
+    .rct-table td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    .rct-table tr {
+        margin-bottom: 14px;
+        border: 1px solid #c5bddb !important;
+        border-radius: 10px;
+        padding: 8px 12px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(103, 80, 164, 0.12);
+    }
+    .rct-table td {
+        text-align: right !important;
+        padding: 6px 8px !important;
+        border: none !important;
+        border-bottom: 1px solid #f0eef7 !important;
+        position: relative;
+        padding-left: 52% !important;
+        font-size: 13px;
+        min-height: 32px;
+        word-break: break-word;
+    }
+    .rct-table td:last-child {
+        border-bottom: none !important;
+        text-align: center !important;
+        padding-left: 8px !important;
+    }
+    .rct-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 8px;
+        font-weight: 600;
+        text-align: left;
+        color: #6750a4;
+        font-size: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .rct-table td:last-child::before {
+        content: none;
+    }
+    /* Reset DataTables wrapper decorations when in card mode */
+    .dataTables_wrapper {
+        padding: 8px !important;
+    }
+}
