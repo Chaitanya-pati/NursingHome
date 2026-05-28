@@ -21,7 +21,7 @@ body {
    RESPONSIVE GRID — shared styles for all .rct-table DataTables
    ============================================================ */
 
-/* Tablet (768px – 991px): horizontal scroll instead of collapsing */
+/* Tablet (768px – 991px): horizontal scroll, no collapsing */
 @media (min-width: 768px) and (max-width: 991px) {
   .dataTables_wrapper {
     overflow-x: auto;
@@ -32,57 +32,85 @@ body {
   }
 }
 
-/* Mobile (≤767px): card / stacked layout */
+/* Mobile (≤767px): card layout using CSS Grid per cell */
 @media (max-width: 767px) {
 
-  /* Hide the column header row */
+  /* ---- DataTables wrapper controls ---- */
+  .dataTables_wrapper {
+    overflow-x: hidden;
+  }
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    float: none !important;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+  .dataTables_wrapper .dataTables_filter input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    float: none !important;
+    text-align: center;
+    margin-top: 10px;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+
+  /* ---- Hide header ---- */
   table.rct-table thead {
     display: none !important;
   }
 
-  /* Each row becomes its own card */
+  /* ---- Table & body become block ---- */
   table.rct-table,
-  table.rct-table tbody,
-  table.rct-table tr,
-  table.rct-table td {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
+  table.rct-table tbody {
+    display: block !important;
+    width: 100% !important;
   }
 
+  /* ---- Each row is a card ---- */
   table.rct-table tr {
-    margin-bottom: 14px;
-    border: 1px solid #d8d4e8;
-    border-radius: 8px;
-    padding: 6px 4px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 12px !important;
+    border: 1px solid #d8d4e8 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
   }
 
-  /* Each cell: label on the left, value on the right */
+  /* ---- Each cell: CSS Grid with label | value ---- */
   table.rct-table td {
-    position: relative;
-    padding: 9px 10px 9px 50%;
-    border: none;
-    border-bottom: 1px solid #f0eef8;
-    text-align: right;
-    font-size: 13px;
-    min-height: 36px;
-    word-break: break-word;
+    display: grid !important;
+    grid-template-columns: 45% 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 9px 12px !important;
+    border: none !important;
+    border-bottom: 1px solid #f0eef8 !important;
+    font-size: 13px !important;
+    gap: 8px;
+    overflow: hidden !important;
   }
 
   table.rct-table td:last-child {
-    border-bottom: none;
+    border-bottom: none !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
   }
 
-  /* Column label injected via ::before — each view defines the content */
+  /* ---- Column label (::before = first grid column) ---- */
   table.rct-table td::before {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 44%;
-    padding-right: 6px;
     font-weight: 600;
     font-size: 12px;
     color: #6f42c1;
@@ -90,41 +118,19 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    align-self: center;
   }
 
-  /* Action column (last td): centred, no label offset */
-  table.rct-table td:last-child {
-    padding-left: 10px;
-    text-align: center;
-  }
-
+  /* ---- Action cell: no label, centred ---- */
   table.rct-table td:last-child::before {
     content: none !important;
+    display: none !important;
   }
 
-  /* DataTables controls: stack neatly */
-  .dataTables_wrapper .dataTables_length,
-  .dataTables_wrapper .dataTables_filter {
-    float: none;
-    text-align: left;
-    margin-bottom: 8px;
-  }
-
-  .dataTables_wrapper .dataTables_filter input {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .dataTables_wrapper .dataTables_info,
-  .dataTables_wrapper .dataTables_paginate {
-    float: none;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .dataTables_wrapper .dataTables_paginate .paginate_button {
-    padding: 4px 8px;
-    font-size: 13px;
+  /* ---- Value text: right-align, wraps cleanly ---- */
+  table.rct-table td,
+  table.rct-table td * {
+    word-break: break-word;
+    min-width: 0;
   }
 }

@@ -7,8 +7,6 @@
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 
-<script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script>
-<script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.js"></script>
 
 <!-- Modal -->
 <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -622,16 +620,7 @@
         }
 
         function GetData() {
-            var table = $('#tblOldAge').DataTable({
-                responsive: true,
-                columnDefs: [
-                    { responsivePriority: 1, targets: 0 }, // Patient Name
-                    { responsivePriority: 2, targets: -1 }, // Action column
-                    { responsivePriority: 3, targets: 1 }, // Admission Date
-                    { responsivePriority: 4, targets: 2 }, // Period From
-                    { responsivePriority: 5, targets: 3 }  // Period To
-                ]
-            });
+            var table = $('#tblOldAge').DataTable();
             let startDate = $('#startDate').val();
             let endDate = $('#endDate').val();
             let user = $('#ddlUsers').val();
@@ -642,7 +631,7 @@
                 success: function (response) {
                     table.clear().draw();
                     response.data.forEach(function (item) {
-                        var row = table.row.add([
+                        table.row.add([
                             item.patientName,
                             item.admissionDate ? item.admissionDate.split("T")[0] : null,
                             item.periodFrom ? item.periodFrom.split("T")[0] : null,
@@ -650,14 +639,6 @@
                             '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
                                     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
                         ]).draw();
-                        
-                        // Add data-label attributes for responsive card view
-                        var rowNode = row.node();
-                        $(rowNode).find('td').eq(0).attr('data-label', 'Patient Name');
-                        $(rowNode).find('td').eq(1).attr('data-label', 'Admission Date');
-                        $(rowNode).find('td').eq(2).attr('data-label', 'Period From');
-                        $(rowNode).find('td').eq(3).attr('data-label', 'Period To');
-                        $(rowNode).find('td').eq(4).attr('data-label', 'Action');
                     });
                     $('#oldAgeLoader').hide();
                     },
