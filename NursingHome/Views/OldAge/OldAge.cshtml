@@ -375,12 +375,41 @@
                 return '';
             }
 
-            var formContainer = document.querySelector('#oldAgePopup .registrationFormContent');
-            var pdfFilename   = ($('#patientName').val() || 'patient') + '.pdf';
-            var clientSign    = getPDFSignatureSrc('clientSignature', 'clientSignatureImage');
-            var authSign      = getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage');
-
-            await generatePDFFromForm(formContainer, pdfFilename, clientSign, authSign);
+            await generateRegistrationPDF({
+                filename:          ($('#patientName').val() || 'patient') + '.pdf',
+                formTitle:         'OLD AGE ADMISSION FORM:',
+                serialNo:          $('#serialNo').val(),
+                date:              $('#adminssionDate').val(),
+                addressLine1:      $('#customAdreesLine1').text().trim(),
+                mobileNumbers:     $('#cutomMobileNumbers').text().trim(),
+                email:             $('#customEmailAddress').text().trim(),
+                fields: [
+                    { label: 'Patient Name',         value: $('#patientName').val() },
+                    { label: 'Address',              value: $('#address').val() },
+                    { label: 'Patient Age',          value: $('#patientAge').val() },
+                    { label: 'Patient Condition',    value: $('#patientCondition').val() },
+                    { label: 'Customer Name',        value: $('#customerName').val() },
+                    { label: 'Mobile No',            value: $('#mobileNo').val() },
+                    { label: 'ID Proof',             value: $('#idProof')[0].files.length ? $('#idProof')[0].files[0].name : '(uploaded)' },
+                    { label: 'Types of Service',     value: $('#typesOfService').val() },
+                    { label: 'Registration Charges', value: $('#registrationCharges').val() },
+                    { label: 'Monthly Payment Rs',   value: $('#monthlyPayment').val() },
+                    { label: 'Period From',          value: $('#periodFrom').val() },
+                    { label: 'To',                   value: $('#periodTo').val() }
+                ],
+                termsTitle:        'Terms and Conditions for Client:',
+                terms: [
+                    'We give with patients attender and nursing staff with emergency doctor visit.',
+                    'Three times food and tea, coffee (daily changes of food).',
+                    'We don\'t allow outside food and we don\'t provide any event foods for patients.',
+                    'We don\'t gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).',
+                    'If the patient\'s discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.',
+                    'In case patient death non refund advance amount.'
+                ],
+                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.',
+                clientSignSrc:     getPDFSignatureSrc('clientSignature', 'clientSignatureImage'),
+                authorizedSignSrc: getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage')
+            });
         });
 
         $('#idProof').on('change', function (event) {

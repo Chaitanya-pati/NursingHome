@@ -1,244 +1,237 @@
 /**
  * pdfGenerator.js
  *
- * Generates a PDF by cloning the actual form DOM so the output is
- * pixel-identical to what the user sees on screen.
+ * Builds a completely self-contained, inline-styled HTML string that
+ * replicates the registration form layout exactly — no Bootstrap, no
+ * external CSS.  The string is handed directly to html2pdf(), which
+ * creates its own properly-positioned container internally.
  *
- * Strategy:
- *  1. Deep-clone the modal-body (.registrationFormContent).
- *  2. Replace every <input>/<select> with a plain <span> showing its value.
- *  3. Replace signature <canvas> elements with <img> data-URI tags.
- *  4. Remove interactive chrome (file inputs, refresh icons, hidden inputs …).
- *  5. Inject an inline <style> that overrides every Bootstrap responsive rule
- *     so the layout is always rendered at fixed A4 widths regardless of the
- *     device viewport.
- *  6. Wrap everything in a 794 px container and hand it to html2pdf as an
- *     HTML string (most reliable path — avoids blank-page bugs).
+ * config = {
+ *   filename          : string
+ *   formTitle         : string          e.g. "Registration Form:"
+ *   serialNo          : string
+ *   date              : string
+ *   fields            : [{label, value}]
+ *   termsTitle        : string
+ *   terms             : string[]
+ *   declarationText   : string
+ *   clientSignSrc     : string          data URI or ''
+ *   authorizedSignSrc : string          data URI or ''
+ *   addressLine1      : string
+ *   mobileNumbers     : string
+ *   email             : string
+ * }
  */
-
 (function (window) {
     'use strict';
 
     /* ------------------------------------------------------------------ */
-    /*  CSS override block injected into every PDF render                  */
+    /*  Logo fetcher                                                        */
     /* ------------------------------------------------------------------ */
-    var PDF_STYLE = [
-        '* { box-sizing: border-box !important; }',
-
-        /* ---- Force all Bootstrap grid columns to their desktop widths ---- */
-        '.container, .container-fluid { width: 100% !important; padding: 0 !important; }',
-        '.row { display: flex !important; flex-wrap: wrap !important; margin: 0 !important; }',
-        '.col-1  { flex: 0 0  8.333% !important; max-width:  8.333% !important; width:  8.333% !important; padding: 0 4px !important; }',
-        '.col-2  { flex: 0 0 16.667% !important; max-width: 16.667% !important; width: 16.667% !important; padding: 0 4px !important; }',
-        '.col-3  { flex: 0 0 25%     !important; max-width: 25%     !important; width: 25%     !important; padding: 0 4px !important; }',
-        '.col-4  { flex: 0 0 33.333% !important; max-width: 33.333% !important; width: 33.333% !important; padding: 0 4px !important; }',
-        '.col-5  { flex: 0 0 41.667% !important; max-width: 41.667% !important; width: 41.667% !important; padding: 0 4px !important; }',
-        '.col-6  { flex: 0 0 50%     !important; max-width: 50%     !important; width: 50%     !important; padding: 0 4px !important; }',
-        '.col-7  { flex: 0 0 58.333% !important; max-width: 58.333% !important; width: 58.333% !important; padding: 0 4px !important; }',
-        '.col-8  { flex: 0 0 66.667% !important; max-width: 66.667% !important; width: 66.667% !important; padding: 0 4px !important; }',
-        '.col-9  { flex: 0 0 75%     !important; max-width: 75%     !important; width: 75%     !important; padding: 0 4px !important; }',
-        '.col-10 { flex: 0 0 83.333% !important; max-width: 83.333% !important; width: 83.333% !important; padding: 0 4px !important; }',
-        '.col-11 { flex: 0 0 91.667% !important; max-width: 91.667% !important; width: 91.667% !important; padding: 0 4px !important; }',
-        '.col-12 { flex: 0 0 100%    !important; max-width: 100%    !important; width: 100%    !important; padding: 0 4px !important; }',
-
-        /* ---- Tables ---- */
-        '.table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; }',
-        '.table-bordered td, .table-bordered th { border: 1px solid #aaa !important; padding: 6px 10px !important; vertical-align: middle !important; word-wrap: break-word !important; }',
-        'td, th { word-wrap: break-word !important; overflow-wrap: break-word !important; }',
-
-        /* ---- Suppress Bootstrap's mobile table stacking ---- */
-        '.modal-body table tr td:first-child { display: table-cell !important; width: auto !important; font-weight: normal !important; padding-bottom: inherit !important; }',
-        '.modal-body table tr td:last-child  { display: table-cell !important; width: auto !important; padding-top: inherit !important; }',
-
-        /* ---- Inputs become transparent so only the text value shows ---- */
-        'input, select, textarea { border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; -webkit-appearance: none !important; width: 100% !important; font-size: inherit !important; font-family: inherit !important; }',
-        '.form-control { border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }',
-
-        /* ---- Alignment helpers ---- */
-        '.contentCenter { display: flex !important; justify-content: center !important; align-items: center !important; }',
-        '.contentEnd    { display: flex !important; justify-content: flex-end   !important; align-items: center !important; }',
-
-        /* ---- Signatures always side-by-side ---- */
-        '.signature-section { display: flex !important; flex-direction: row !important; align-items: flex-end !important; }',
-        '.signature-box     { width: 33.333% !important; flex: 0 0 33.333% !important; }',
-
-        /* ---- Remove all @media responsive overrides (replaced above) ---- */
-        /* ---- Prevent page-break inside key sections ---- */
-        'table, tr, td { page-break-inside: avoid !important; }',
-        '.signature-section { page-break-inside: avoid !important; }',
-
-        /* ---- Hide elements that must not appear in PDF ---- */
-        '.pdf-hide { display: none !important; }',
-
-        /* ---- Margins / spacing ---- */
-        '.mt-2 { margin-top: 8px !important; }',
-        '.mt-1 { margin-top: 4px !important; }',
-        '.ml-2 { margin-left: 8px !important; }',
-        '.mb-2 { margin-bottom: 8px !important; }',
-        '.me-1 { margin-right: 4px !important; }',
-    ].join('\n');
-
-    /* ------------------------------------------------------------------ */
-    /*  Helpers                                                             */
-    /* ------------------------------------------------------------------ */
-
-    function fetchAsDataUri(url) {
+    function fetchDataUri(url) {
         return fetch(url)
             .then(function (r) { return r.blob(); })
             .then(function (blob) {
                 return new Promise(function (resolve) {
-                    var reader = new FileReader();
-                    reader.onload  = function (e) { resolve(e.target.result); };
-                    reader.onerror = function ()  { resolve(''); };
-                    reader.readAsDataURL(blob);
+                    var fr = new FileReader();
+                    fr.onload  = function (e) { resolve(e.target.result); };
+                    fr.onerror = function ()  { resolve(''); };
+                    fr.readAsDataURL(blob);
                 });
             })
             .catch(function () { return ''; });
     }
 
-    /**
-     * Replace every <img> inside el whose src is a relative /images/… path
-     * with a data-URI version so html2canvas never needs a network request.
-     */
-    function inlineImages(el) {
-        var imgs = el.querySelectorAll('img');
-        var promises = [];
-        imgs.forEach(function (img) {
-            var src = img.getAttribute('src') || '';
-            if (!src || src.startsWith('data:')) return;
-            var absolute = src.startsWith('http') ? src : (window.location.origin + (src.startsWith('/') ? '' : '/') + src);
-            promises.push(
-                fetchAsDataUri(absolute).then(function (dataUri) {
-                    if (dataUri) img.setAttribute('src', dataUri);
-                })
-            );
-        });
-        return Promise.all(promises);
+    /* ------------------------------------------------------------------ */
+    /*  HTML escaping                                                       */
+    /* ------------------------------------------------------------------ */
+    function esc(s) {
+        if (s == null) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Section builders (all inline styles)                               */
+    /* ------------------------------------------------------------------ */
+
+    /* ── Header: logo | VEDHANTH + subtitle | logo ── */
+    function buildHeader(logoPlus, logoSteth, addressLine1, mobileNumbers, email) {
+        var imgL = logoPlus  ? '<img src="' + logoPlus  + '" style="height:65px;width:80px;object-fit:contain;display:block;" />' : '';
+        var imgR = logoSteth ? '<img src="' + logoSteth + '" style="height:65px;width:80px;object-fit:contain;display:block;margin-left:auto;" />' : '';
+
+        return '<tr>' +
+            '<td colspan="2" style="padding:10px 14px 8px;border:1px solid #999;">' +
+              /* logos + brand name */
+              '<table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tbody><tr>' +
+                '<td style="width:88px;vertical-align:middle;">' + imgL + '</td>' +
+                '<td style="text-align:center;vertical-align:middle;padding:0 6px;">' +
+                  '<div style="font-family:fantasy,serif;font-size:40px;color:red;letter-spacing:4px;line-height:1.1;margin:0;">VEDHANTH</div>' +
+                  '<div style="font-size:20px;color:red;font-weight:500;margin-top:2px;">Home Nursing Helpline</div>' +
+                '</td>' +
+                '<td style="width:88px;vertical-align:middle;">' + imgR + '</td>' +
+              '</tr></tbody></table>' +
+              /* address */
+              '<div style="text-align:center;margin-top:6px;font-size:12px;font-weight:500;">' + esc(addressLine1) + '</div>' +
+              '<div style="text-align:center;font-size:12px;font-weight:500;">Mob : ' + esc(mobileNumbers) + ' &nbsp;&nbsp; Email : ' + esc(email) + '</div>' +
+            '</td>' +
+            '</tr>';
+    }
+
+    /* ── Form title row: "Registration Form:" on the left, No / Date on the right ── */
+    function buildTitleRow(formTitle, serialNo, date) {
+        return '<tr>' +
+            '<td colspan="2" style="padding:8px 14px;border:1px solid #999;">' +
+              '<table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tbody><tr>' +
+                /* left 58%: form title */
+                '<td style="width:58%;text-align:right;vertical-align:middle;padding-right:16px;">' +
+                  '<span style="color:red;font-size:15px;font-weight:700;">' + esc(formTitle) + '</span>' +
+                '</td>' +
+                /* right 42%: No + Date */
+                '<td style="width:42%;vertical-align:middle;">' +
+                  '<table style="width:100%;border-collapse:collapse;"><tbody>' +
+                    '<tr>' +
+                      '<td style="font-size:13px;white-space:nowrap;padding:2px 6px 2px 0;width:42px;">No :</td>' +
+                      '<td style="border-bottom:1px solid #555;font-size:13px;padding:2px 4px;">' + esc(serialNo) + '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                      '<td style="font-size:13px;white-space:nowrap;padding:6px 6px 2px 0;">Date :</td>' +
+                      '<td style="border-bottom:1px solid #555;font-size:13px;padding:6px 4px 2px;">' + esc(date) + '</td>' +
+                    '</tr>' +
+                  '</tbody></table>' +
+                '</td>' +
+              '</tr></tbody></table>' +
+            '</td>' +
+            '</tr>';
+    }
+
+    /* ── Field rows: label (35%) | value (65%) ── */
+    function buildFieldRows(fields) {
+        return fields.map(function (f) {
+            return '<tr>' +
+                '<td style="width:35%;padding:7px 12px;border:1px solid #999;font-size:13px;font-weight:600;vertical-align:middle;word-wrap:break-word;">' +
+                  esc(f.label) +
+                '</td>' +
+                '<td style="width:65%;padding:7px 12px;border:1px solid #999;font-size:13px;vertical-align:middle;word-wrap:break-word;">' +
+                  esc(f.value) +
+                '</td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    /* ── Terms + Declaration + Signatures ── */
+    function buildTermsRow(termsTitle, terms, declarationText, clientSignSrc, authSignSrc) {
+
+        /* numbered term items */
+        var termLines = terms.map(function (t, i) {
+            return '<div style="display:table;width:100%;margin-top:8px;">' +
+                '<div style="display:table-cell;width:28px;font-size:12px;font-weight:700;vertical-align:top;text-align:center;">' + (i + 1) + '.</div>' +
+                '<div style="display:table-cell;font-size:12px;line-height:1.6;vertical-align:top;">' + esc(t) + '</div>' +
+                '</div>';
+        }).join('');
+
+        /* signature images or blank spacers */
+        var clientImg = clientSignSrc
+            ? '<img src="' + clientSignSrc + '" style="max-width:140px;max-height:60px;object-fit:contain;display:block;" />'
+            : '<div style="height:60px;"></div>';
+        var authImg = authSignSrc
+            ? '<img src="' + authSignSrc + '" style="max-width:140px;max-height:60px;object-fit:contain;display:block;margin-left:auto;" />'
+            : '<div style="height:60px;"></div>';
+
+        return '<tr>' +
+            '<td colspan="2" style="padding:12px 14px 16px;border:1px solid #999;">' +
+              /* terms heading */
+              '<div style="font-size:13px;font-weight:700;margin-bottom:4px;">' + esc(termsTitle) + '</div>' +
+              termLines +
+              /* declaration */
+              '<div style="font-size:13px;font-weight:700;margin-top:14px;margin-bottom:6px;">Declaration</div>' +
+              '<div style="font-size:12px;line-height:1.6;margin-bottom:22px;">' + esc(declarationText) + '</div>' +
+              /* signatures */
+              '<table style="width:100%;border-collapse:collapse;table-layout:fixed;"><tbody><tr>' +
+                '<td style="width:33%;vertical-align:bottom;padding-bottom:4px;">' +
+                  clientImg +
+                  '<div style="border-top:1px solid #444;margin-top:6px;padding-top:4px;font-size:12px;">Signature of the Client</div>' +
+                '</td>' +
+                '<td style="width:34%;"></td>' +
+                '<td style="width:33%;vertical-align:bottom;padding-bottom:4px;">' +
+                  authImg +
+                  '<div style="border-top:1px solid #444;margin-top:6px;padding-top:4px;font-size:12px;text-align:right;">Authorised Signatory</div>' +
+                '</td>' +
+              '</tr></tbody></table>' +
+            '</td>' +
+            '</tr>';
     }
 
     /* ------------------------------------------------------------------ */
     /*  Public API                                                          */
     /* ------------------------------------------------------------------ */
+    window.generateRegistrationPDF = async function (config) {
 
-    /**
-     * generatePDFFromForm(containerEl, filename, clientSignSrc, authorizedSignSrc)
-     *
-     * containerEl      – the DOM element wrapping the form (modal-body div)
-     * filename         – output file name
-     * clientSignSrc    – data URI for client signature (or '')
-     * authorizedSignSrc– data URI for authorized signature (or '')
-     */
-    window.generatePDFFromForm = async function (containerEl, filename, clientSignSrc, authorizedSignSrc) {
+        /* Fetch logos as data URIs so html2canvas never makes a network call */
+        var base = window.location.origin;
+        var logos = await Promise.all([
+            fetchDataUri(base + '/images/plus%20icon.png'),
+            fetchDataUri(base + '/images/stethoscope.png')
+        ]);
 
-        /* 1. Deep-clone so we never mutate the live form */
-        var clone = containerEl.cloneNode(true);
+        /* Build the complete inline-styled table */
+        var rows =
+            buildHeader(logos[0], logos[1], config.addressLine1, config.mobileNumbers, config.email) +
+            buildTitleRow(config.formTitle, config.serialNo, config.date) +
+            buildFieldRows(config.fields) +
+            buildTermsRow(
+                config.termsTitle,
+                config.terms,
+                config.declarationText,
+                config.clientSignSrc    || '',
+                config.authorizedSignSrc || ''
+            );
 
-        /* 2. Replace <input type="text|number"> with plain spans */
-        clone.querySelectorAll('input[type="text"], input[type="number"]').forEach(function (el) {
-            var span = document.createElement('span');
-            span.style.cssText = 'display:inline-block;width:100%;word-break:break-word;white-space:pre-wrap;';
-            span.textContent = el.value || '';
-            el.parentNode.replaceChild(span, el);
-        });
+        /*
+         * Outer wrapper: fixed 740 px so it fits inside A4 content area.
+         * At windowWidth 794 and margin 0.25 in × 2 the content area
+         * on the PDF page is ≈ 7.77 in = 745 px — 740 px is safe.
+         */
+        var html =
+            '<div style="' +
+              'width:740px;' +
+              'font-family:Arial,Helvetica,sans-serif;' +
+              'background:#fff;' +
+              'padding:0;' +
+              'box-sizing:border-box;' +
+            '">' +
+              '<table style="' +
+                'width:100%;' +
+                'border-collapse:collapse;' +
+                'border:1px solid #999;' +
+                'table-layout:fixed;' +
+                'page-break-inside:auto;' +
+              '">' +
+                '<tbody>' + rows + '</tbody>' +
+              '</table>' +
+            '</div>';
 
-        /* 3. Replace <input type="date"> with plain spans */
-        clone.querySelectorAll('input[type="date"]').forEach(function (el) {
-            var span = document.createElement('span');
-            span.style.cssText = 'display:inline-block;';
-            span.textContent = el.value || '';
-            el.parentNode.replaceChild(span, el);
-        });
-
-        /* 4. Replace <select> with the selected option text */
-        clone.querySelectorAll('select').forEach(function (el) {
-            var span = document.createElement('span');
-            span.style.cssText = 'display:inline-block;width:100%;';
-            span.textContent = el.selectedIndex >= 0 && el.options[el.selectedIndex]
-                ? el.options[el.selectedIndex].text : '';
-            el.parentNode.replaceChild(span, el);
-        });
-
-        /* 5. Remove elements that must not appear in the PDF */
-        [
-            'input[type="file"]',
-            'input[type="hidden"]',
-            '#idProofStatus',
-            '#downloadIdProof',
-            '.refreshSign',
-            'button',
-        ].forEach(function (sel) {
-            clone.querySelectorAll(sel).forEach(function (el) {
-                el.parentNode && el.parentNode.removeChild(el);
-            });
-        });
-
-        /* 6. Replace signature <canvas> elements with <img> or blank spacer */
-        clone.querySelectorAll('canvas').forEach(function (canvas) {
-            var id = canvas.id || '';
-            var src = (id === 'clientSignature') ? clientSignSrc
-                    : (id === 'authorizedSignature') ? authorizedSignSrc
-                    : '';
-            if (src) {
-                var img = document.createElement('img');
-                img.src = src;
-                img.style.cssText = 'max-width:140px;max-height:60px;object-fit:contain;display:block;';
-                canvas.parentNode.replaceChild(img, canvas);
-            } else {
-                var spacer = document.createElement('div');
-                spacer.style.height = '60px';
-                canvas.parentNode.replaceChild(spacer, canvas);
-            }
-        });
-
-        /* 7. Hide the signature <img> placeholders (already replaced above via canvas) */
-        clone.querySelectorAll('.signatureContainerImage').forEach(function (img) {
-            img.style.display = 'none';
-        });
-
-        /* 8. Inline all /images/… logo srcs as data URIs */
-        await inlineImages(clone);
-
-        /* 9. Build the final printable wrapper */
-        var wrapper = document.createElement('div');
-        wrapper.style.cssText = [
-            'width:754px',
-            'font-family:Arial,Helvetica,sans-serif',
-            'font-size:13px',
-            'background:#fff',
-            'padding:16px 20px',
-            'box-sizing:border-box',
-        ].join(';');
-
-        var styleTag = document.createElement('style');
-        styleTag.textContent = PDF_STYLE;
-
-        wrapper.appendChild(styleTag);
-        wrapper.appendChild(clone);
-
-        /* 10. Convert to string so html2pdf can use its own container
-               (passing a string avoids the blank-page bug caused by
-               off-screen DOM elements being clipped by html2canvas) */
-        var htmlString = wrapper.outerHTML;
-
-        /* 11. Render */
         var opts = {
-            margin:      [0.35, 0.25, 0.25, 0.25],
-            filename:    filename || 'registration.pdf',
+            margin:      [0.35, 0.28, 0.25, 0.28],   /* top right bottom left (inches) */
+            filename:    config.filename || 'registration.pdf',
             image:       { type: 'jpeg', quality: 0.98 },
             html2canvas: {
-                scale:       2.5,
+                scale:       2,
                 useCORS:     true,
                 allowTaint:  true,
                 logging:     false,
-                windowWidth: 794,
+                windowWidth: 794,          /* A4 pixel width at 96 dpi */
                 scrollX:     0,
                 scrollY:     0,
             },
             jsPDF:       { unit: 'in', format: 'a4', orientation: 'portrait' },
-            pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] },
+            pagebreak:   { mode: ['css', 'legacy'], avoid: ['tr', 'td', '.signature-block'] },
         };
 
-        await html2pdf().from(htmlString).set(opts).save();
+        await html2pdf().from(html).set(opts).save();
     };
 
 })(window);
