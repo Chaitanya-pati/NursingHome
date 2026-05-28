@@ -1,0 +1,50 @@
+We have two ASP.NET MVC Razor views for Nursing Home and Old Age registration forms. The current PDF generation and print layout are unstable across mobile and desktop devices. I want you to completely improve the A4 print rendering system while keeping the existing UI/design exactly the same.
+
+Main goal:
+The generated PDF and print output must always look exactly like a professionally designed fixed A4 hospital registration form, identical on both desktop and mobile devices, without any layout breaking, shifting, scaling issues, or content overflow.
+
+Current issues:
+
+PDF layout changes on mobile devices
+Content breaks between pages
+Terms & conditions split awkwardly
+Signature section shifts or resizes
+Modal responsiveness affects PDF structure
+Bootstrap responsive classes break print layout
+Different output on desktop vs mobile
+Long text pushes table structure
+Hidden rows still affect spacing
+Generated PDF sometimes clips bottom content
+Excess white space appears
+Alignment is inconsistent
+Editing/reopening forms changes layout
+
+Requirements:
+
+Create a true fixed A4 rendering system for both forms.
+PDF must always maintain exact A4 proportions regardless of screen size.
+Mobile should only scale visually for preview, but PDF structure must remain desktop-style A4.
+Prevent any table rows, signatures, or terms sections from breaking across pages.
+Ensure signatures remain sharp, aligned, and fixed in position.
+Prevent Bootstrap/mobile CSS from affecting PDF generation.
+Use a separate print-safe rendering mode for PDF generation.
+Create a hidden clean print container instead of generating PDF directly from modal.
+Improve PDF quality and sharpness for text, borders, and images.
+Ensure all borders, red headings, logos, and signatures print correctly.
+Keep all existing branding, colors, table structure, and UI exactly the same.
+Do not redesign the form — only improve print stability and A4 consistency.
+Create one reusable PDF generation function shared between Nursing Home and Old Age forms.
+Ensure generated PDFs look exactly like the reference registration form image provided.
+Make the layout hospital-grade and production-ready for printing from Chrome, Edge, Android Chrome, desktop, and mobile browsers.
+Prevent responsive columns or stacked layouts inside the PDF.
+Fix spacing, overflow, alignment, margin, and page break problems completely.
+Ensure edit/save/reopen operations preserve exact layout consistency.
+Make terms & conditions and signature sections non-breakable.
+Ensure long addresses and dynamic content never distort the form layout.
+
+Apply all these improvements to BOTH:
+
+NursingHome.cshtml
+OldAge.cshtml
+
+Do a professional refactor of the print/PDF rendering system and provide the best possible stable solution for consistent A4 printing and PDF generation.

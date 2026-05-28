@@ -362,50 +362,52 @@
         })
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
-            const source = document.querySelector('.registrationFormContent');
 
-            // Clone and render at fixed desktop width so mobile layout doesn't affect PDF
-            const clone = source.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            clone.style.width = '780px';
-            clone.style.transform = '';
-            clone.style.transformOrigin = '';
-            document.body.appendChild(clone);
-
-            // Wait for all images (including base64 signature images) to fully decode
-            const images = Array.from(clone.querySelectorAll('img'));
-            await Promise.all(images.map(function (img) {
-                if (img.src && img.complete && img.naturalWidth > 0) return Promise.resolve();
-                if (img.src) {
-                    return new Promise(function (resolve) {
-                        img.onload = resolve;
-                        img.onerror = resolve;
-                    });
+            function getPDFSignatureSrc(canvasId, imgId) {
+                var canvas = document.getElementById(canvasId);
+                var img = document.getElementById(imgId);
+                if (canvas && !canvas.hidden) {
+                    var ctx = canvas.getContext('2d');
+                    var buf = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+                    if (buf.some(function (c) { return c !== 0; })) return canvas.toDataURL('image/png');
                 }
-                return Promise.resolve();
-            }));
+                if (img && !img.hidden && img.src && img.src.length > 50) return img.src;
+                return '';
+            }
 
-            const options = {
-                margin: [0.3, 0.3, 0.08, 0.3],
-                filename: ($('#patientName').val() || 'patient') + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false,
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: 780
-                },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            html2pdf().from(clone).set(options).save().finally(function () {
-                document.body.removeChild(clone);
+            await generateRegistrationPDF({
+                filename:          ($('#patientName').val() || 'patient') + '.pdf',
+                formTitle:         'OLD AGE ADMISSION FORM:',
+                serialNo:          $('#serialNo').val(),
+                date:              $('#adminssionDate').val(),
+                addressLine1:      $('#customAdreesLine1').text().trim(),
+                mobileNumbers:     $('#cutomMobileNumbers').text().trim(),
+                email:             $('#customEmailAddress').text().trim(),
+                fields: [
+                    { label: 'Patient Name',           value: $('#patientName').val() },
+                    { label: 'Address',                value: $('#address').val() },
+                    { label: 'Patient Age',            value: $('#patientAge').val() },
+                    { label: 'Patient Condition',      value: $('#patientCondition').val() },
+                    { label: 'Customer Name',          value: $('#customerName').val() },
+                    { label: 'Mobile No',              value: $('#mobileNo').val() },
+                    { label: 'Types of Service',       value: $('#typesOfService').val() },
+                    { label: 'Registration Charges',   value: $('#registrationCharges').val() },
+                    { label: 'Monthly Payment Rs',     value: $('#monthlyPayment').val() },
+                    { label: 'Period From',            value: $('#periodFrom').val() },
+                    { label: 'To',                     value: $('#periodTo').val() }
+                ],
+                termsTitle:        'Terms and Conditions for Client:',
+                terms: [
+                    'We give with patients attender and nursing staff with emergency doctor visit.',
+                    'Three times food and tea, coffee (daily changes of food).',
+                    'We don\'t allow outside food and we don\'t provide any event foods for patients.',
+                    'We don\'t gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).',
+                    'If the patient\'s discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.',
+                    'In case patient death non refund advance amount.'
+                ],
+                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.',
+                clientSignSrc:     getPDFSignatureSrc('clientSignature', 'clientSignatureImage'),
+                authorizedSignSrc: getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage')
             });
         });
 
