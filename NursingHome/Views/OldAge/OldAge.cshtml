@@ -347,6 +347,14 @@
                 var ID = JSON.parse($(this).attr('dataId'));
                 confirmDelete(ID);
             });
+            $('#tblOldAge').on('click', '.btn-sign-link', function () {
+                var itemId = $(this).attr('data-id');
+                var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                var link = baseUrl + '/OldAge/ClientSignature?id=' + itemId;
+                $('#clientSignatureLink').val(link);
+                $('#clientSignatureLinkContainer').show();
+                $('html, body').animate({ scrollTop: $('#clientSignatureLinkContainer').offset().top }, 400);
+            });
             $('#tblOldAgePayment').on('click', '.btn-edit', function () {
                 var fullData = JSON.parse($(this).attr('data-full-data'));
                 BindPaymentData(fullData);
@@ -666,8 +674,11 @@
                             item.admissionDate ? item.admissionDate.split("T")[0] : null,
                             item.periodFrom ? item.periodFrom.split("T")[0] : null,
                             item.periodTo ? item.periodTo.split("T")[0] : null,
-                            '<div class="contentCenter"><i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                                    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i></div>'
+                            '<div class="contentCenter">' +
+                            '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green;cursor:pointer;" title="Edit" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+                            '<i class="fa-solid fa-paper-plane me-4 ml-2 btn-sign-link" style="color:#0d6efd;cursor:pointer;" title="Send Signature Link" data-id="' + item.id + '"></i>' +
+                            '<i class="fa fa-trash ml-2 btn-delete" style="color:red;cursor:pointer;" title="Delete" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
+                            '</div>'
                         ]).draw();
                     });
                     $('#oldAgeLoader').hide();
