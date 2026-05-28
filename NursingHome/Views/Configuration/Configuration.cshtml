@@ -1,6 +1,15 @@
-﻿<div class="container-fluid">
+@{
+    ViewData["Title"] = "Configuration";
+}
+<style>
+    @@media (max-width: 767px) {
+        #tablecity td:nth-child(1)::before { content: "City Name"; }
+        #tablecity td:nth-child(2)::before { content: none; }
+    }
+</style>
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 text-right mt-2">
+        <div class="col-md-12 text-right mt-2 page-add-btn">
             <button type="button" class="customBtn" data-toggle="modal" data-target="#cityModal" onclick="ClearFields()">
                 <i class="fa fa-add me-1"></i>   Add New City
             </button>
@@ -56,7 +65,7 @@
 
     <div class="row mt-4">
         <div class="col-md-12">
-            <table id="tablecity" class="display table-bordered">
+            <table id="tablecity" class="display table-bordered rct-table" style="width:100%">
                 <thead class="thead-light">
                     <tr>
                         <th>Name</th>

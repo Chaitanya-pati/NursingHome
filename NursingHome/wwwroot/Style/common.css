@@ -249,3 +249,21 @@ table.dataTable{
         padding: 8px !important;
     }
 }
+
+/* Responsive nav-tabs — scrollable on mobile so tabs never wrap to a second line */
+@media (max-width: 767px) {
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .nav-tabs .nav-item {
+        flex-shrink: 0;
+    }
+    .nav-tabs .nav-link {
+        font-size: 13px;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+}

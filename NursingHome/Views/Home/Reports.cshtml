@@ -1,8 +1,13 @@
-﻿
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+@{
+    ViewData["Title"] = "Reports";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    @@media (max-width: 767px) {
+        .chart-card { padding: 12px; }
+        canvas { max-height: 220px; }
+    }
+</style>
 
 
 <div class="col-md-12">

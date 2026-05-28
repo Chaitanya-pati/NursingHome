@@ -28,10 +28,18 @@
             transform: rotate(360deg);
         }
     }
+
+    /* Card-view labels for Helpers grid */
+    @@media (max-width: 767px) {
+        #tblHelpers td:nth-child(1)::before { content: "Candidate Name"; }
+        #tblHelpers td:nth-child(2)::before { content: "Permanent Address"; }
+        #tblHelpers td:nth-child(3)::before { content: "Languages Known"; }
+        #tblHelpers td:nth-child(4)::before { content: none; }
+    }
 </style>
 <div id="helpersLoader" class="loader"><div class="spinner"></div></div>
 <div class="container-fluid">
-    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-4 mt-4 mb-2">
+    <div class="col-lg-2 col-md-3 col-sm-12 mt-4 mb-2 page-add-btn">
 
         <button type="button" class="customBtn" onclick="ClearInputFields();">
             Add Helper
@@ -258,7 +266,7 @@
 </div>
 
 <div class="col-12 container-fluid">
-    <table id="tblHelpers" class="display table-bordered" style="width:100%">
+    <table id="tblHelpers" class="display table-bordered rct-table" style="width:100%">
         <thead>
             <tr>
                 <th>Candidate Name</th>

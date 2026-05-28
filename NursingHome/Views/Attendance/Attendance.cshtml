@@ -1,13 +1,24 @@
 ﻿@{
-
     ViewData["Title"] = "Attendance";
 }
+<style>
+    @@media (max-width: 767px) {
+        #tableAttendance td:nth-child(1)::before { content: "Helper Name"; }
+        #tableAttendance td:nth-child(2)::before { content: "Patient Name"; }
+        #tableAttendance td:nth-child(3)::before { content: "Date"; }
+        #tableAttendance td:nth-child(4)::before { content: "Total Hours"; }
+        #tableAttendance td:nth-child(5)::before { content: "Description"; }
+        #tableAttendance td:nth-child(6)::before { content: none; }
+        /* Description cell — allow text to wrap */
+        #tableAttendance td:nth-child(5) { word-break: break-word; }
+    }
+</style>
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 text-right mb-2 mt-2">
+        <div class="col-md-12 text-right mb-2 mt-2 page-add-btn">
             <button type="button" class="customBtn" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
                 Add Attendance
             </button>
@@ -69,7 +80,7 @@
     <!-- Attendance Table -->
     <div class="row mt-2">
         <div class="col-md-12">
-            <table id="tableAttendance" class="display table-bordered">
+            <table id="tableAttendance" class="display table-bordered rct-table" style="width:100%">
                 <thead class="thead-light">
                     <tr>
                         <th>Helper Name</th>
