@@ -410,13 +410,26 @@
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
             $('#helperRow').attr('hidden', 'hidden');
-            const element = document.querySelector('.registrationFormContent');
+            const source = document.querySelector('.registrationFormContent');
+
+            // Clone and render at fixed desktop width so mobile layout doesn't affect PDF
+            const clone = source.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.width = '780px';
+            clone.style.transform = '';
+            clone.style.transformOrigin = '';
+            // Keep helper row hidden in clone too
+            const cloneHelperRow = clone.querySelector('#helperRow');
+            if (cloneHelperRow) cloneHelperRow.setAttribute('hidden', 'hidden');
+            document.body.appendChild(clone);
 
             // Wait for all images (including base64 signature images) to fully decode
-            const images = Array.from(element.querySelectorAll('img'));
+            const images = Array.from(clone.querySelectorAll('img'));
             await Promise.all(images.map(function (img) {
-                if (!img.hidden && img.src && img.complete && img.naturalWidth > 0) return Promise.resolve();
-                if (!img.hidden && img.src) {
+                if (img.src && img.complete && img.naturalWidth > 0) return Promise.resolve();
+                if (img.src) {
                     return new Promise(function (resolve) {
                         img.onload = resolve;
                         img.onerror = resolve;
@@ -426,7 +439,7 @@
             }));
 
             const options = {
-                margin: [0.3, 0.3, 0.3, 0.3],
+                margin: [0.3, 0.3, 0.08, 0.3],
                 filename: ($('#patientName').val() || 'patient') + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: {
@@ -435,13 +448,15 @@
                     allowTaint: true,
                     logging: false,
                     scrollX: 0,
-                    scrollY: 0
+                    scrollY: 0,
+                    windowWidth: 780
                 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            html2pdf().from(element).set(options).save().finally(function () {
+            html2pdf().from(clone).set(options).save().finally(function () {
+                document.body.removeChild(clone);
                 $('#helperRow').prop('hidden', false);
             });
         });
