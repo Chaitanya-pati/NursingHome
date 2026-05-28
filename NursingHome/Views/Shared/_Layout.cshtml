@@ -42,6 +42,28 @@
         <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 
+        <!-- Mobile card-label injector — registered HERE so it catches the very first draw -->
+        <script>
+            $(document).on('draw.dt', function (e, settings) {
+                var api = new $.fn.dataTable.Api(settings);
+                var headers = $(api.table().header()).find('th').map(function () {
+                    return $(this).text().trim();
+                }).get();
+                $(api.table().body()).find('tr').each(function () {
+                    $(this).find('td').each(function (i) {
+                        var $td = $(this);
+                        if ($td.find('.cell-label').length) return;
+                        var label = headers[i] || '';
+                        var content = $td.html();
+                        $td.html(
+                            '<span class="cell-label">' + label + '</span>' +
+                            '<span class="cell-value">' + content + '</span>'
+                        );
+                    });
+                });
+            });
+        </script>
+
         <!-- jQuery Confirm JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 
@@ -568,29 +590,6 @@
                     sidebarOverlay.classList.remove("active");
                 });
             }
-
-            /* ── Mobile DataTable card labels ───────────────────────────
-               After every DataTable draw, inject .cell-label / .cell-value
-               spans so CSS can lay them out without ::before battles.       */
-            $(document).on('draw.dt', function (e, settings) {
-                var api = new $.fn.dataTable.Api(settings);
-                var headers = $(api.table().header()).find('th').map(function () {
-                    return $(this).text().trim();
-                }).get();
-
-                $(api.table().body()).find('tr').each(function () {
-                    $(this).find('td').each(function (i) {
-                        var $td = $(this);
-                        if ($td.find('.cell-label').length) return; // already done
-                        var label = headers[i] || '';
-                        var content = $td.html();
-                        $td.html(
-                            '<span class="cell-label">' + label + '</span>' +
-                            '<span class="cell-value">' + content + '</span>'
-                        );
-                    });
-                });
-            });
 
             let id = localStorage.getItem('userID');
             if (id == null) {
