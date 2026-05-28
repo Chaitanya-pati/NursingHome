@@ -422,49 +422,12 @@
                 return '';
             }
 
-            await generateRegistrationPDF({
-                filename:          ($('#patientName').val() || 'patient') + '.pdf',
-                formTitle:         'Registration Form:',
-                serialNo:          $('#serialNo').val(),
-                date:              $('#adminssionDate').val(),
-                addressLine1:      $('#customAdreesLine1').text().trim(),
-                mobileNumbers:     $('#cutomMobileNumbers').text().trim(),
-                email:             $('#customEmailAddress').text().trim(),
-                fields: [
-                    { label: 'Patient Name',           value: $('#patientName').val() },
-                    { label: 'Address',                value: $('#address').val() },
-                    { label: 'Patient Age',            value: $('#patientAge').val() },
-                    { label: 'Patient Condition',      value: $('#patientCondition').val() },
-                    { label: 'Customer Name',          value: $('#customerName').val() },
-                    { label: 'Mobile No',              value: $('#mobileNo').val() },
-                    { label: 'Types of Service',       value: $('#typesOfService').val() },
-                    { label: 'Registration Charges',   value: $('#registrationCharges').val() },
-                    { label: 'Monthly Payment Rs',     value: $('#monthlyPayment').val() },
-                    { label: 'Period From',            value: $('#periodFrom').val() },
-                    { label: 'To',                     value: $('#periodTo').val() }
-                ],
-                termsTitle:        'VEDHANTH Home Nursing Services Terms and Conditions:',
-                terms: [
-                    'VEDHANTH Home Nursing Services requires a one-time registration with a non-refundable deposit. If there are any unforeseen events or uncertainties in the patient\'s condition post-registration, the deposit will not be refunded.',
-                    'VEDHANTH Home Nursing Services reserves the right to take appropriate action if there is any violation of the terms and conditions.',
-                    'If our staff visits your home and you cancel the service and contact the staff directly for further assistance without informing VEDHANTH Home Nursing Services, we hold the right to take necessary action.',
-                    'In case the home nurse needs to be absent due to a personal emergency, VEDHANTH Home Nursing Services will provide a replacement who has received sufficient training to handle the patient.',
-                    'If the nursing staff experiences any uncomfortable situation or we receive complaints, VEDHANTH Home Nursing Services will cease providing services to that home.',
-                    'While on duty, the nurse will only provide nursing services. They are not expected to perform additional household work.',
-                    'Any extra work performed by the nursing staff must be agreed upon between the family and the nurse. VEDHANTH Home Nursing Services will not be responsible for this arrangement.',
-                    'Although VEDHANTH Home Nursing Services conducts background checks and collects personal identification of all nursing staff, we request the patient\'s family to ensure the safety and security of all valuables at their residence. VEDHANTH Home Nursing Services will not be responsible for the loss of any belongings.',
-                    'The patient\'s family should refrain from sharing sensitive information such as financial details, ATM passwords, or online banking credentials with the nursing staff. VEDHANTH Home Nursing Services will not be responsible for any misuse of such information.',
-                    'If the family decides to discontinue our nursing services but continues to take service from the same staff without our consent, VEDHANTH Home Nursing Services will not be liable for any arising situations.',
-                    'VEDHANTH Home Nursing Services provides nursing staff and is only responsible for the performance of the staff in relation to the patient\'s care and well-being.',
-                    'In the unfortunate event of a patient\'s death within 15 days of service, the advance payment will be non-refundable.',
-                    'Nurses, Care Takers, and Attenders should be treated respectfully as part of the family. The responsibility of their accommodation and meals lies with the client or the patient\'s family.',
-                    'Nurses, Care Takers, and Attenders will focus solely on patient care. They will not engage in other household tasks.',
-                    'If the nurse, care taker, or attender takes leave, a suitable replacement will be provided.'
-                ],
-                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.',
-                clientSignSrc:     getPDFSignatureSrc('clientSignature', 'clientSignatureImage'),
-                authorizedSignSrc: getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage')
-            });
+            var formContainer = document.querySelector('#homeNursingModal .registrationFormContent');
+            var pdfFilename   = ($('#patientName').val() || 'patient') + '.pdf';
+            var clientSign    = getPDFSignatureSrc('clientSignature', 'clientSignatureImage');
+            var authSign      = getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage');
+
+            await generatePDFFromForm(formContainer, pdfFilename, clientSign, authSign);
         });
         function GetHelperData() {
             let UserName = 'admin';
