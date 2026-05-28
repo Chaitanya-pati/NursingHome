@@ -408,23 +408,41 @@
             document.body.removeChild(link);
         }
 
-        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+        document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
             $('#helperRow').attr('hidden', 'hidden');
             const element = document.querySelector('.registrationFormContent');
-            element.style.transform = 'scale(1)';
-            element.style.transformOrigin = 'top center';
+
+            // Wait for all images (including base64 signature images) to fully decode
+            const images = Array.from(element.querySelectorAll('img'));
+            await Promise.all(images.map(function (img) {
+                if (!img.hidden && img.src && img.complete && img.naturalWidth > 0) return Promise.resolve();
+                if (!img.hidden && img.src) {
+                    return new Promise(function (resolve) {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+                }
+                return Promise.resolve();
+            }));
+
             const options = {
-                margin: 0,
-                filename: $('#patientName').val() + '.pdf',
-                image: { type: 'jpeg', quality: 3 },
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                margin: [0.3, 0.3, 0.3, 0.3],
+                filename: ($('#patientName').val() || 'patient') + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0
+                },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            html2pdf().from(element).set(options).save().finally(() => {
+            html2pdf().from(element).set(options).save().finally(function () {
                 $('#helperRow').prop('hidden', false);
-                element.style.transform = '';
-                element.style.transformOrigin = '';
             });
         });
         function GetHelperData() {
