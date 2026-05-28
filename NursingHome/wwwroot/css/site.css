@@ -16,3 +16,115 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* ============================================================
+   RESPONSIVE GRID — shared styles for all .rct-table DataTables
+   ============================================================ */
+
+/* Tablet (768px – 991px): horizontal scroll instead of collapsing */
+@media (min-width: 768px) and (max-width: 991px) {
+  .dataTables_wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table.rct-table {
+    min-width: 600px;
+  }
+}
+
+/* Mobile (≤767px): card / stacked layout */
+@media (max-width: 767px) {
+
+  /* Hide the column header row */
+  table.rct-table thead {
+    display: none !important;
+  }
+
+  /* Each row becomes its own card */
+  table.rct-table,
+  table.rct-table tbody,
+  table.rct-table tr,
+  table.rct-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  table.rct-table tr {
+    margin-bottom: 14px;
+    border: 1px solid #d8d4e8;
+    border-radius: 8px;
+    padding: 6px 4px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Each cell: label on the left, value on the right */
+  table.rct-table td {
+    position: relative;
+    padding: 9px 10px 9px 50%;
+    border: none;
+    border-bottom: 1px solid #f0eef8;
+    text-align: right;
+    font-size: 13px;
+    min-height: 36px;
+    word-break: break-word;
+  }
+
+  table.rct-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* Column label injected via ::before — each view defines the content */
+  table.rct-table td::before {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44%;
+    padding-right: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6f42c1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Action column (last td): centred, no label offset */
+  table.rct-table td:last-child {
+    padding-left: 10px;
+    text-align: center;
+  }
+
+  table.rct-table td:last-child::before {
+    content: none !important;
+  }
+
+  /* DataTables controls: stack neatly */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    float: none;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    float: none;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+}
