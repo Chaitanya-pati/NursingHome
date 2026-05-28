@@ -32,13 +32,14 @@ body {
   }
 }
 
-/* Mobile (≤767px): card layout using CSS Grid per cell */
+/* ----------------------------------------------------------------
+   Mobile (≤767px): label-above-value stacked card layout
+   Each row becomes a card; each td shows its label above the value.
+   ---------------------------------------------------------------- */
 @media (max-width: 767px) {
 
-  /* ---- DataTables wrapper controls ---- */
-  .dataTables_wrapper {
-    overflow-x: hidden;
-  }
+  /* DataTables controls: stack & fill width */
+  .dataTables_wrapper { overflow-x: hidden; }
   .dataTables_wrapper .dataTables_length,
   .dataTables_wrapper .dataTables_filter {
     float: none !important;
@@ -60,24 +61,25 @@ body {
     font-size: 13px;
   }
 
-  /* ---- Hide header ---- */
+  /* Hide the header row entirely */
   table.rct-table thead {
     display: none !important;
   }
 
-  /* ---- Table & body become block ---- */
+  /* Table and tbody: full-width block */
   table.rct-table,
   table.rct-table tbody {
     display: block !important;
     width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  /* ---- Each row is a card ---- */
+  /* Each row → a card */
   table.rct-table tr {
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 14px !important;
     border: 1px solid #d8d4e8 !important;
     border-radius: 8px !important;
     background: #fff !important;
@@ -86,51 +88,45 @@ body {
     padding: 0 !important;
   }
 
-  /* ---- Each cell: CSS Grid with label | value ---- */
+  /* Each td: label (::before) on top, value below */
   table.rct-table td {
-    display: grid !important;
-    grid-template-columns: 45% 1fr !important;
-    align-items: center !important;
+    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    min-width: 0 !important;
     box-sizing: border-box !important;
-    padding: 9px 12px !important;
+    padding: 8px 14px !important;
     border: none !important;
     border-bottom: 1px solid #f0eef8 !important;
-    font-size: 13px !important;
-    gap: 8px;
-    overflow: hidden !important;
+    text-align: left !important;
+    font-size: 14px !important;
+    color: #333 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
   table.rct-table td:last-child {
     border-bottom: none !important;
-    grid-template-columns: 1fr !important;
-    justify-items: center !important;
+    text-align: center !important;
+    padding: 10px 14px !important;
   }
 
-  /* ---- Column label (::before = first grid column) ---- */
+  /* Label: small uppercase text above the value */
   table.rct-table td::before {
-    font-weight: 600;
-    font-size: 12px;
-    color: #6f42c1;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    align-self: center;
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #6f42c1 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    margin-bottom: 3px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* ---- Action cell: no label, centred ---- */
+  /* Action cell: no label */
   table.rct-table td:last-child::before {
     content: none !important;
     display: none !important;
-  }
-
-  /* ---- Value text: right-align, wraps cleanly ---- */
-  table.rct-table td,
-  table.rct-table td * {
-    word-break: break-word;
-    min-width: 0;
   }
 }
