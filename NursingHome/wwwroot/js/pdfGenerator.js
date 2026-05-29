@@ -170,6 +170,8 @@
             'box-sizing:border-box',
             'z-index:-1',
             'overflow:visible',
+            'padding:0',
+            'margin:0',
         ].join(';');
         document.body.appendChild(clone);
 
