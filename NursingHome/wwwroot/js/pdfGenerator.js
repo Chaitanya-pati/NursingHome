@@ -151,64 +151,122 @@
     /* ================================================================== */
 
     /**
+     * syncLiveValues(original, clone)
+     *
+     * cloneNode(true) copies DOM attributes but NOT JavaScript-set properties.
+     * This function patches the clone so that:
+     *   • input / textarea / select  show the same typed/set value
+     *   • img elements              show the same src (base64 previews, etc.)
+     *   • canvas elements           show the same drawn content (signatures)
+     */
+    function syncLiveValues(original, clone) {
+        /* ── inputs / textareas / selects ── */
+        var oFields = original.querySelectorAll('input, textarea, select');
+        var cFields = clone.querySelectorAll('input, textarea, select');
+        oFields.forEach(function (el, i) {
+            if (!cFields[i]) return;
+            cFields[i].value   = el.value;
+            cFields[i].checked = el.checked;
+        });
+
+        /* ── images (candidate photo, signature image) ── */
+        var oImgs = original.querySelectorAll('img');
+        var cImgs = clone.querySelectorAll('img');
+        oImgs.forEach(function (el, i) {
+            if (cImgs[i]) cImgs[i].src = el.src;
+        });
+
+        /* ── canvases (drawn signature pad) ── */
+        var oCanvases = original.querySelectorAll('canvas');
+        var cCanvases = clone.querySelectorAll('canvas');
+        oCanvases.forEach(function (origC, i) {
+            if (!cCanvases[i]) return;
+            var dCtx = cCanvases[i].getContext('2d');
+            cCanvases[i].width  = origC.width;
+            cCanvases[i].height = origC.height;
+            dCtx.drawImage(origC, 0, 0);
+        });
+    }
+
+    /**
      * generatePDFFromElement(sourceEl, filename)
      *
-     * Captures the element EXACTLY as the browser has already rendered it
-     * (no clone, no forced width) so Bootstrap column widths and all other
-     * computed styles are preserved.  The resulting canvas is then scaled to
-     * fit the A4 content width and sliced into pages with jsPDF.
+     * Strategy:
+     *  1. Clone the source element so the full content height is available
+     *     (the original may be inside a scrollable modal-body).
+     *  2. Sync all live form values, images and canvas drawings from the
+     *     original element to the clone (cloneNode doesn't do this).
+     *  3. Inject the clone at position:fixed, width = CONTENT_PX (741 px)
+     *     so html2canvas renders it at exactly the A4 content width.
+     *     windowWidth is set to the real viewport width so Bootstrap's
+     *     col-* percentage classes compute the same ratios as on screen.
+     *  4. Slice the resulting canvas into A4 pages with jsPDF.
      */
     window.generatePDFFromElement = async function (sourceEl, filename) {
 
-        /* Two rAF ticks so the browser has fully painted before capture */
+        var clone = sourceEl.cloneNode(true);
+        clone.id = '__pdf_el_clone__';
+        clone.style.cssText = [
+            'position:fixed',
+            'left:0',
+            'top:0',
+            'width:' + CONTENT_PX + 'px',
+            'background:#ffffff',
+            'box-sizing:border-box',
+            'z-index:-1',
+            'overflow:visible',
+        ].join(';');
+
+        /* Sync live values BEFORE appending so img.src loads correctly */
+        syncLiveValues(sourceEl, clone);
+
+        document.body.appendChild(clone);
+
+        /* Two rAF ticks — let the browser fully lay out the clone */
         await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
 
-        /* Capture the element in-place — html2canvas accounts for its
-           current scroll/offset position automatically */
-        var canvas = await html2canvas(sourceEl, {
-            scale:      2,
-            useCORS:    true,
-            allowTaint: true,
-            logging:    false,
-            /* scrollX / scrollY: compensate for any page scroll so the
-               element is captured from its true top-left corner          */
-            scrollX:    0,
-            scrollY:    -window.scrollY,
-        });
+        try {
+            var canvas = await html2canvas(clone, {
+                scale:       2,
+                useCORS:     true,
+                allowTaint:  true,
+                logging:     false,
+                width:       CONTENT_PX,
+                /* Keep the real viewport width so Bootstrap col-* ratios
+                   remain identical to what the user sees on screen        */
+                windowWidth: window.innerWidth || document.documentElement.clientWidth,
+            });
 
-        var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-        var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+            var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+            var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-        /*
-         * Scale the captured canvas width to CONTENT_W_MM.
-         * cW is in canvas pixels (scale=2), so:
-         *   mmPerCpx = CONTENT_W_MM / cW
-         * The page strip height follows the same ratio.
-         */
-        var cW       = canvas.width;
-        var cH       = canvas.height;
-        var mmPerCpx = CONTENT_W_MM / cW;
-        var pageHpx  = Math.floor(CONTENT_H_MM / mmPerCpx);
-        var total    = Math.ceil(cH / pageHpx);
+            var cW       = canvas.width;          // CONTENT_PX * 2  (scale 2)
+            var cH       = canvas.height;
+            var mmPerCpx = CONTENT_W_MM / cW;     // exact A4 ratio
+            var pageHpx  = Math.floor(CONTENT_H_MM / mmPerCpx);
+            var total    = Math.ceil(cH / pageHpx);
 
-        for (var page = 0; page < total; page++) {
-            if (page > 0) doc.addPage();
-            var srcY  = page * pageHpx;
-            var srcH  = Math.min(pageHpx, cH - srcY);
-            var destH = srcH * mmPerCpx;
-            var strip = document.createElement('canvas');
-            strip.width  = cW;
-            strip.height = srcH;
-            strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
-            doc.addImage(
-                strip.toDataURL('image/jpeg', 0.97),
-                'JPEG',
-                MARGIN_MM, MARGIN_T_MM,
-                CONTENT_W_MM, destH
-            );
+            for (var page = 0; page < total; page++) {
+                if (page > 0) doc.addPage();
+                var srcY  = page * pageHpx;
+                var srcH  = Math.min(pageHpx, cH - srcY);
+                var destH = srcH * mmPerCpx;
+                var strip = document.createElement('canvas');
+                strip.width  = cW;
+                strip.height = srcH;
+                strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
+                doc.addImage(
+                    strip.toDataURL('image/jpeg', 0.97),
+                    'JPEG',
+                    MARGIN_MM, MARGIN_T_MM,
+                    CONTENT_W_MM, destH
+                );
+            }
+
+            doc.save(filename || 'document.pdf');
+        } finally {
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
         }
-
-        doc.save(filename || 'document.pdf');
     };
 
     /* ================================================================== */
