@@ -29,7 +29,7 @@
     /* ------------------------------------------------------------------ */
     var CONTENT_PX  = 741;      // element width in CSS px → fits A4 exactly
     var MARGIN_MM   = 7;        // side margins in mm
-    var MARGIN_T_MM = 8;        // top/bottom margin in mm
+    var MARGIN_T_MM = 4;        // top/bottom margin in mm
     var A4_W_MM     = 210;
     var A4_H_MM     = 297;
     var CONTENT_W_MM = A4_W_MM - MARGIN_MM * 2;       // 196 mm
