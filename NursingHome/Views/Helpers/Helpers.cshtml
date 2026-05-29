@@ -290,7 +290,8 @@
         });
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-            var element = document.querySelector('.registrationFormContent > form') || document.querySelector('.registrationFormContent');
+            var element = document.querySelector('.registrationFormContent table') ||
+                          document.querySelector('.registrationFormContent');
             var filename = ($('#candidateName').val() || 'helper') + '.pdf';
             generatePDFFromElement(element, filename);
         });
