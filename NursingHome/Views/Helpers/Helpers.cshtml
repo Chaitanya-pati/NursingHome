@@ -290,17 +290,50 @@
         });
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-            var element  = document.querySelector('.registrationFormContent');
-            var filename = ($('#candidateName').val() || 'helper') + '.pdf';
+            var sourceEl = document.querySelector('.registrationFormContent');
+            var filename  = ($('#candidateName').val() || 'helper') + '.pdf';
 
-            /* Temporarily widen the modal to a fixed desktop size so that
-               Bootstrap's responsive breakpoints never collapse the columns,
-               regardless of whether the user is on mobile or tablet.
-               windowWidth:1200 tells html2canvas to evaluate media-queries
-               as if the viewport is 1200 px wide — same effect internally. */
-            var modalDialog = document.querySelector('#helperModal .custom-modal-dialog');
-            var origStyle   = modalDialog.getAttribute('style') || '';
-            modalDialog.style.cssText = 'width:780px!important;max-width:780px!important;';
+            /* Clone off-screen (position:absolute, left:-9999px) at a fixed
+               760px width so:
+               (a) Bootstrap breakpoints always render in desktop column mode
+                   (reinforced by windowWidth:1200 passed to html2canvas), and
+               (b) the capture area is never clipped by the real viewport width
+                   on mobile/tablet screens.                                   */
+            var clone = sourceEl.cloneNode(true);
+            clone.style.cssText = [
+                'position:absolute',
+                'left:-9999px',
+                'top:0',
+                'width:760px',
+                'background:#fff',
+                'box-sizing:border-box',
+                'overflow:visible',
+            ].join(';');
+
+            /* Sync live values — cloneNode copies DOM attributes but not
+               JavaScript-set .value / .checked, or canvas pixel data.       */
+            var srcFields = sourceEl.querySelectorAll('input,textarea,select');
+            var clnFields = clone.querySelectorAll('input,textarea,select');
+            srcFields.forEach(function (el, i) {
+                if (!clnFields[i]) return;
+                clnFields[i].value   = el.value;
+                clnFields[i].checked = el.checked;
+            });
+
+            var srcImgs = sourceEl.querySelectorAll('img');
+            var clnImgs = clone.querySelectorAll('img');
+            srcImgs.forEach(function (el, i) { if (clnImgs[i]) clnImgs[i].src = el.src; });
+
+            var srcCanvases = sourceEl.querySelectorAll('canvas');
+            var clnCanvases = clone.querySelectorAll('canvas');
+            srcCanvases.forEach(function (orig, i) {
+                if (!clnCanvases[i]) return;
+                clnCanvases[i].width  = orig.width;
+                clnCanvases[i].height = orig.height;
+                clnCanvases[i].getContext('2d').drawImage(orig, 0, 0);
+            });
+
+            document.body.appendChild(clone);
 
             var options = {
                 margin:      0,
@@ -310,8 +343,8 @@
                 jsPDF:       { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            html2pdf().from(element).set(options).save().finally(function () {
-                modalDialog.setAttribute('style', origStyle);
+            html2pdf().from(clone).set(options).save().finally(function () {
+                if (clone.parentNode) clone.parentNode.removeChild(clone);
             });
         });
         function chooseOption() {
