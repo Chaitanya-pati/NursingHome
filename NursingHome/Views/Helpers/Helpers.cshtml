@@ -289,95 +289,30 @@
             GetCityDetails();
         });
 
-        document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
-            var sourceEl = document.querySelector('.registrationFormContent table');
+        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
+            var element  = document.querySelector('.registrationFormContent');
             var filename = ($('#candidateName').val() || 'helper') + '.pdf';
 
-            /* ── Clone the table to a fixed off-screen position ──────────
-               Capturing the live element inside a scrollable modal body
-               causes html2canvas to miscalculate the top offset, cropping
-               the first row. A clone placed directly on <body> has no
-               scroll-container offset to worry about.                       */
-            var clone = sourceEl.cloneNode(true);
-            clone.style.cssText = [
-                'position:fixed',
-                'left:-9999px',
-                'top:0',
-                'width:760px',
-                'background:#ffffff',
-                'box-sizing:border-box',
-                'z-index:-9999',
-                'overflow:visible',
-            ].join(';');
+            /* Temporarily widen the modal to a fixed desktop size so that
+               Bootstrap's responsive breakpoints never collapse the columns,
+               regardless of whether the user is on mobile or tablet.
+               windowWidth:1200 tells html2canvas to evaluate media-queries
+               as if the viewport is 1200 px wide — same effect internally. */
+            var modalDialog = document.querySelector('#helperModal .custom-modal-dialog');
+            var origStyle   = modalDialog.getAttribute('style') || '';
+            modalDialog.style.cssText = 'width:780px!important;max-width:780px!important;';
 
-            /* ── Sync live form values (cloneNode copies attributes, not
-               JavaScript-set .value / .checked / canvas drawings)          */
-            var srcFields = sourceEl.querySelectorAll('input,textarea,select');
-            var clnFields = clone.querySelectorAll('input,textarea,select');
-            srcFields.forEach(function (el, i) {
-                if (!clnFields[i]) return;
-                clnFields[i].value   = el.value;
-                clnFields[i].checked = el.checked;
+            var options = {
+                margin:      0,
+                filename:    filename,
+                image:       { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, windowWidth: 1200, useCORS: true },
+                jsPDF:       { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(options).save().finally(function () {
+                modalDialog.setAttribute('style', origStyle);
             });
-
-            var srcImgs = sourceEl.querySelectorAll('img');
-            var clnImgs = clone.querySelectorAll('img');
-            srcImgs.forEach(function (el, i) {
-                if (clnImgs[i]) clnImgs[i].src = el.src;
-            });
-
-            var srcCanvases = sourceEl.querySelectorAll('canvas');
-            var clnCanvases = clone.querySelectorAll('canvas');
-            srcCanvases.forEach(function (orig, i) {
-                if (!clnCanvases[i]) return;
-                clnCanvases[i].width  = orig.width;
-                clnCanvases[i].height = orig.height;
-                clnCanvases[i].getContext('2d').drawImage(orig, 0, 0);
-            });
-
-            document.body.appendChild(clone);
-
-            /* Two rAF ticks — let the browser lay out the clone fully       */
-            await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
-
-            try {
-                var canvas = await html2canvas(clone, {
-                    scale:       2,
-                    useCORS:     true,
-                    allowTaint:  true,
-                    logging:     false,
-                    width:       760,
-                    windowWidth: 1200,
-                });
-
-                var MGMM  = 7,  MGTMM  = 8;
-                var CW_MM = 196, CH_MM = 281;
-
-                var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-                var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-
-                var cW      = canvas.width;
-                var cH      = canvas.height;
-                var mPerPx  = CW_MM / cW;
-                var pageHpx = Math.floor(CH_MM / mPerPx);
-                var total   = Math.ceil(cH / pageHpx);
-
-                for (var p = 0; p < total; p++) {
-                    if (p > 0) doc.addPage();
-                    var srcY  = p * pageHpx;
-                    var srcH  = Math.min(pageHpx, cH - srcY);
-                    var strip = document.createElement('canvas');
-                    strip.width  = cW;
-                    strip.height = srcH;
-                    strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
-                    doc.addImage(strip.toDataURL('image/jpeg', 0.97), 'JPEG',
-                                 MGMM, MGTMM, CW_MM, srcH * mPerPx);
-                }
-
-                doc.save(filename);
-            } finally {
-                if (clone.parentNode) clone.parentNode.removeChild(clone);
-            }
         });
         function chooseOption() {
             $.alert({
