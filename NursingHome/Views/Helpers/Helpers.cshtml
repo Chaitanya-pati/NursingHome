@@ -290,25 +290,9 @@
         });
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-
-            const element = document.querySelector('.registrationFormContent');
-        $('#siddhartname').text = "ವೇದಾಂತ್";
-            element.style.transform = 'scale(1)';
-            element.style.transformOrigin = 'top center';
-            // Options for html2pdf
-            const options = {
-                margin: 0,
-                filename: $('#candidateName').val() + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
-            html2pdf().from(element).set(options).save().finally(() => {
-
-                element.style.transform = '';
-                element.style.transformOrigin = '';
-            });
+            var element = document.querySelector('.registrationFormContent');
+            var filename = ($('#candidateName').val() || 'helper') + '.pdf';
+            generatePDFFromElement(element, filename);
         });
         function chooseOption() {
             $.alert({

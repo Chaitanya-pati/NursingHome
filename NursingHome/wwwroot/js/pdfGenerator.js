@@ -147,7 +147,78 @@
     }
 
     /* ================================================================== */
-    /*  Public API                                                          */
+    /*  Public API — capture any live DOM element into an A4 PDF          */
+    /* ================================================================== */
+
+    /**
+     * generatePDFFromElement(sourceEl, filename)
+     *
+     * Clones the given element, injects the clone at position:fixed (0,0)
+     * at CONTENT_PX width so html2canvas sees a fully-laid-out subtree,
+     * then slices the resulting canvas into A4 pages exactly like
+     * generateRegistrationPDF does.  The original element is never modified.
+     */
+    window.generatePDFFromElement = async function (sourceEl, filename) {
+        var clone = sourceEl.cloneNode(true);
+        clone.id = '__pdf_el_clone__';
+        clone.style.cssText = [
+            'position:fixed',
+            'left:0',
+            'top:0',
+            'width:' + CONTENT_PX + 'px',
+            'background:#ffffff',
+            'box-sizing:border-box',
+            'z-index:-1',
+            'overflow:visible',
+        ].join(';');
+        document.body.appendChild(clone);
+
+        await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
+
+        try {
+            var canvas = await html2canvas(clone, {
+                scale:       2,
+                useCORS:     true,
+                allowTaint:  true,
+                logging:     false,
+                width:       CONTENT_PX,
+                windowWidth: CONTENT_PX,
+            });
+
+            var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+            var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+            var cW       = canvas.width;
+            var cH       = canvas.height;
+            var mmPerCpx = CONTENT_W_MM / cW;
+            var pageHpx  = Math.floor(CONTENT_H_MM / mmPerCpx);
+            var total    = Math.ceil(cH / pageHpx);
+
+            for (var page = 0; page < total; page++) {
+                if (page > 0) doc.addPage();
+                var srcY  = page * pageHpx;
+                var srcH  = Math.min(pageHpx, cH - srcY);
+                var destH = srcH * mmPerCpx;
+                var strip = document.createElement('canvas');
+                strip.width  = cW;
+                strip.height = srcH;
+                strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
+                doc.addImage(
+                    strip.toDataURL('image/jpeg', 0.97),
+                    'JPEG',
+                    MARGIN_MM, MARGIN_T_MM,
+                    CONTENT_W_MM, destH
+                );
+            }
+
+            doc.save(filename || 'document.pdf');
+        } finally {
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
+        }
+    };
+
+    /* ================================================================== */
+    /*  Public API — build PDF from a config object                        */
     /* ================================================================== */
     window.generateRegistrationPDF = async function (config) {
 
