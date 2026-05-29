@@ -293,14 +293,25 @@
             var element  = document.querySelector('.registrationFormContent table');
             var filename = ($('#candidateName').val() || 'helper') + '.pdf';
 
-            /* Force the modal to a fixed desktop width so Bootstrap's
-               responsive breakpoints never change column layout in the PDF,
-               regardless of the device the user is on.                      */
+            /* 1. Force modal to fixed desktop width — prevents Bootstrap
+                  responsive breakpoints from changing column layout          */
             var modalDialog = document.querySelector('#helperModal .custom-modal-dialog');
             var origStyle   = modalDialog.getAttribute('style') || '';
             modalDialog.style.cssText = 'width:780px!important;max-width:780px!important;margin:2rem auto;';
 
-            /* Two frames so the browser re-paints at the new width          */
+            /* 2. Remove the Bootstrap td padding-top and mt-2 margin that
+                  push the first row's content down in the PDF.
+                  Applied only during capture; removed in the finally block.  */
+            var tempStyle = document.createElement('style');
+            tempStyle.id  = '__helper_pdf_style__';
+            tempStyle.textContent =
+                '#helperModal .registrationFormContent table tbody tr:first-child > td' +
+                '{ padding-top:2px!important; }' +
+                '#helperModal .registrationFormContent table tbody tr:first-child .mt-2' +
+                '{ margin-top:0!important; }';
+            document.head.appendChild(tempStyle);
+
+            /* Two frames so the browser re-paints at the adjusted styles    */
             await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
 
             try {
@@ -312,7 +323,7 @@
                 });
 
                 var MGMM  = 7,  MGTMM  = 8;
-                var CW_MM = 196, CH_MM = 281;   /* 210-14, 297-16 */
+                var CW_MM = 196, CH_MM = 281;
 
                 var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
                 var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
@@ -337,8 +348,9 @@
 
                 doc.save(filename);
             } finally {
-                /* Always restore the modal's original responsive style      */
                 modalDialog.setAttribute('style', origStyle);
+                var ts = document.getElementById('__helper_pdf_style__');
+                if (ts && ts.parentNode) ts.parentNode.removeChild(ts);
             }
         });
         function chooseOption() {
