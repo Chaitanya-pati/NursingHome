@@ -63,7 +63,7 @@
 
                             <tr>
                                 <td colspan="2">
-                                    <div class="row mt-0">
+                                    <div class="row mt-2">
                                         <div class="col-3">
                                             <img src="~/images/plus icon.png" style="height:70px;width:90px" />
                                         </div>
@@ -289,11 +289,57 @@
             GetCityDetails();
         });
 
-        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-            var element = document.querySelector('.registrationFormContent table') ||
-                          document.querySelector('.registrationFormContent');
+        document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
+            var element  = document.querySelector('.registrationFormContent table');
             var filename = ($('#candidateName').val() || 'helper') + '.pdf';
-            generatePDFFromElement(element, filename);
+
+            /* Force the modal to a fixed desktop width so Bootstrap's
+               responsive breakpoints never change column layout in the PDF,
+               regardless of the device the user is on.                      */
+            var modalDialog = document.querySelector('#helperModal .custom-modal-dialog');
+            var origStyle   = modalDialog.getAttribute('style') || '';
+            modalDialog.style.cssText = 'width:780px!important;max-width:780px!important;margin:2rem auto;';
+
+            /* Two frames so the browser re-paints at the new width          */
+            await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
+
+            try {
+                var canvas = await html2canvas(element, {
+                    scale:      2,
+                    useCORS:    true,
+                    allowTaint: true,
+                    logging:    false,
+                });
+
+                var MGMM  = 7,  MGTMM  = 8;
+                var CW_MM = 196, CH_MM = 281;   /* 210-14, 297-16 */
+
+                var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                var doc = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+                var cW      = canvas.width;
+                var cH      = canvas.height;
+                var mPerPx  = CW_MM / cW;
+                var pageHpx = Math.floor(CH_MM / mPerPx);
+                var total   = Math.ceil(cH / pageHpx);
+
+                for (var p = 0; p < total; p++) {
+                    if (p > 0) doc.addPage();
+                    var srcY  = p * pageHpx;
+                    var srcH  = Math.min(pageHpx, cH - srcY);
+                    var strip = document.createElement('canvas');
+                    strip.width  = cW;
+                    strip.height = srcH;
+                    strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
+                    doc.addImage(strip.toDataURL('image/jpeg', 0.97), 'JPEG',
+                                 MGMM, MGTMM, CW_MM, srcH * mPerPx);
+                }
+
+                doc.save(filename);
+            } finally {
+                /* Always restore the modal's original responsive style      */
+                modalDialog.setAttribute('style', origStyle);
+            }
         });
         function chooseOption() {
             $.alert({
