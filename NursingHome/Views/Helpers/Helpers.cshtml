@@ -289,66 +289,263 @@
             GetCityDetails();
         });
 
-        document.getElementById('downloadRegistrationForm').addEventListener('click', function () {
-            var sourceEl = document.querySelector('.registrationFormContent');
-            var filename  = ($('#candidateName').val() || 'helper') + '.pdf';
+        document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
+            var filename = ($('#candidateName').val() || 'helper') + '.pdf';
 
-            /* Place the clone at position:fixed, top:0, left:0, z-index:0.
-               This keeps it inside the viewport so html2canvas can capture
-               the full 760 px width without any clipping (html2canvas uses
-               getBoundingClientRect; an off-screen element gives a blank
-               canvas). The Bootstrap modal backdrop sits at z-index:1040,
-               so the clone is behind the backdrop — the user never sees it.
-               position:fixed also removes it from the modal's scroll/overflow
-               chain, so no ancestor overflow:hidden clips the capture.       */
-            var clone = sourceEl.cloneNode(true);
-            clone.style.cssText = [
-                'position:fixed',
-                'top:0',
-                'left:0',
-                'width:760px',
-                'background:#fff',
+            /* ── helpers ── */
+            function esc(s) {
+                return s == null ? '' : String(s)
+                    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+            function val(id) {
+                var el = document.getElementById(id);
+                return el ? (el.value || '') : '';
+            }
+            async function toDataUri(url) {
+                try {
+                    var blob = await (await fetch(url)).blob();
+                    return await new Promise(function(res) {
+                        var fr = new FileReader();
+                        fr.onload  = function(e) { res(e.target.result); };
+                        fr.onerror = function()  { res(''); };
+                        fr.readAsDataURL(blob);
+                    });
+                } catch(e) { return ''; }
+            }
+
+            /* ── fetch logos ── */
+            var base  = window.location.origin;
+            var logos = await Promise.all([
+                toDataUri(base + '/images/plus%20icon.png'),
+                toDataUri(base + '/images/vedhant%20icon.png')
+            ]);
+            var logoL = logos[0] ? '<img src="'+logos[0]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
+            var logoR = logos[1] ? '<img src="'+logos[1]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
+
+            /* ── candidate photo ── */
+            var previewImg = document.getElementById('preview-image');
+            var photoSrc   = (previewImg && previewImg.src && previewImg.naturalWidth > 0) ? previewImg.src : '';
+            var photoHtml  = photoSrc
+                ? '<img src="'+photoSrc+'" style="height:78px;width:78px;object-fit:cover;border:1px solid #ccc;display:block;">'
+                : '<div style="height:78px;width:78px;border:1px solid #ccc;"></div>';
+
+            /* ── address from DOM ── */
+            function txt(id) { var e=document.getElementById(id); return e ? e.textContent.trim() : ''; }
+            var addr1  = txt('customAdreesLine1');
+            var mobNos = txt('cutomMobileNumbers');
+            var email  = txt('customEmailAddress');
+
+            /* ── signature ── */
+            var sigEl  = document.getElementById('clientSignatureImage');
+            var sigCv  = document.getElementById('clientSignature');
+            var sigSrc = '';
+            if (sigEl && !sigEl.hidden && sigEl.src) {
+                sigSrc = sigEl.src;
+            } else if (sigCv && sigCv.width > 0) {
+                sigSrc = sigCv.toDataURL('image/png');
+            }
+            var sigHtml = sigSrc
+                ? '<img src="'+sigSrc+'" style="max-width:130px;max-height:52px;object-fit:contain;display:block;">'
+                : '<div style="height:52px;"></div>';
+
+            /* ── field rows ── */
+            var KA = 'font-family:\'Noto Sans Kannada\',Arial,sans-serif;';
+            var fields = [
+                { l:'ಪೂರ್ಣ ಹೆಸರು:',                              v:val('candidateName') },
+                { l:'ತಂದೆ / ಪತಿಯ ಹೆಸರು:',                       v:val('parentName') },
+                { l:'ಹುಟ್ಟಿದ ದಿನ:',                               v:val('candidateDOB') },
+                { l:'ವೈವಾಹಿಕ ಸ್ಥಿತಿ:',                           v:val('maritalStatus') },
+                { l:'ಶಾಶ್ವತ ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:',             v:val('permanentAddress') },
+                { l:'ಪ್ರಸ್ತುತ ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:',            v:val('presentAddress') },
+                { l:'ಶೈಕ್ಷಣಿಕ ಅರ್ಹತೆ:',                          v:val('education') },
+                { l:'ತಿಳಿದ ಭಾಷೆಗಳು:',                             v:val('languages') },
+                { l:'ಅನುಭವ (ಸಂಪೂರ್ಣ ವಿವರ ನೀಡಿ):',               v:val('experience') },
+                { l:'ವೈಯಕ್ತಿಕ ಗುರುತಿನ ಪುರಾವೆ:',                  v:'' },
+                { l:'ಕೇಟುಮಾಡಿದ ವೇತನ:',                           v:val('salary') },
+                { l:'ಮಾಹಿತಿ (ಹೆಸರು, ವಿಳಾಸ & ಸಂಪರ್ಕ ಸಂಖ್ಯೆ):',   v:val('referenceDetail') },
+                { l:'ಕುಟುಂಬದ ವಿವರಗಳು:',                          v:val('famMembers') }
+            ];
+            var TD_L = 'style="width:38%;padding:5px 9px;border:1px solid #999;font-size:11.5px;font-weight:600;vertical-align:middle;word-break:break-word;'+KA+'"';
+            var TD_R = 'style="width:62%;padding:5px 9px;border:1px solid #999;font-size:11.5px;vertical-align:middle;word-break:break-word;"';
+            var fieldsHtml = fields.map(function(f){
+                return '<tr><td '+TD_L+'>'+esc(f.l)+'</td><td '+TD_R+'>'+esc(f.v)+'</td></tr>';
+            }).join('');
+
+            /* ── rules section ── */
+            function ruleSection(title, items) {
+                var lis = items.map(function(t){ return '<li style="margin-bottom:4px;">'+t+'</li>'; }).join('');
+                return '<h4 style="text-align:center;color:red;font-size:13px;margin:10px 0 5px;'+KA+'">'+title+'</h4>' +
+                       '<ul style="font-size:11px;list-style-type:disc;margin-left:18px;line-height:1.55;'+KA+'">'+lis+'</ul>';
+            }
+            var rulesHtml =
+                ruleSection('ಪಾಲಿಸಬೇಕಾದ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ',[
+                    'ಸಿಬ್ಬಂದಿಯು ಕನಿಷ್ಠ 3 ತಿಂಗಳು ಯಾವುದೇ ರಜೆ ಇಲ್ಲದೆ ಕೆಲಸ ಮಾಡಬೇಕು ತುರ್ತು ಪರಿಸ್ಥಿತಿಗೆ ಅನುಮತಿ ನೀಡಲಾಗುವುದು ಆದರೆ ಅದನ್ನು ಸಿಬ್ಬಂದಿಯ ತಂದೆ ತಾಯಿ ಮಾತ್ರ ತಿಳಿಸಬೇಕು.',
+                    'ಸಿಬ್ಬಂದಿಯ ಕುಟುಂಬಸ್ಥರ ಸಾವು ಆದಲ್ಲಿ ವಿಡಿಯೋ ಕಾಲ್ ಮುಖಾಂತರ ತಿಳಿಸಿ ಹೋಗತಕ್ಕದ್ದು.',
+                    'ಒಂದು ವೇಳೆ ಸಿಬ್ಬಂದಿ 30 ದಿನಗಳ ಒಳಗೆ ಮನೆಗೆ ತೆರಳಲು ಬಯಸಿದರೆ ಸಂಬಳ ನೀಡಲಾಗುವುದಿಲ್ಲ.',
+                    'ರಾಜೀನಾಮೆ ನೀಡಿದ ನಂತರ ಸಿಬ್ಬಂದಿಯು 1 ತಿಂಗಳು ಕೆಲಸ ಮಾಡಬೇಕು.',
+                    'ರಜೆ ಪತ್ರ ಅಥವಾ ರಾಜೀನಾಮೆ ಪತ್ರ ನೀಡದೆ ಯಾವುದೇ ಸಿಬ್ಬಂದಿಯನ್ನು ಮನೆಗೆ ಕಳುಹಿಸುವುದಿಲ್ಲ. ರಜೆ ಪತ್ರಕ್ಕೆ ಸಂಬಳದ 70% ಪಾವತಿಸಲಾಗುವುದು ಮತ್ತು ಹಿಂತಿರುಗಿದ ನಂತರ ಉಳಿದ 30% ಪಾವತಿಸಲಾಗುವುದು.',
+                    'ಕಛೇರಿಗೆ ಬರುವಾಗ ಸಿಬ್ಬಂದಿ ಗುರುತಿನ ಚೀಟಿ ಧರಿಸಬೇಕು.',
+                    'ಸಂಬಳವನ್ನು ಖಾತೆಗೆ ಜಮಾ ಮಾಡಲಾಗುವುದು, ಸಿಬ್ಬಂದಿಗೆ ಯಾವುದೇ ಹಣವನ್ನು ನಗದಾಗಿ ಪಾವತಿಸುವುದಿಲ್ಲ.',
+                    'ಲೆಕ್ಕ ಪರಿಶೋಧನೆಯ ಉದ್ದೇಶದಿಂದ ಸಿಬ್ಬಂದಿಗೆ ಮುಂಗಡ ಪಾವತಿ ಇಲ್ಲ.',
+                    'ಸಂಬಳದ ದಿನಾಂಕವು ಪ್ರತಿ ತಿಂಗಳ 1 ರಿಂದ 30ರವರೆಗೆ ಇರುತ್ತದೆ, ಮತ್ತು ಪ್ರತಿ ತಿಂಗಳ 10ನೇ ತಾರೀಖಿಗೆ ನೀಡಲಾಗುತ್ತದೆ.',
+                    'ಸಿಬ್ಬಂದಿ ರಜೆಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಮ್ಯಾನೇಜರ್‌ಗೆ ಯಾವುದೇ ಬ್ಲಾಕ್ ಮೇಲ್ ಮಾಡಬೇಡಿ. ಬ್ಲ್ಯಾಕ್ ಮೇಲ್‌ಗಳನ್ನು ಕಂಡುಕೊಂಡರೆ ಸಂಬಳದ 10% ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತದೆ.',
+                    'ಯಾವುದೇ ಪುರಾವೆಗಳಿಲ್ಲದೆ ಕಛೇರಿಯಲ್ಲಿ ಹಿಂಸೆ ಇಲ್ಲ. ಯಾವುದೇ ದೂರುಗಳನ್ನು ಆದ್ಯತೆಯಾಗಿ ತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದು.',
+                    'ಯಾವುದೇ ಕಳ್ಳತನ / ಆತ್ಮಹತ್ಯೆಯ ಸಂದರ್ಭದಲ್ಲಿ ಕಂಪನಿಯು ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ.',
+                    'ರೋಗಿಯ ಸ್ಥಳದ ಬಳಿ ಕುಟುಂಬದವರು, ನೆರೆಹೊರೆಯವರು, ಸ್ನೇಹಿತರಿಗೆ ಅನುಮತಿ ಇರುವುದಿಲ್ಲ.',
+                    'ಸಂಸ್ಥೆಯ ಮೊದಲ ತಿಂಗಳ ಸಿಬ್ಬಂದಿಯು ಪೋಲೀಸ್ ಪರಿಶೀಲನೆಯನ್ನು ಮಾಡಲಿದೆ ಹಾಗೂ ರೂ.1,000/- ಕಡಿತಗೊಳಿಸಲಾಗುವುದು.'
+                ]) +
+                ruleSection('ಸಂಬಳ ಅಭಿವೃದ್ಧಿ',[
+                    'ಸಿಬ್ಬಂದಿ ಯಾವುದೇ ರೋಗಿಯನ್ನು ಸೂಚಿಸಿದರೆ 10% ಕಮಿಷನ್ ನೀಡಲಾಗುತ್ತದೆ.',
+                    'ಸಿಬ್ಬಂದಿ ಇತರ ಸಿಬ್ಬಂದಿಯನ್ನು ಉಲ್ಲೇಖಿಸಿದರೆ ಮೊದಲ ಎರಡು ತಿಂಗಳಿಗೆ ₹700/- ಪಾವತಿಸಲಾಗುವುದು.',
+                    'ವೇತನವನ್ನು ವರ್ಷಕೊಮ್ಮೆ ಹೆಚ್ಚಿಸಲಾಗುವುದು.',
+                    'ಹೆಚ್ಚಳವು ಪ್ರಾಮಾಣಿತವಾಗಿ 7% ಆಗಿರುತ್ತದೆ.'
+                ]) +
+                ruleSection('ಸಂಸ್ಥೆಯ ವಸತಿಗೃಹದ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ',[
+                    'ಸಿಬ್ಬಂದಿಯು ವಸತಿಗೃಹ ನೈರ್ಮಲ್ಯ ಕಾಪಾಡಬೇಕು.',
+                    'ವಸತಿಗೃಹದಲ್ಲಿ ಯಾವುದೇ ಮಧ್ಯಪಾನ, ದೂಮಪಾನ, ತಂಬಾಕು ಉಪಯೋಗಿಸುವಂತಿಲ್ಲ.',
+                    'ರಾತ್ರಿ ಊಟದ ನಂತರ ಯಾರು ಹೊರಗೆ ಬರಬಾರದು. ಸಮಯದ ಮಿತಿ ರಾತ್ರಿ 10:00 ಗಂಟೆ.',
+                    'ಅನುಮತಿಯಿಲ್ಲದೆ ವಸತಿ ಗೃಹದಿಂದ ಹೊರ ಬರಬಾರದು.',
+                    'ನಿಮ್ಮ ವಸ್ತುಗಳನ್ನು ನೀವೇ ಸುರಕ್ಷಿತವಾಗಿರಿಸಿಕೊಳ್ಳಬೇಕು.',
+                    'ಆಹಾರವನ್ನು ವ್ಯರ್ಥ ಮಾಡಬೇಡಿ.',
+                    'ವಿದ್ವಂಸತೆಯು ಗಂಭೀರ ಅಪರಾಧ; ತಪ್ಪಿತಸ್ಥ ಸಿಬ್ಬಂದಿಯನ್ನು ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ.',
+                    'ರಾತ್ರಿ 7:30ರ ನಂತರ ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ಹೊರಗೆ ಹೋಗುವಂತಿಲ್ಲ.'
+                ]) +
+                ruleSection('ಕೆಲಸದ ಕಡೆಗೆ ನಿಯಮಗಳು ಮತ್ತು ನಿಯಂತ್ರಣ',[
+                    'ಸಿಬ್ಬಂದಿಯು ಗ್ರಾಹಕರ ಸ್ಥಳದಲ್ಲಿ ಸ್ವಚ್ಛತೆ ಕಾಪಾಡಬೇಕು.',
+                    'ಸಿಬ್ಬಂದಿಯು ಮೊಬೈಲ್ ಫೋನ್ ಬಳಕೆಯ ಮೇಲೆ ನಿಯಂತ್ರಣ ಹೊಂದಿರಬೇಕು.',
+                    'ಗ್ರಾಹಕರ ಸ್ಥಳದಲ್ಲಿ ಕಳ್ಳತನ ಸಂಪೂರ್ಣವಾಗಿ ಕಾನೂನು ಬಾಹಿರ.',
+                    'ನಾವು 10 ಗಂಟೆ ಮತ್ತು 24 ಗಂಟೆಗಳ ಸೇವೆ ಎರಡನ್ನೂ ಒದಗಿಸುತ್ತಿದ್ದೇವೆ.',
+                    'ಸಿಬ್ಬಂದಿ ಒಂದು ಸಂಪೂರ್ಣ ಪ್ರೇರಣೆ ಅಂಶಗಳೊಂದಿಗೆ ರೋಗಿಯನ್ನು ತೊಡಗಿಸಿಕೊಳ್ಳಬೇಕು.',
+                    'ಯಾವುದೇ ಸಿಬ್ಬಂದಿ ನಿರ್ವಹಣೆಗೆ ತಿಳಿಸದೆ ರೋಗಿಯ ಸ್ಥಳದಿಂದ ಹೊರಹೋಗಬಾರದು.',
+                    'ಸಿಬ್ಬಂದಿಯು 15 ದಿನಗಳ ಮೊದಲು ದೀರ್ಘ ರಜೆಯ ಪೂರ್ವ ಸೂಚನೆಯನ್ನು ನೀಡಬೇಕು.',
+                    'ಸಮಸ್ಯೆಗಳನ್ನು ತಕ್ಷಣ ಕ್ಷೇತ್ರ ವ್ಯವಸ್ಥಾಪಕರಿಗೆ ವರದಿ ಮಾಡಬೇಕು.',
+                    'ಗ್ರಾಹಕರೊಂದಿಗೆ ಮತ್ತು ವ್ಯವಸ್ಥಾಪಕರೊಂದಿಗೆ ದುರ್ವತನೆ ತೋರಿಸಬಾರದು.',
+                    'ಸಿಬ್ಬಂದಿ ಮ್ಯಾನೇಜರ್‌ಗೆ ಕರೆ ಮಾಡಿ ಯಾವುದೇ ವಿಷಯಕ್ಕಾಗಿ ತೊಂದರೆಗೊಳಿಸಲು ಅನುಮತಿ ಇಲ್ಲ.',
+                    'ಸಿಬ್ಬಂದಿಯು ಕೆಲಸಕ್ಕೆ ಸೂಕ್ತವೆನಿಸದಿದ್ದಲ್ಲಿ ಯಾವುದೇ ಸೂಚನೆ ನೀಡದೆ ತೆಗೆದುಹಾಕಲಾಗುವುದು.',
+                    'ಯಾವುದೇ ಕಳ್ಳತನ / ಆತ್ಮಹತ್ಯೆಯ ಸಂದರ್ಭದಲ್ಲಿ ಕಂಪನಿಯು ಜವಾಬ್ದಾರರಾಗಿರುವುದಿಲ್ಲ.',
+                    'ಸಿಬ್ಬಂದಿ ಗ್ರಾಹಕರೊಂದಿಗೆ ಸಂಬಳದ ಬಗ್ಗೆ ಚರ್ಚಿಸಬಾರದು.',
+                    'ಕರ್ತವ್ಯವನ್ನು ತೊರೆದ ನಂತರ ಗ್ರಾಹಕ ಮತ್ತು ಸಿಬ್ಬಂದಿ ನಡುವೆ ಯಾವುದೇ ಸಂಪರ್ಕ ಇರಬಾರದು.'
+                ]);
+
+            var declHtml =
+                '<p style="font-size:11px;text-align:justify;line-height:1.6;margin-top:10px;'+KA+'">' +
+                'ಈ ಮೇಲ್ಕಂಡ ಎಲ್ಲಾ ಅಂಶಗಳನ್ನು ನಾನು ಸಿಬ್ಬಂದಿಯಾಗಿ ಕೆಲಸಕ್ಕೆ ಸೇರುವ ಮುನ್ನ ನನಗೆ ವಿವರಿಸಿದ್ದಾರೆ ಮತ್ತು ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ' +
+                'ಎಲ್ಲಾ ಸ್ವರೂಪದಲ್ಲಿ ಸಂಸ್ಥೆಯ ನಿಯಮಗಳ ಪರಿಣಾಮಗಳನ್ನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ. ' +
+                'ನಾನು ಯಾವುದೇ ದೋಷ ಮಾಡದೆ ಸಂಸ್ಥೆಯ ಅಭಿವೃದ್ಧಿಗಾಗಿ ಕೆಲಸ ಮಾಡುವ ಗುರಿ ಹೊಂದಿದ್ದೇನೆ.</p>';
+
+            var bottomHtml =
+                '<table style="width:100%;border-collapse:collapse;margin-top:14px;">' +
+                '<tr>' +
+                '<td style="width:33%;vertical-align:bottom;font-size:11px;'+KA+'">' +
+                    '<div>ಸ್ಥಳ : <span style="border-bottom:1px solid #555;display:inline-block;min-width:80px;padding:0 4px;">'+esc(val('place'))+'</span></div>' +
+                    '<div style="margin-top:6px;">ದಿನಾಂಕ : <span style="border-bottom:1px solid #555;display:inline-block;min-width:80px;padding:0 4px;">'+esc(val('bottomDate'))+'</span></div>' +
+                '</td>' +
+                '<td style="width:34%;"></td>' +
+                '<td style="width:33%;vertical-align:bottom;text-align:right;">' +
+                    sigHtml +
+                    '<div style="border-top:1px solid #444;margin-top:5px;padding-top:3px;font-size:11px;'+KA+'">ಸಹಿ</div>' +
+                '</td>' +
+                '</tr></table>';
+
+            /* ── assemble full table ── */
+            var CONTENT_PX = 741;
+            var tableHtml =
+                '<table style="width:100%;border-collapse:collapse;border:1px solid #999;table-layout:fixed;">' +
+                '<tbody>' +
+                /* header */
+                '<tr><td colspan="2" style="padding:8px 12px 5px;border:1px solid #999;">' +
+                    '<table style="width:100%;border-collapse:collapse;"><tr>' +
+                        '<td style="width:88px;vertical-align:middle;">'+logoL+'</td>' +
+                        '<td style="text-align:center;vertical-align:middle;padding:0 6px;">' +
+                            '<div style="font-family:\'Noto Sans Kannada\',fantasy,serif;font-size:42px;color:red;letter-spacing:4px;line-height:1.1;">ವೇದಾಂತ್</div>' +
+                            '<div style="font-size:19px;color:red;font-weight:500;margin-top:1px;'+KA+'">ಹೋಮ್ ನರ್ಸಿಂಗ್ ಹೆಲ್ಪ್‌ಲೈನ್</div>' +
+                        '</td>' +
+                        '<td style="width:88px;vertical-align:middle;text-align:right;">'+photoHtml+'</td>' +
+                    '</tr></table>' +
+                    '<div style="text-align:center;margin-top:4px;font-size:11px;font-weight:500;">'+esc(addr1)+'</div>' +
+                    '<div style="text-align:center;font-size:11px;font-weight:500;">ಮೊಬೈಲ್: '+esc(mobNos)+' &nbsp; ಇಮೇಲ್: '+esc(email)+'</div>' +
+                '</td></tr>' +
+                /* title */
+                '<tr><td colspan="2" style="padding:5px 12px;border:1px solid #999;">' +
+                    '<table style="width:100%;border-collapse:collapse;"><tr>' +
+                        '<td style="width:56%;text-align:right;padding-right:12px;vertical-align:middle;">' +
+                            '<span style="color:red;font-size:13px;font-weight:700;'+KA+'">ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್:</span>' +
+                        '</td>' +
+                        '<td style="width:44%;vertical-align:middle;">' +
+                            '<table style="width:100%;border-collapse:collapse;">' +
+                                '<tr><td style="font-size:11.5px;white-space:nowrap;padding:2px 4px 2px 0;width:45px;'+KA+'">ನಂ:</td>' +
+                                    '<td style="border-bottom:1px solid #666;font-size:11.5px;padding:2px 4px;"></td></tr>' +
+                                '<tr><td style="font-size:11.5px;white-space:nowrap;padding:4px 4px 2px 0;'+KA+'">ದಿನಾಂಕ:</td>' +
+                                    '<td style="border-bottom:1px solid #666;font-size:11.5px;padding:4px 4px 2px;">'+esc(val('admissionDate'))+'</td></tr>' +
+                            '</table>' +
+                        '</td>' +
+                    '</tr></table>' +
+                '</td></tr>' +
+                /* fields */
+                fieldsHtml +
+                /* rules & declaration */
+                '<tr><td colspan="2" style="padding:8px 14px 14px;border:1px solid #999;">' +
+                    rulesHtml + declHtml + bottomHtml +
+                '</td></tr>' +
+                '</tbody></table>';
+
+            /* ── inject at (0,0) behind modal overlay, exactly like pdfGenerator.js ── */
+            var el = document.createElement('div');
+            el.id  = '__helper_pdf_tmp__';
+            el.style.cssText = [
+                'position:fixed', 'left:0', 'top:0',
+                'width:'+CONTENT_PX+'px',
+                'background:#ffffff',
+                'font-family:Arial,Helvetica,sans-serif',
                 'box-sizing:border-box',
-                'overflow:visible',
-                'z-index:0',
+                'z-index:-1',
+                'overflow:visible'
             ].join(';');
+            el.innerHTML = tableHtml;
+            document.body.appendChild(el);
 
-            /* Sync live values — cloneNode copies attributes, not the
-               JavaScript-set .value / .checked / canvas pixel data.         */
-            var srcFields = sourceEl.querySelectorAll('input,textarea,select');
-            var clnFields = clone.querySelectorAll('input,textarea,select');
-            srcFields.forEach(function (el, i) {
-                if (!clnFields[i]) return;
-                clnFields[i].value   = el.value;
-                clnFields[i].checked = el.checked;
-            });
+            /* two rAF ticks — let the browser fully lay out and render fonts */
+            await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
 
-            var srcImgs = sourceEl.querySelectorAll('img');
-            var clnImgs = clone.querySelectorAll('img');
-            srcImgs.forEach(function (el, i) { if (clnImgs[i]) clnImgs[i].src = el.src; });
+            try {
+                var canvas = await html2canvas(el, {
+                    scale:       2,
+                    useCORS:     true,
+                    allowTaint:  true,
+                    logging:     false,
+                    width:       CONTENT_PX,
+                    windowWidth: CONTENT_PX,
+                });
 
-            var srcCanvases = sourceEl.querySelectorAll('canvas');
-            var clnCanvases = clone.querySelectorAll('canvas');
-            srcCanvases.forEach(function (orig, i) {
-                if (!clnCanvases[i]) return;
-                clnCanvases[i].width  = orig.width;
-                clnCanvases[i].height = orig.height;
-                clnCanvases[i].getContext('2d').drawImage(orig, 0, 0);
-            });
+                var MARGIN_MM = 7, MARGIN_T_MM = 8;
+                var CW_MM = 196, CH_MM = 281;
 
-            document.body.appendChild(clone);
+                var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                var doc = new jsPDFCtor({ unit:'mm', format:'a4', orientation:'portrait' });
 
-            var options = {
-                margin:      0,
-                filename:    filename,
-                image:       { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3, windowWidth: 1200, useCORS: true },
-                jsPDF:       { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
+                var cW = canvas.width, cH = canvas.height;
+                var mmPerCpx = CW_MM / cW;
+                var pageHpx  = Math.floor(CH_MM / mmPerCpx);
+                var total    = Math.ceil(cH / pageHpx);
 
-            html2pdf().from(clone).set(options).save().finally(function () {
-                if (clone.parentNode) clone.parentNode.removeChild(clone);
-            });
+                for (var p = 0; p < total; p++) {
+                    if (p > 0) doc.addPage();
+                    var srcY  = p * pageHpx;
+                    var srcH  = Math.min(pageHpx, cH - srcY);
+                    var strip = document.createElement('canvas');
+                    strip.width  = cW;
+                    strip.height = srcH;
+                    strip.getContext('2d').drawImage(canvas, 0, srcY, cW, srcH, 0, 0, cW, srcH);
+                    doc.addImage(strip.toDataURL('image/jpeg', 0.97), 'JPEG',
+                                 MARGIN_MM, MARGIN_T_MM, CW_MM, srcH * mmPerCpx);
+                }
+
+                doc.save(filename);
+            } finally {
+                var tmp = document.getElementById('__helper_pdf_tmp__');
+                if (tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+            }
         });
         function chooseOption() {
             $.alert({
