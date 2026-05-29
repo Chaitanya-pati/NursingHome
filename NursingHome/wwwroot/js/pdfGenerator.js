@@ -175,6 +175,15 @@
         ].join(';');
         document.body.appendChild(clone);
 
+        /* Inject a temporary stylesheet that forces padding/margin to 0 on
+           the clone root and its immediate form child so no Bootstrap class
+           (e.g. .modal-body { padding:1rem }) can override the inline reset. */
+        var tempStyle = document.createElement('style');
+        tempStyle.id = '__pdf_tmp_style__';
+        tempStyle.textContent =
+            '#__pdf_el_clone__, #__pdf_el_clone__ > form { padding:0!important; margin:0!important; }';
+        document.head.appendChild(tempStyle);
+
         await new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
 
         try {
@@ -216,6 +225,8 @@
             doc.save(filename || 'document.pdf');
         } finally {
             if (clone.parentNode) clone.parentNode.removeChild(clone);
+            var ts = document.getElementById('__pdf_tmp_style__');
+            if (ts && ts.parentNode) ts.parentNode.removeChild(ts);
         }
     };
 
