@@ -65,7 +65,7 @@
                                 <td colspan="2">
                                     <div class="row mt-2">
                                         <div class="col-3">
-                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                            <img src="~/images/VedhanthLatestLogo.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
                                             <label style="font-family:'Noto Sans Kannada','Times New Roman';font-size:50px;color:red;letter-spacing:5px">ವೇದಾಂತ್</label>
@@ -317,10 +317,10 @@
             /* ── fetch logos ── */
             var base  = window.location.origin;
             var logos = await Promise.all([
-                toDataUri(base + '/images/plus%20icon.png'),
+                toDataUri(base + '/images/VedhanthLatestLogo.png'),
                 toDataUri(base + '/images/vedhant%20icon.png')
             ]);
-            var logoL = logos[0] ? '<img src="'+logos[0]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
+            var logoL = logos[0] ? '<img src="'+logos[0]+'" style="height:90px;width:110px;object-fit:contain;display:block;">' : '';
             var logoR = logos[1] ? '<img src="'+logos[1]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
 
             /* ── candidate photo ── */

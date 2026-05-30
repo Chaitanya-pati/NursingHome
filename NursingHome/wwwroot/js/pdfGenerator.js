@@ -69,8 +69,8 @@
     /* ================================================================== */
 
     function buildHeader(imgL, imgR, addr1, mob, email) {
-        var l = imgL ? '<img src="' + imgL + '" style="height:60px;width:74px;object-fit:contain;display:block;">' : '';
-        var r = imgR ? '<img src="' + imgR + '" style="height:60px;width:74px;object-fit:contain;display:block;">' : '';
+        var l = imgL ? '<img src="' + imgL + '" style="height:75px;width:100px;object-fit:contain;display:block;">' : '';
+        var r = imgR ? '<img src="' + imgR + '" style="height:75px;width:100px;object-fit:contain;display:block;">' : '';
         return '<tr><td colspan="2" style="padding:10px 14px 8px;border:1px solid #999;">' +
             '<table style="width:100%;border-collapse:collapse;"><tr>' +
               '<td style="width:80px;vertical-align:middle;">' + l + '</td>' +
@@ -154,8 +154,12 @@
         /* ── 1. Logos as data URIs ── */
         var base  = window.location.origin;
         var logos = await Promise.all([
-            fetchDataUri(base + '/images/plus%20icon.png'),
-            fetchDataUri(base + '/images/stethoscope.png')
+            fetchDataUri(
+                base + ($('#titleValue')?.val() === "Nursing Home"
+                    ? '/images/VedhanthHomenursingNew.png'
+                    : '/images/VedhanthOldAgeNew.png')
+            ),
+            fetchDataUri(base + '/images/VedhanthLatestLogo.png')
         ]);
 
         /* ── 2. Build table HTML ── */
