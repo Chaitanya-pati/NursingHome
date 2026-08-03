@@ -49,7 +49,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); // Disabled: Replit proxy handles HTTPS
 app.UseStaticFiles();
 
 app.UseRouting();
