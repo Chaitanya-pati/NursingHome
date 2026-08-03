@@ -129,17 +129,16 @@
       z-index: 1;
       display: flex;
       justify-content: center;
-      padding: 18px 0 8px;
+      padding: 20px 0 10px;
     }
 
     .photo-ring {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      border: 3.5px solid #1976d2;
+      border: 2.5px solid #1976d2;
       padding: 3px;
       background: #fff;
-      box-shadow: 0 2px 12px rgba(25,118,210,0.18);
     }
 
     .photo-ring img {
@@ -147,23 +146,8 @@
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
-    }
-
-    /* photo placeholder */
-    .photo-placeholder {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #bbdefb 0%, #e3f2fd 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #90caf9;
-    }
-
-    .photo-placeholder svg {
-      width: 52px;
-      height: 52px;
+      object-position: center top;
+      display: block;
     }
 
     /* ── NAME SECTION ── */
@@ -171,51 +155,47 @@
       position: relative;
       z-index: 1;
       text-align: center;
-      padding: 6px 16px 4px;
+      padding: 6px 16px 6px;
     }
 
     .name-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-bottom: 2px;
-    }
-
-    .ecg-line {
-      flex: 1;
-      height: 18px;
-      max-width: 62px;
+      margin-bottom: 6px;
     }
 
     .emp-name {
-      font-size: 17px;
-      font-weight: 600;
-      color: #1565c0;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0d3b8c;
       white-space: nowrap;
+      letter-spacing: 0.2px;
     }
 
+    /* ── ROLE ROW with ECG ── */
     .role-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-top: 1px;
+      gap: 0;
+      margin-top: 0;
     }
 
-    .role-dash {
-      width: 22px;
-      height: 1.5px;
-      background: #90a4ae;
-      border-radius: 2px;
+    /* flat line + spike arm */
+    .ecg-arm {
+      flex: 1;
+      height: 22px;
+      max-width: 70px;
     }
 
     .emp-role {
-      font-size: 9px;
-      font-weight: 600;
-      color: #78909c;
-      letter-spacing: 2.5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #0d3b8c;
+      letter-spacing: 3px;
       text-transform: uppercase;
+      padding: 0 6px;
     }
 
     /* ── INFO SECTION ── */
@@ -378,19 +358,27 @@
     <!-- Photo -->
     <div class="photo-section">
       <div class="photo-ring">
-        <img src="/Images/priya_nair.png" alt="Priya Nair" style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;"/>
+        <img src="/Images/priya_nair.png" alt="Priya Nair"/>
       </div>
     </div>
 
-    <!-- Name -->
+    <!-- Name + Role -->
     <div class="name-section">
       <div class="name-row">
         <span class="emp-name">Priya Nair</span>
       </div>
       <div class="role-row">
-        <div class="role-dash"></div>
-        <span class="emp-role">Helper</span>
-        <div class="role-dash"></div>
+        <!-- ECG left -->
+        <svg class="ecg-arm" viewBox="0 0 70 22" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="0,11 28,11 32,4 36,18 40,11 44,11 47,6 50,16 53,11 70,11"
+            fill="none" stroke="#0d3b8c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="emp-role">HELPER</span>
+        <!-- ECG right -->
+        <svg class="ecg-arm" viewBox="0 0 70 22" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="0,11 17,11 20,6 23,16 26,11 30,11 34,4 38,18 42,11 70,11"
+            fill="none" stroke="#0d3b8c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     </div>
 
