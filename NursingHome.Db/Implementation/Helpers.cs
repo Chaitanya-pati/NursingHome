@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,6 +56,10 @@ namespace NursingHome.Db.Implementation
                 GetData.Salary = helperData.Salary;
                 GetData.Reference = helperData.Reference;
                 GetData.FamilyMembers = helperData.FamilyMembers;
+                GetData.MobileNo = helperData.MobileNo;
+                GetData.Designation = helperData.Designation;
+                GetData.BloodGroup = helperData.BloodGroup;
+                GetData.AadhaarNo = helperData.AadhaarNo;
                 Db.SaveChanges();
                 return true;
             }
