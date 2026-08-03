@@ -16,7 +16,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #dce8f5;
+            background: #eaf2fa;
             font-family: 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -79,12 +79,14 @@
            ══════════════════════════════════════ */
         .id-card {
             width: 324px;
-            background-color: #ecf4ff;
-            /* subtle cross / plus pattern */
+            /* Clean white card — light-blue hex tiles on left & right edges only */
+            background-color: #ffffff;
             background-image:
-                linear-gradient(rgba(150,195,240,0.35) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(150,195,240,0.35) 1px, transparent 1px);
-            background-size: 22px 22px;
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32'%3E%3Cpolygon points='14,1 27,8 27,24 14,31 1,24 1,8' fill='none' stroke='%23bee1f8' stroke-width='1.4'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32'%3E%3Cpolygon points='14,1 27,8 27,24 14,31 1,24 1,8' fill='none' stroke='%23bee1f8' stroke-width='1.4'/%3E%3C/svg%3E");
+            background-position: left top, right top;
+            background-size: 52px auto, 52px auto;
+            background-repeat: repeat-y, repeat-y;
             border-radius: 18px;
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(0,0,0,0.22);
@@ -580,7 +582,7 @@
                 useCORS:         true,
                 allowTaint:      true,
                 logging:         false,
-                backgroundColor: '#ecf4ff'
+                backgroundColor: '#ffffff'
             });
             // Scale to match card's actual proportions at 54 mm wide
             var PDF_W   = 54;
