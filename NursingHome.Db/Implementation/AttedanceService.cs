@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,11 +33,11 @@ namespace NursingHome.Db.Implementation
 
                 var attendance = new Attendance
                 {
-                    fkHelperId = AddAttendenceData.fkHelperId,
-                    fkNursingId = AddAttendenceData.fkNursingId, // Ensure this is correctly named
-                    Date = AddAttendenceData.Date,
-                    Time = AddAttendenceData.Time, // Store as double (total hours) if needed
-                    Description = AddAttendenceData.Description
+                    fkHelperId   = AddAttendenceData.fkHelperId,
+                    fkNursingId  = AddAttendenceData.fkNursingId,
+                    Date         = AddAttendenceData.Date,
+                    Time         = AddAttendenceData.Time,
+                    Description  = AddAttendenceData.Description
                 };
 
                 Db.Attendance.Add(attendance);
@@ -47,8 +47,42 @@ namespace NursingHome.Db.Implementation
             }
             catch (Exception ex)
             {
-                // Log the exception if needed
-                // Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Records a GPS check-in. All GPS and timestamp fields must be
+        /// pre-populated by the caller (controller).
+        /// </summary>
+        public bool RecordCheckIn(Attendance checkIn)
+        {
+            try
+            {
+                using var Db = new TaskContext(_dbConn);
+
+                var record = new Attendance
+                {
+                    fkHelperId  = checkIn.fkHelperId,
+                    fkNursingId = checkIn.fkNursingId,
+                    Date        = checkIn.CheckInTime.HasValue
+                                      ? checkIn.CheckInTime.Value.Date
+                                      : (DateTime?)null,
+                    CheckInTime = checkIn.CheckInTime,
+                    Latitude    = checkIn.Latitude,
+                    Longitude   = checkIn.Longitude,
+                    GpsAccuracy = checkIn.GpsAccuracy,
+                    Address     = checkIn.Address,
+                    Status      = checkIn.Status,
+                    Description = checkIn.Description
+                };
+
+                Db.Attendance.Add(record);
+                Db.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }
@@ -57,88 +91,81 @@ namespace NursingHome.Db.Implementation
         {
             using var Db = new TaskContext(_dbConn);
             var result = (from a in Db.Attendance
-                          join h in Db.Helpers on a.fkHelperId equals h.Id
+                          join h in Db.Helpers    on a.fkHelperId  equals h.Id
                           join o in Db.HomeNursing on a.fkNursingId equals o.Id
                           select new
                           {
-                              HelperName = h.Name,
-                              AttendanceId = a.Id,
-                              Time=a.Time,
-                              fkHelperId = a.fkHelperId,
-                              fknursing = a.fkNursingId,
+                              HelperName     = h.Name,
+                              AttendanceId   = a.Id,
+                              Time           = a.Time,
+                              fkHelperId     = a.fkHelperId,
+                              fknursing      = a.fkNursingId,
                               AttendanceDate = a.Date,
                               AttendanceTime = a.Time,
-                              Description = a.Description,
-                              PatientName = o.PatientName
+                              Description    = a.Description,
+                              PatientName    = o.PatientName,
+                              // GPS check-in fields
+                              CheckInTime    = a.CheckInTime,
+                              Latitude       = a.Latitude,
+                              Longitude      = a.Longitude,
+                              GpsAccuracy    = a.GpsAccuracy,
+                              Address        = a.Address,
+                              Status         = a.Status
                           }).ToList<object>();
 
             return result;
         }
+
         public bool UpdateAttendance(Attendance updatedAttendanceData)
         {
             try
             {
                 using var Db = new TaskContext(_dbConn);
 
-                // Find the existing attendance record by Id
                 var existingAttendance = Db.Attendance.FirstOrDefault(a => a.Id == updatedAttendanceData.Id);
 
                 if (existingAttendance == null)
                 {
-                    // Attendance record not found
                     return false;
                 }
 
-                // Update the fields with the new data
-                existingAttendance.fkHelperId = updatedAttendanceData.fkHelperId;
-                existingAttendance.fkNursing = updatedAttendanceData.fkNursing;
-                existingAttendance.Date = updatedAttendanceData.Date;
-                existingAttendance.Time = updatedAttendanceData.Time;
+                existingAttendance.fkHelperId  = updatedAttendanceData.fkHelperId;
+                existingAttendance.fkNursing   = updatedAttendanceData.fkNursing;
+                existingAttendance.Date        = updatedAttendanceData.Date;
+                existingAttendance.Time        = updatedAttendanceData.Time;
                 existingAttendance.Description = updatedAttendanceData.Description;
 
-                // Save the changes to the database
                 Db.SaveChanges();
-
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log the exception if needed
-                // Console.WriteLine(ex.Message);
                 return false;
             }
         }
+
         public bool DeleteAttendance(int id)
         {
             try
             {
                 using var Db = new TaskContext(_dbConn);
 
-                // Find the existing attendance record by Id
                 var existingAttendance = Db.Attendance.FirstOrDefault(a => a.Id == id);
 
                 if (existingAttendance == null)
                 {
-                    // Attendance record not found
                     return false;
                 }
 
-                // Remove the attendance record
                 Db.Attendance.Remove(existingAttendance);
-
-                // Save the changes to the database
                 Db.SaveChanges();
-
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log the exception if needed
-                // Console.WriteLine(ex.Message);
                 return false;
             }
         }
-
 
         public List<object> PatientDetails()
         {
@@ -154,7 +181,7 @@ namespace NursingHome.Db.Implementation
                            .Select(p => new { p.Id, p.PatientName })
                            .ToList();
 
-            return result.Cast<object>().ToList();  // Returning as anonymous type
+            return result.Cast<object>().ToList();
         }
 
         public List<object> GetHelpers()
@@ -171,13 +198,7 @@ namespace NursingHome.Db.Implementation
                            .Select(h => new { h.Id, h.Name })
                            .ToList();
 
-            return result.Cast<object>().ToList(); // Returns an anonymous type list
+            return result.Cast<object>().ToList();
         }
-
-
-       
-
-
-
     }
 }

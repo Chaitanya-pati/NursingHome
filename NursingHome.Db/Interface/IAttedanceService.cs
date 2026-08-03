@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +16,11 @@ namespace NursingHome.Db.Interface
         List<object> GetHelpers();
         List<object> PatientDetails();
 
-
+        /// <summary>
+        /// Records a GPS-captured check-in. The caller must populate
+        /// CheckInTime (server time), Latitude, Longitude, GpsAccuracy,
+        /// Address, and Status before calling this method.
+        /// </summary>
+        bool RecordCheckIn(Attendance checkIn);
     }
 }
