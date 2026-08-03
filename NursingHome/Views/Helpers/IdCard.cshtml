@@ -1,0 +1,569 @@
+@{
+    Layout = null;
+    var helperId = ViewBag.HelperId;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helper ID Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #e8edf4;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px 40px;
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-size: 24px;
+            color: #1a3a6b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .page-header p {
+            color: #5a6a80;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* ── Action buttons ── */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-print  { background: #1a3a6b; color: #fff; }
+        .btn-print:hover  { background: #142d55; }
+        .btn-pdf    { background: #c0392b; color: #fff; }
+        .btn-pdf:hover    { background: #a93226; }
+        .btn-back   { background: #fff; color: #1a3a6b; border: 2px solid #1a3a6b; }
+        .btn-back:hover   { background: #f0f4ff; }
+
+        /* ── Card wrapper (screen centering) ── */
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ══════════════════════════════════════
+           THE ID CARD
+           Portrait PVC size: 54 mm × 86 mm
+           We scale to ~324px × 516px on screen
+           ══════════════════════════════════════ */
+        .id-card {
+            width: 324px;
+            height: 516px;
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* ── Header band ── */
+        .card-header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #2563c0 100%);
+            padding: 18px 14px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .card-header-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            flex-shrink: 0;
+        }
+        .company-logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .company-info { text-align: center; }
+        .company-name {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        .company-tagline {
+            font-size: 9px;
+            color: rgba(255,255,255,0.82);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+        /* blue wave divider */
+        .card-wave {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+        }
+
+        /* ── Photo area ── */
+        .card-photo-section {
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 14px;
+            padding-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .card-photo-ring {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a3a6b, #2563c0);
+            padding: 3px;
+            box-shadow: 0 4px 14px rgba(26,58,107,0.35);
+        }
+        .card-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e8edf4;
+            display: block;
+        }
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #d0dce8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-placeholder i {
+            font-size: 36px;
+            color: #8fa8c4;
+        }
+
+        /* ── Name & Role ── */
+        .card-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a3a6b;
+            margin-top: 10px;
+            text-align: center;
+            padding: 0 14px;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
+        }
+        .card-role {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(90deg, #1a3a6b, #2563c0);
+            border-radius: 20px;
+            padding: 3px 14px;
+            margin-top: 5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* ── Divider ── */
+        .card-divider {
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c0d0e8, transparent);
+            margin: 10px auto 0;
+        }
+
+        /* ── Info section ── */
+        .card-info {
+            flex: 1;
+            padding: 10px 18px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 9.5px;
+        }
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #1a3a6b, #2563c0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .info-icon i {
+            font-size: 9px;
+            color: #fff;
+        }
+        .info-text { flex: 1; padding-top: 2px; }
+        .info-label {
+            font-size: 8px;
+            color: #8fa0b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value {
+            font-size: 10px;
+            color: #1a3a6b;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* ── Footer band ── */
+        .card-footer {
+            background: linear-gradient(135deg, #1a3a6b 0%, #2563c0 100%);
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .footer-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 8.5px;
+            color: rgba(255,255,255,0.9);
+        }
+        .footer-row i { font-size: 8px; color: rgba(255,255,255,0.7); }
+
+        /* ── Loading state ── */
+        #loadingOverlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 40px;
+            color: #1a3a6b;
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 4px solid #d0dce8;
+            border-top-color: #2563c0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Print styles ── */
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .page-header, .action-buttons { display: none !important; }
+            .card-wrapper { justify-content: center; }
+            .id-card {
+                width: 54mm;
+                height: 86mm;
+                box-shadow: none;
+                border-radius: 4mm;
+                page-break-inside: avoid;
+            }
+            .company-name { font-size: 6.5pt; }
+            .company-tagline { font-size: 4.5pt; }
+            .card-name { font-size: 8pt; }
+            .card-role { font-size: 5pt; padding: 1.5px 7px; }
+            .info-row { font-size: 5pt; }
+            .info-label { font-size: 4pt; }
+            .info-value { font-size: 5pt; }
+            .footer-row { font-size: 4.5pt; }
+            .card-photo-ring { width: 40mm; height: 40mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1><i class="fas fa-id-card"></i> Helper ID Card</h1>
+        <p>Subramanya Home Nursing Helpline — Professional Identity Card</p>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-action btn-back" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn-action btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print
+        </button>
+        <button class="btn-action btn-pdf" onclick="downloadPDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+    </div>
+
+    <div class="card-wrapper">
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <span>Loading helper details…</span>
+        </div>
+
+        <!-- THE ID CARD — hidden until data loads -->
+        <div id="idCardEl" class="id-card" style="display:none;">
+
+            <!-- Header -->
+            <div class="card-header">
+                <div class="card-header-top">
+                    <img id="companyLogo" class="company-logo" src="/Images/Subramanya.png" alt="Logo"
+                         onerror="this.style.display='none'" />
+                    <div class="company-info">
+                        <div class="company-name" id="companyName">SUBRAMANYA</div>
+                        <div class="company-tagline" id="companyTagline">Home Nursing Helpline</div>
+                    </div>
+                </div>
+                <!-- wave SVG -->
+                <svg class="card-wave" viewBox="0 0 324 18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 18 C54 4, 108 4, 162 10 C216 16, 270 16, 324 8 L324 18 Z" fill="#ffffff"/>
+                </svg>
+            </div>
+
+            <!-- Photo + Name -->
+            <div class="card-photo-section">
+                <div class="card-photo-ring">
+                    <img id="helperPhoto" class="card-photo" src="" alt="Helper Photo" />
+                </div>
+                <div class="card-name" id="helperName">—</div>
+                <div class="card-role" id="helperRole">Home Nursing Helper</div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <!-- Info rows -->
+            <div class="card-info">
+                <div class="info-row" id="rowId">
+                    <div class="info-icon"><i class="fas fa-fingerprint"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Helper ID</div>
+                        <div class="info-value" id="infoId">—</div>
+                    </div>
+                </div>
+                <div class="info-row" id="rowDob">
+                    <div class="info-icon"><i class="fas fa-birthday-cake"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value" id="infoDob">—</div>
+                    </div>
+                </div>
+                <div class="info-row" id="rowMobile">
+                    <div class="info-icon"><i class="fas fa-phone"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Mobile</div>
+                        <div class="info-value" id="infoMobile">—</div>
+                    </div>
+                </div>
+                <div class="info-row" id="rowAadhaar">
+                    <div class="info-icon"><i class="fas fa-id-badge"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Aadhaar</div>
+                        <div class="info-value" id="infoAadhaar">—</div>
+                    </div>
+                </div>
+                <div class="info-row" id="rowBlood">
+                    <div class="info-icon"><i class="fas fa-tint"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Blood Group</div>
+                        <div class="info-value" id="infoBlood">—</div>
+                    </div>
+                </div>
+                <div class="info-row" id="rowJoining">
+                    <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="info-text">
+                        <div class="info-label">Joining Date</div>
+                        <div class="info-value" id="infoJoining">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer">
+                <div class="footer-row" id="footerPhone">
+                    <i class="fas fa-phone-alt"></i>
+                    <span id="companyPhone">—</span>
+                </div>
+                <div class="footer-row" id="footerWeb">
+                    <i class="fas fa-globe"></i>
+                    <span id="companyWeb">Subramanya.bsite.net</span>
+                </div>
+                <div class="footer-row" id="footerAddr">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="companyAddr">Matikere, Bengaluru - 560054</span>
+                </div>
+            </div>
+
+        </div><!-- /#idCardEl -->
+    </div><!-- /.card-wrapper -->
+
+<script>
+    var helperId = @helperId;
+    var userId   = @(ViewBag.UserId ?? 0);
+
+    function fmtDate(val) {
+        if (!val) return null;
+        var d = new Date(val);
+        if (isNaN(d.getTime())) return null;
+        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    function setRow(rowId, infoId, value) {
+        if (!value) {
+            document.getElementById(rowId).style.display = 'none';
+        } else {
+            document.getElementById(infoId).textContent = value;
+        }
+    }
+    function show(id, value) { if (value) document.getElementById(id).textContent = value; }
+
+    // ── Fetch helper data ──────────────────────────────────────────
+    $.ajax({
+        url: '/Helpers/GetHelperById',
+        type: 'GET',
+        data: { id: helperId, userId: userId },
+        success: function (h) {
+            if (!h) { document.getElementById('loadingOverlay').innerHTML = '<p style="color:red">Helper not found.</p>'; return; }
+
+            // Photo
+            var photoEl = document.getElementById('helperPhoto');
+            if (h.image) {
+                var src = h.image.indexOf('~') !== -1 ? 'data:image/png;base64,' + h.image.split('~')[1] : 'data:image/png;base64,' + h.image;
+                photoEl.src = src;
+                photoEl.onerror = function () { photoEl.replaceWith(makePlaceholder()); };
+            } else {
+                photoEl.replaceWith(makePlaceholder());
+            }
+
+            // Name & Role
+            document.getElementById('helperName').textContent = h.name || '—';
+            document.getElementById('helperRole').textContent = h.designation || 'Home Nursing Helper';
+
+            // Info rows
+            document.getElementById('infoId').textContent = 'SHN-' + String(h.id).padStart(4, '0');
+            setRow('rowDob',     'infoDob',     fmtDate(h.dateOfBirth));
+            setRow('rowMobile',  'infoMobile',  h.mobileNo);
+            setRow('rowAadhaar', 'infoAadhaar', h.aadhaarNo);
+            setRow('rowBlood',   'infoBlood',   h.bloodGroup);
+            setRow('rowJoining', 'infoJoining', fmtDate(h.admissionDate));
+
+            // Show card
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('idCardEl').style.display = 'flex';
+        },
+        error: function () {
+            document.getElementById('loadingOverlay').innerHTML = '<p style="color:red">Failed to load helper details.</p>';
+        }
+    });
+
+    // ── Fetch company details ──────────────────────────────────────
+    $.ajax({
+        url: '/Configuration/CityDetails',
+        type: 'GET',
+        data: { username: 'admin' },
+        success: function (c) {
+            if (!c) return;
+            if (c.mobileNumbers) {
+                document.getElementById('companyPhone').textContent = c.mobileNumbers;
+                document.getElementById('footerPhone').style.display = 'flex';
+            }
+            if (c.officeAddress) {
+                var addr = c.officeAddress;
+                // shorten for footer
+                var parts = addr.split(',');
+                var short = parts.length > 2 ? parts.slice(-2).join(',').trim() : addr;
+                document.getElementById('companyAddr').textContent = short;
+            }
+            if (c.email) {
+                document.getElementById('companyWeb').textContent = c.email;
+            }
+        },
+        error: function () { /* silently ignore — fallback text already set */ }
+    });
+
+    function makePlaceholder() {
+        var div = document.createElement('div');
+        div.className = 'photo-placeholder';
+        div.innerHTML = '<i class="fas fa-user"></i>';
+        return div;
+    }
+
+    // ── Download PDF ────────────────────────────────────────────────
+    async function downloadPDF() {
+        var card = document.getElementById('idCardEl');
+        if (!card) return;
+        var btn = event.currentTarget;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+        try {
+            var canvas = await html2canvas(card, {
+                scale: 3,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+            // CR80 portrait: 54mm × 86mm
+            var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+            var doc = new jsPDFCtor({ unit: 'mm', format: [54, 86], orientation: 'portrait' });
+            var imgData = canvas.toDataURL('image/jpeg', 0.97);
+            doc.addImage(imgData, 'JPEG', 0, 0, 54, 86);
+            var name = document.getElementById('helperName').textContent.replace(/\s+/g, '_') || 'Helper';
+            doc.save('IDCard_' + name + '.pdf');
+        } catch (e) {
+            alert('PDF generation failed. Please try Print instead.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+        }
+    }
+</script>
+</body>
+</html>

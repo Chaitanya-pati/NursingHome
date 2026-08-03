@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
@@ -10,11 +10,27 @@ namespace NursingHome.Controllers
     {
         private readonly IHomeService _logger;
         private readonly IHelpers _DbConn;
+        private readonly IUserService _userService;
 
-        public HelpersController(IHomeService logger, IHelpers Db)
+        public HelpersController(IHomeService logger, IHelpers Db, IUserService userService)
         {
-            _logger = logger;
-            _DbConn = Db;
+            _logger      = logger;
+            _DbConn      = Db;
+            _userService = userService;
+        }
+
+        /// <summary>
+        /// Verifies that userId maps to a real database user (same pattern as AttendanceController).
+        /// Returns null on success; a 401 IActionResult on failure.
+        /// </summary>
+        private IActionResult? RequireValidUser(int userId)
+        {
+            if (userId <= 0)
+                return StatusCode(401, new { message = "Unauthorized: missing user session." });
+            var user = _userService.GetUserDataById(userId);
+            if (user == null)
+                return StatusCode(401, new { message = "Unauthorized: user not found." });
+            return null;
         }
 
         public IActionResult Helpers()
@@ -25,7 +41,7 @@ namespace NursingHome.Controllers
             }
             catch (Exception ex)
             {
-                _logger.SaveLog("HelpersController", "Helpers",ex.Message); // Assuming IHomeService has a LogError method
+                _logger.SaveLog("HelpersController", "Helpers", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -76,6 +92,63 @@ namespace NursingHome.Controllers
             catch (Exception ex)
             {
                 _logger.SaveLog("HelpersController", "DeleteData", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Renders the ID card page. Requires a valid userId from the client session.
+        /// </summary>
+        public IActionResult IdCard(int id, int userId)
+        {
+            try
+            {
+                var authError = RequireValidUser(userId);
+                if (authError != null) return authError;
+
+                ViewBag.HelperId = id;
+                ViewBag.UserId   = userId;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "IdCard", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Returns a safe DTO with the helper's details for ID card rendering.
+        /// Requires a valid userId from the client session.
+        /// </summary>
+        public IActionResult GetHelperById(int id, int userId)
+        {
+            try
+            {
+                var authError = RequireValidUser(userId);
+                if (authError != null) return authError;
+
+                var h = _DbConn.GetData("admin").FirstOrDefault(x => x.Id == id);
+                if (h == null) return Json(null);
+
+                // Project to a DTO — keeps EF navigation properties out of the
+                // JSON response and avoids circular-reference serialisation errors.
+                return Json(new {
+                    id               = h.Id,
+                    name             = h.Name,
+                    image            = h.Image,
+                    dateOfBirth      = h.DateOfBirth,
+                    mobileNo         = h.MobileNo,
+                    designation      = h.Designation,
+                    bloodGroup       = h.BloodGroup,
+                    aadhaarNo        = h.AadhaarNo,
+                    admissionDate    = h.admissionDate,
+                    permanentAddress = h.PermanentAddress
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "GetHelperById", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

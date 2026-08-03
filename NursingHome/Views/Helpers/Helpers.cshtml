@@ -1,4 +1,4 @@
-﻿<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
 <style>
     .loader {
@@ -622,6 +622,11 @@
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindData(fullData);
         });
+        $('#tblHelpers').on('click', '.btn-idcard', function () {
+            var ID     = JSON.parse($(this).attr('dataId'));
+            var uId    = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            window.open('/Helpers/IdCard?id=' + ID + '&userId=' + uId, '_blank');
+        });
         $('#tblHelpers').on('click', '.btn-delete', function () {
             var ID = JSON.parse($(this).attr('dataId'));
             confirmDelete(ID);
@@ -733,6 +738,7 @@
          item.permanentAddress,
          item.languagesKnown,
      '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+    '<i class="fa fa-id-card ml-2 mr-4 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
      ]).draw();
        });

@@ -47,6 +47,8 @@ var app = builder.Build();
 
 // ── Run Attendance GPS migrations at startup (idempotent — safe every restart) ──
 RunAttendanceMigrations(builder.Configuration.GetConnectionString("NursingHome"));
+// ── Add Helpers ID-card columns if missing ────────────────────────────────────
+RunHelpersMigrations(builder.Configuration.GetConnectionString("NursingHome"));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -66,6 +68,43 @@ app.MapControllerRoute(
     pattern: "{controller=Users}/{action=Login}/{id?}");
 
 app.Run();
+
+// ────────────────────────────────────────────────────────────────────────────────
+// Adds ID-card columns to [Helpers] if they don't already exist.
+// Idempotent — safe to run on every boot.
+// ────────────────────────────────────────────────────────────────────────────────
+static void RunHelpersMigrations(string? connectionString)
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        Console.WriteLine("[Migration] Helpers: Skipped — connection string is empty.");
+        return;
+    }
+    var statements = new[]
+    {
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Helpers' AND COLUMN_NAME='MobileNo') ALTER TABLE [dbo].[Helpers] ADD [MobileNo] NVARCHAR(50) NULL",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Helpers' AND COLUMN_NAME='Designation') ALTER TABLE [dbo].[Helpers] ADD [Designation] NVARCHAR(100) NULL",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Helpers' AND COLUMN_NAME='BloodGroup') ALTER TABLE [dbo].[Helpers] ADD [BloodGroup] NVARCHAR(20) NULL",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Helpers' AND COLUMN_NAME='AadhaarNo') ALTER TABLE [dbo].[Helpers] ADD [AadhaarNo] NVARCHAR(20) NULL",
+    };
+    try
+    {
+        using var conn = new SqlConnection(connectionString);
+        conn.Open();
+        int applied = 0;
+        foreach (var sql in statements)
+        {
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.ExecuteNonQuery();
+            applied++;
+        }
+        Console.WriteLine($"[Migration] Helpers ID-card columns migration complete ({applied} statements executed).");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Migration] Helpers WARNING: {ex.Message}");
+    }
+}
 
 // ────────────────────────────────────────────────────────────────────────────────
 // Applies GPS check-in / check-out / approval columns to [Attendance].
