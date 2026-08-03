@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,16 +19,25 @@ namespace NursingHome.Db.Implementation
         {
             _dbConn = new DbContextOptionsBuilder<TaskContext>().UseSqlServer(DbConn).Options;
         }
-        public void SaveLog(string ControllerName,string ActionName,string ErrorDescription)
+        public void SaveLog(string ControllerName, string ActionName, string ErrorDescription)
         {
-            var db = new TaskContext(_dbConn);
-            Logger log = new Logger();
-            log.controllerName = ControllerName;
-            log.actionName = ActionName;
-            log.errorDescription=ErrorDescription;
-            log.createdDate= DateTime.Now;
-            db.Add(log);
-            db.SaveChanges();
+            try
+            {
+                var db = new TaskContext(_dbConn);
+                Logger log = new Logger
+                {
+                    controllerName   = ControllerName,
+                    actionName       = ActionName,
+                    errorDescription = ErrorDescription,
+                    createdDate      = DateTime.Now
+                };
+                db.Add(log);
+                db.SaveChanges();
+            }
+            catch
+            {
+                // Logging must never crash the caller — swallow silently.
+            }
         }
 
         public int TotalOldAgeAdmissionLast30days()

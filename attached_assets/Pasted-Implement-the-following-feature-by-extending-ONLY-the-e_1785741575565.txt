@@ -1,0 +1,136 @@
+Implement the following feature by extending ONLY the existing Attendance module.
+
+STRICT RULES:
+- Do NOT modify Authentication, Login, Employee Management, Patient Module, Scheduling, Payroll, Dashboard, Reports, existing APIs, existing business logic, workflows, permissions, UI of unrelated modules, or unrelated database tables.
+- Keep all changes completely isolated to the Attendance module.
+- Do NOT perform unnecessary refactoring.
+- Preserve all existing functionality.
+
+ATTENDANCE FLOW
+
+Employee Check In:
+1. Employee logs in and clicks the existing "Check In" button.
+2. Automatically capture:
+   - GPS Latitude
+   - GPS Longitude
+   - GPS Accuracy
+3. Send the location data to the backend.
+4. Backend must:
+   - Record SERVER TIMESTAMP (never browser/device time)
+   - Perform reverse geocoding
+   - Convert GPS coordinates into a readable address
+   - Create a new attendance record
+   - Set Status = "Pending Approval"
+
+Employee Check Out:
+1. Employee clicks the existing "Check Out" button.
+2. Automatically capture GPS location again.
+3. Send GPS data to the backend.
+4. Backend must:
+   - Record SERVER TIMESTAMP
+   - Perform reverse geocoding
+   - Update the same attendance record
+   - Keep Status = "Pending Approval"
+
+MANAGER APPROVAL
+
+Create a Manager Attendance Approval screen (or extend the existing attendance management page only).
+
+Display:
+- Employee Name
+- Attendance Date
+- Check In Time
+- Check Out Time
+- Total Working Hours
+- Check In Address
+- Check Out Address
+- Check In Latitude
+- Check In Longitude
+- Check Out Latitude
+- Check Out Longitude
+- GPS Accuracy
+- Current Status
+
+Manager Actions:
+- Approve
+- Reject
+- Optional Remarks
+
+When Approved:
+- Status = Approved
+- Calculate Working Hours automatically
+- Save Approval Timestamp (SERVER TIME)
+- Save Approved By
+
+When Rejected:
+- Status = Rejected
+- Save Manager Remarks
+- Save Approval Timestamp
+- Save Approved By
+
+DATABASE
+
+Reuse the existing Attendance table wherever possible.
+
+Only add attendance-related fields such as:
+- CheckInTime
+- CheckOutTime
+- CheckInLatitude
+- CheckInLongitude
+- CheckInGPSAccuracy
+- CheckInAddress
+- CheckOutLatitude
+- CheckOutLongitude
+- CheckOutGPSAccuracy
+- CheckOutAddress
+- Status
+- WorkingHours
+- ApprovedBy
+- ApprovalTimestamp
+- ManagerRemarks
+
+If approval history requires a separate table, create:
+AttendanceApproval
+
+Do NOT modify unrelated database tables.
+
+TIME RULES
+
+Always use SERVER TIME.
+Never use browser or device time.
+
+UI
+
+Keep the existing Attendance UI unchanged.
+
+Employees should only click:
+- Check In
+- Check Out
+
+Everything else must happen automatically in the background:
+- GPS Capture
+- GPS Accuracy
+- Server Timestamp
+- Reverse Geocoding
+- Attendance Create/Update
+
+Do not redesign the UI.
+
+FINAL REQUIREMENTS
+
+After implementation:
+- Verify Check In works.
+- Verify Check Out works.
+- Verify GPS location is saved.
+- Verify addresses are stored.
+- Verify server timestamps are used.
+- Verify Manager Approval works.
+- Verify Working Hours are calculated.
+- Verify no unrelated module is affected.
+
+Before making any code changes, first analyze the existing Attendance module and explain:
+1. Which files will be modified.
+2. Which database changes are required.
+3. Which APIs will be added or updated.
+
+Only after the analysis, implement the feature.
