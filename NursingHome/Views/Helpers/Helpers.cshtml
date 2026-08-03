@@ -65,10 +65,10 @@
                                 <td colspan="2">
                                     <div class="row mt-2">
                                         <div class="col-3">
-                                            <img src="~/images/plus icon.png" style="height:70px;width:90px" />
+                                            <img src="~/images/Subramanya.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
-                                            <label style="font-family:'Noto Sans Kannada','Times New Roman';font-size:50px;color:red;letter-spacing:5px">ವೇದಾಂತ್</label>
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">SUBRAMANYA</label>
                                         </div>
                                         <div class="col-3 contentEnd">
                                             <label for="candidateImg">
@@ -78,7 +78,7 @@
                                         </div>
                                         <div class="col-2"></div>
                                         <div class="col-8 contentCenter" style="margin-top:-20px">
-                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">ಹೋಮ್ ನರ್ಸಿಂಗ್ ಹೆಲ್ಪ್‌ಲೈನ್</label>
+                                            <label style="font-size:26px;color:red;margin-top:-5px;font-weight:500">Home Nursing Helpline</label>
                                         </div>
                                     </div>
                                     <div id="customAddress">
@@ -317,10 +317,10 @@
             /* ── fetch logos ── */
             var base  = window.location.origin;
             var logos = await Promise.all([
-                toDataUri(base + '/images/plus%20icon.png'),
+                toDataUri(base + '/images/Subramanya.png'),
                 toDataUri(base + '/images/vedhant%20icon.png')
             ]);
-            var logoL = logos[0] ? '<img src="'+logos[0]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
+            var logoL = logos[0] ? '<img src="'+logos[0]+'" style="height:100px;width:140px;object-fit:contain;display:block;">' : '';
             var logoR = logos[1] ? '<img src="'+logos[1]+'" style="height:62px;width:80px;object-fit:contain;display:block;">' : '';
 
             /* ── candidate photo ── */
@@ -458,8 +458,8 @@
                     '<table style="width:100%;border-collapse:collapse;"><tr>' +
                         '<td style="width:88px;vertical-align:middle;">'+logoL+'</td>' +
                         '<td style="text-align:center;vertical-align:middle;padding:0 6px;">' +
-                            '<div style="font-family:\'Noto Sans Kannada\',fantasy,serif;font-size:42px;color:red;letter-spacing:4px;line-height:1.1;">ವೇದಾಂತ್</div>' +
-                            '<div style="font-size:19px;color:red;font-weight:500;margin-top:1px;'+KA+'">ಹೋಮ್ ನರ್ಸಿಂಗ್ ಹೆಲ್ಪ್‌ಲೈನ್</div>' +
+                            '<div style="font-family:\'Noto Sans Kannada\',fantasy,serif;font-size:42px;color:red;letter-spacing:4px;line-height:1.1;">SUBRAMANYA</div>' +
+                            '<div style="font-size:19px;color:red;font-weight:500;margin-top:1px;'+KA+'">Home Nursing Helpline</div>' +
                         '</td>' +
                         '<td style="width:88px;vertical-align:middle;text-align:right;">'+photoHtml+'</td>' +
                     '</tr></table>' +
