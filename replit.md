@@ -1,71 +1,36 @@
-# Hospital Management System — Subramanya Home Nursing
+# Nursing Home Management System
 
-## Project Overview
+An ASP.NET Core 7 MVC web application for managing nursing home / home healthcare operations. Built by Codemind Software Solutions.
 
-ASP.NET Core MVC application (.NET 7) for managing nursing home operations including:
-- Home Nursing patient management
-- Old Age care management
-- Helper (staff) management
-- Attendance tracking with GPS check-in/check-out
-- Cash Memo
+## Stack
+- **Backend:** ASP.NET Core 7 MVC (C#)
+- **Database:** SQL Server (external, hosted at bsite.net)
+- **Frontend:** Razor views, jQuery, Bootstrap, Font Awesome, face-api.js
+
+## Modules
+- Users / Login
+- Old Age patients management
+- Nursing Home (home nursing) management
+- Attendance tracking
+- Cash Memo / billing
 - Salary Slip generation
-- User management with face recognition login
+- Helpers management
+- Configuration (countries, etc.)
+- Reports / Dashboard
 
-**Stack:** ASP.NET Core 7 MVC · EF Core 7 · Microsoft SQL Server (external) · Bootstrap 4 · jQuery · DataTables
-
----
-
-## Running the Project
-
-The configured workflow runs:
+## How to run
+The workflow **"Start application"** starts the app:
 ```
 cd NursingHome && dotnet run --urls=http://0.0.0.0:5000
 ```
+The app starts on port 5000 and opens at the Login page (`/Users/Login`).
 
----
+## Database
+Connected to an external SQL Server on `sql.bsite.net`. Connection string is in `NursingHome/appsettings.json`.
 
-## Database Configuration
+## Notes
+- Face recognition (face-api.js) requires WebGL — not available in Replit's sandboxed preview browser; works in a real browser
+- WASM backend for face-api also requires the wasm files to be served correctly
+- The app uses session-based login with no ASP.NET Core Identity — custom `UserService`
 
-The SQL Server connection string is stored as a Replit Secret named:
-
-```
-ConnectionStrings__NursingHome
-```
-
-ASP.NET Core picks this up automatically from the environment (double-underscore is the hierarchy separator). **Never commit credentials to `appsettings.json`.**
-
----
-
-## Pending Database Migrations
-
-Before certain features work, run these migration scripts **once** against your SQL Server database (in order):
-
-| Script | What it adds |
-|--------|-------------|
-| `DBSchema/Migrations/001_AddGpsCheckIn.sql` | GPS check-in columns (Latitude, Longitude, GpsAccuracy, CheckInTime, Address, Status) |
-| `DBSchema/Migrations/002_AddCheckOutAndApproval.sql` | GPS check-out columns + manager approval columns (CheckOutTime, CheckOutLatitude, CheckOutLongitude, CheckOutGpsAccuracy, CheckOutAddress, TotalHours, ManagerRemarks, ApprovedBy, ApprovalTimestamp) |
-
-The full schema reference is at `DBSchema/dbo/Tables/Attendance.sql`.
-
----
-
-## Attendance Module
-
-### Employee Flow
-1. **Check In** — GPS captured by browser; server records timestamp + reverse-geocodes address; status set to *Pending Approval*
-2. **Check Out** — Same GPS flow; record updated with checkout time/location; status remains *Pending Approval*
-
-### Manager Flow (admin role only)
-- **Pending Approvals tab** is visible only to admin users
-- Each pending record shows: employee, patient, both timestamps, calculated hours, both GPS addresses and coordinates
-- **Approve** → total hours calculated automatically, status → *Approved*
-- **Reject** → optional remarks stored, status → *Rejected*
-
----
-
-## User Preferences
-
-- Keep changes isolated to the module being modified; do not touch unrelated modules
-- Use `msgPopup` (SweetAlert2 toast) for success/error messages throughout the app
-- GPS timestamps are always server-side — never trust the client clock
-- Connection strings and credentials must use Replit Secrets, never hardcoded files
+## User preferences
