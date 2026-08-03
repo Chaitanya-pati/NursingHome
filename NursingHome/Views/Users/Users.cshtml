@@ -1,4 +1,4 @@
-﻿<script src="~/js/face-api.min.js"></script>
+<script src="~/js/face-api.min.js"></script>
 
 <style>
     #video-container {
@@ -169,7 +169,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="HidePopup('userModal')">Close</button>
-                        <button type="submit" class="btn btn-success" onclick="AddUser()">Save</button>
+                        <button type="button" class="btn btn-success" id="btnSaveUser" onclick="AddUser()">Save</button>
                     </div>
                 </form>
             </div>
@@ -297,11 +297,12 @@
 
 
     function OpenPopup() {
-        $('.UserIPfields').val();
+        $('.UserIPfields').val('');   // clear all bound fields
         userIdPrrof = '';
         userImageString = '';
         showPopup('userModal');
         $('#usernameError').remove();
+        $('.error-message-field').remove();
         GetUsersData();
     }
     //document.getElementById('downloadIdProof').addEventListener('click', function () {
@@ -323,47 +324,61 @@
         document.body.removeChild(link);
     }
     function AddUser() {
-        if (CheckEmptyFields()) {
-            var formData = new FormData();
-            formData.append('Id', $('#userId').val());
-            formData.append('FirstName', $('#firstName').val());
-            formData.append('LastName', $('#lastName').val());
-            formData.append('UserName', $('#userName').val());
-            formData.append('Password', $('#password').val());
-            formData.append('Roles', $('#roles').val());
-            formData.append('MobileNo', $('#mobileNo').val());
-            formData.append('IdProof', userIdPrrof); // Assuming userIdPrrof is a file object or relevant data
-            formData.append('ImageString', userImageString); // Assuming userImageString is a file object or relevant data
-            formData.append('fkCity', $('#fkCity').val());
-            formData.append('PinCode', $('#pinCode').val());
-            formData.append('HighestQualification', $('#highestQualification').val());
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("AddorEditUser", "Users")',
-                data: formData,
-                processData: false, // Required for FormData
-                contentType: false, // Required for FormData
-                traditional: true,
-                async: false,
-                success: function (response) {
-                    if (response) {
-                        if ($('#userId').val() == '') {
-                            msgPopup("success", "User Added Successfully");
-                        } else {
-                            msgPopup("success", "User Updated Successfully");
-                        }
-                    }
-                    else {
-                        msgPopup("error", "Error! Please Try Again");
-                    }
-                },
-                error: function (response) {
-
-                    console.error(response);
-                }
-            });
+        console.log('[AddUser] Save button clicked');
+        if (!CheckEmptyFields()) {
+            console.warn('[AddUser] Validation failed — required fields are empty');
+            return;
         }
+
+        var isNew = ($('#userId').val() === '' || $('#userId').val() === '0');
+        console.log('[AddUser] Mode:', isNew ? 'ADD' : 'EDIT (id=' + $('#userId').val() + ')');
+
+        var formData = new FormData();
+        formData.append('Id', $('#userId').val() || '0');
+        formData.append('FirstName', $('#firstName').val());
+        formData.append('LastName', $('#lastName').val());
+        formData.append('UserName', $('#userName').val());
+        formData.append('Password', $('#password').val());
+        formData.append('Roles', $('#roles').val());
+        formData.append('MobileNo', $('#mobileNo').val());
+        formData.append('IdProof', userIdPrrof);
+        formData.append('ImageString', userImageString);
+        formData.append('fkCity', $('#fkCity').val());
+        formData.append('PinCode', $('#pinCode').val());
+        formData.append('HighestQualification', $('#highestQualification').val());
+
+        console.log('[AddUser] Sending API request to AddorEditUser');
+
+        $('#btnSaveUser').prop('disabled', true).text('Saving…');
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddorEditUser", "Users")',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log('[AddUser] API response:', response);
+                if (response && response.success) {
+                    var msg = isNew ? "User Added Successfully" : "User Updated Successfully";
+                    console.log('[AddUser] Save succeeded:', msg);
+                    msgPopup("success", msg);
+                    HidePopup('userModal');
+                    GetUsersData();
+                } else {
+                    var errMsg = (response && response.message) ? response.message : "Error! Please Try Again";
+                    console.error('[AddUser] Save returned failure:', errMsg);
+                    msgPopup("error", errMsg);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('[AddUser] AJAX error — status:', status, '| error:', error, '| response:', xhr.responseText);
+                msgPopup("error", "An unexpected error occurred. Please try again.");
+            },
+            complete: function () {
+                $('#btnSaveUser').prop('disabled', false).text('Save');
+            }
+        });
     }
    
     function GetUsersData() {

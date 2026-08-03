@@ -2,213 +2,445 @@
     ViewData["Title"] = "Attendance";
 }
 <style>
+    /* ── Mobile card labels ─────────────────────────────────── */
     @@media (max-width: 767px) {
         #tableAttendance td:nth-child(1)::before { content: "Helper Name"; }
         #tableAttendance td:nth-child(2)::before { content: "Patient Name"; }
         #tableAttendance td:nth-child(3)::before { content: "Check-In Time"; }
-        #tableAttendance td:nth-child(4)::before { content: "Status"; }
-        #tableAttendance td:nth-child(5)::before { content: "Address"; }
-        #tableAttendance td:nth-child(6)::before { content: "Description"; }
-        #tableAttendance td:nth-child(7)::before { content: none; }
-        #tableAttendance td:nth-child(5),
-        #tableAttendance td:nth-child(6) { word-break: break-word; }
+        #tableAttendance td:nth-child(4)::before { content: "Check-Out Time"; }
+        #tableAttendance td:nth-child(5)::before { content: "Total Hrs"; }
+        #tableAttendance td:nth-child(6)::before { content: "Status"; }
+        #tableAttendance td:nth-child(7)::before { content: "Check-In Address"; }
+        #tableAttendance td:nth-child(8)::before { content: none; }
+
+        #tablePending td:nth-child(1)::before { content: "Helper"; }
+        #tablePending td:nth-child(2)::before { content: "Patient"; }
+        #tablePending td:nth-child(3)::before { content: "Date"; }
+        #tablePending td:nth-child(4)::before { content: "Check-In"; }
+        #tablePending td:nth-child(5)::before { content: "Check-Out"; }
+        #tablePending td:nth-child(6)::before { content: "Est. Hours"; }
+        #tablePending td:nth-child(7)::before { content: none; }
+
+        #tableAttendance td:nth-child(7),
+        #tableAttendance td:nth-child(3),
+        #tableAttendance td:nth-child(4) { word-break: break-word; }
     }
 
-    /* Status badge colours */
+    /* ── Status badges ──────────────────────────────────────── */
     .badge-pending  { background-color: #f0ad4e; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
     .badge-approved { background-color: #5cb85c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
     .badge-rejected { background-color: #d9534f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
 
-    /* GPS indicator */
-    #gpsStatusBox { font-size: 13px; margin-top: 6px; }
+    /* ── GPS indicator ──────────────────────────────────────── */
+    .gps-status-box { font-size: 13px; margin-top: 6px; }
     .gps-ok   { color: #27ae60; }
     .gps-wait { color: #e67e22; }
     .gps-err  { color: #e74c3c; }
+
+    /* ── Approval modal detail grid ─────────────────────────── */
+    .approval-detail-row { display: flex; gap: 12px; margin-bottom: 8px; }
+    .approval-detail-row .detail-label  { font-weight: 600; min-width: 130px; color: #555; font-size: 13px; }
+    .approval-detail-row .detail-value  { font-size: 13px; word-break: break-word; }
+    .approval-section-header { font-weight: 700; font-size: 13px; text-transform: uppercase;
+                                letter-spacing: .5px; color: #6750a4; margin: 10px 0 4px; border-bottom: 1px solid #ddd; }
+    /* ── Pending badge on tab ───────────────────────────────── */
+    #pendingCountBadge { font-size: 11px; padding: 2px 6px; }
 </style>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     GPS CHECK-IN MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="CheckInModal" tabindex="-1" role="dialog" aria-labelledby="CheckInModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CheckInModalLabel">
+                    <i class="fa fa-map-marker" style="color:#e74c3c"></i> Employee Check In
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ciHelperDDL">Select Helper</label>
+                    <select class="form-select" id="ciHelperDDL" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="ciPatientDDL">Select Patient</label>
+                    <select class="form-select" id="ciPatientDDL" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="ciDescription">Description (optional)</label>
+                    <textarea class="form-control" id="ciDescription" rows="2"></textarea>
+                </div>
+                <div class="gps-status-box" id="ciGpsStatusBox">
+                    <span class="gps-wait"><i class="fa fa-spinner fa-spin"></i> Waiting for GPS location…</span>
+                </div>
+                <input type="hidden" id="ciLatitude">
+                <input type="hidden" id="ciLongitude">
+                <input type="hidden" id="ciAccuracy">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="btnCheckIn" onclick="SubmitCheckIn()" disabled>
+                    <i class="fa fa-map-marker"></i> Check In
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GPS CHECK-OUT MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="CheckOutModal" tabindex="-1" role="dialog" aria-labelledby="CheckOutModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CheckOutModalLabel">
+                    <i class="fa fa-sign-out-alt" style="color:#27ae60"></i> Employee Check Out
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="coRecordInfo" class="alert alert-info" style="font-size:13px;padding:8px 12px;margin-bottom:12px;"></div>
+                <div class="gps-status-box" id="coGpsStatusBox">
+                    <span class="gps-wait"><i class="fa fa-spinner fa-spin"></i> Acquiring GPS location…</span>
+                </div>
+                <input type="hidden" id="coAttendanceId">
+                <input type="hidden" id="coLatitude">
+                <input type="hidden" id="coLongitude">
+                <input type="hidden" id="coAccuracy">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="btnCheckOut" onclick="SubmitCheckOut()" disabled>
+                    <i class="fa fa-sign-out-alt"></i> Check Out
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     APPROVE / REJECT DETAIL MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="ApprovalModal" tabindex="-1" role="dialog" aria-labelledby="ApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" id="approvalModalHeader">
+                <h5 class="modal-title" id="ApprovalModalLabel">Review Attendance</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height:65vh;overflow-y:auto">
+
+                <!-- Employee summary -->
+                <div class="approval-section-header">Employee &amp; Shift</div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Employee</span>
+                    <span class="detail-value" id="amHelperName">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Patient</span>
+                    <span class="detail-value" id="amPatientName">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value" id="amDate">—</span>
+                </div>
+
+                <!-- Times & hours -->
+                <div class="approval-section-header">Times &amp; Duration</div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Check-In Time</span>
+                    <span class="detail-value" id="amCheckInTime">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Check-Out Time</span>
+                    <span class="detail-value" id="amCheckOutTime">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Total Hours</span>
+                    <span class="detail-value" id="amTotalHours">—</span>
+                </div>
+
+                <!-- Check-In GPS -->
+                <div class="approval-section-header">Check-In Location</div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Address</span>
+                    <span class="detail-value" id="amCheckInAddress">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Latitude / Longitude</span>
+                    <span class="detail-value" id="amCheckInLatLon">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">GPS Accuracy</span>
+                    <span class="detail-value" id="amCheckInAccuracy">—</span>
+                </div>
+
+                <!-- Check-Out GPS -->
+                <div class="approval-section-header">Check-Out Location</div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Address</span>
+                    <span class="detail-value" id="amCheckOutAddress">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">Latitude / Longitude</span>
+                    <span class="detail-value" id="amCheckOutLatLon">—</span>
+                </div>
+                <div class="approval-detail-row">
+                    <span class="detail-label">GPS Accuracy</span>
+                    <span class="detail-value" id="amCheckOutAccuracy">—</span>
+                </div>
+
+                <!-- Remarks -->
+                <div class="approval-section-header">Manager Remarks (optional)</div>
+                <textarea class="form-control" id="amRemarks" rows="3" placeholder="Enter remarks…"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn" id="btnConfirmApproval" onclick="SubmitApproval()">Confirm</button>
+            </div>
+            <input type="hidden" id="amAttendanceId">
+            <input type="hidden" id="amAction">
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ADMIN ADD / EDIT MODAL  (unchanged)
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="AddAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="AttendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AttendanceModalLabel">Attendance Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="attendanceForm" novalidate>
+                    <div class="form-group">
+                        <label>Select Helper</label>
+                        <select class="form-select ClearAttendenceClass" id="HelperNameDDL" required></select>
+                        <div class="invalid-feedback ClearAttendenceClass">Please select the Helper</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Patient</label>
+                        <select class="form-select ClearAttendenceClass" id="PatientNameDDL" required></select>
+                        <div class="invalid-feedback ClearAttendenceClass">Please select the Patient</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Date</label>
+                        <input type="datetime-local" class="form-control ClearAttendenceClass" id="AttendanceDate" required>
+                        <div class="invalid-feedback ClearAttendenceClass">Please select the date</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Work Hours</label>
+                        <input type="text" class="form-control ClearAttendenceClass" id="TotalHoursAdmin">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control ClearAttendenceClass" id="Description" rows="4"></textarea>
+                    </div>
+                    <input type="hidden" class="ClearAttendenceClass" id="AttendanceId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="AddandEditAttendence()" id="SaveAttendanceData">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE CONTENT
+     ═══════════════════════════════════════════════════════════════ -->
 <div class="col-md-12">
     @Html.Partial("~/Partialviews/_SearchBar.cshtml")
 </div>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12 text-right mb-2 mt-2 page-add-btn">
-            <!-- GPS Check-In button (primary action) -->
-            <button type="button" class="customBtn mr-2" onclick="OpenCheckInModal()">
-                <i class="fa fa-map-marker"></i> Check In
-            </button>
-            <!-- Keep existing manual Add for admin use -->
-            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="ClearAttendenceModalData()" data-toggle="modal" data-target="#AddAttendanceModal">
-                Add Attendance (Admin)
-            </button>
-        </div>
-    </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-         GPS CHECK-IN MODAL
-         ══════════════════════════════════════════════════════════ -->
-    <div class="modal fade" id="CheckInModal" tabindex="-1" role="dialog" aria-labelledby="CheckInModalLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="CheckInModalLabel">
-                        <i class="fa fa-map-marker" style="color:#e74c3c"></i> Employee Check In
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="ciHelperDDL">Select Helper</label>
-                        <select class="form-select" id="ciHelperDDL" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ciPatientDDL">Select Patient</label>
-                        <select class="form-select" id="ciPatientDDL" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="ciDescription">Description (optional)</label>
-                        <textarea class="form-control" id="ciDescription" rows="2"></textarea>
-                    </div>
+    <!-- Tab navigation -->
+    <ul class="nav nav-tabs mt-2" id="attendanceTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="recordsTabLink" data-toggle="tab"
+               href="#recordsTabContent" role="tab">
+                <i class="fa fa-list me-1"></i> Attendance Records
+            </a>
+        </li>
+        <li class="nav-item AuthorizedContent" hidden id="liPendingTab">
+            <a class="nav-link" id="pendingTabLink" data-toggle="tab"
+               href="#pendingTabContent" role="tab" onclick="GetPendingData()">
+                <i class="fa fa-clock me-1"></i> Pending Approvals
+                <span class="badge badge-warning ml-1" id="pendingCountBadge" hidden></span>
+            </a>
+        </li>
+    </ul>
 
-                    <!-- GPS status display -->
-                    <div id="gpsStatusBox">
-                        <span class="gps-wait"><i class="fa fa-spinner fa-spin"></i> Waiting for GPS location…</span>
-                    </div>
+    <div class="tab-content mt-2" id="attendanceTabsContent">
 
-                    <!-- Hidden GPS values populated by JS -->
-                    <input type="hidden" id="ciLatitude">
-                    <input type="hidden" id="ciLongitude">
-                    <input type="hidden" id="ciAccuracy">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="btnCheckIn" onclick="SubmitCheckIn()" disabled>
+        <!-- ── Tab 1: Attendance Records ──────────────────────────── -->
+        <div class="tab-pane fade show active" id="recordsTabContent" role="tabpanel">
+
+            <div class="row mb-2 mt-1 page-add-btn">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="customBtn mr-2" onclick="OpenCheckInModal()">
                         <i class="fa fa-map-marker"></i> Check In
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════════════
-         EXISTING ADMIN ADD/EDIT MODAL (unchanged)
-         ══════════════════════════════════════════════════════════ -->
-    <div class="modal fade" id="AddAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="AttendanceModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="AttendanceModalLabel">Attendance Form</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm AuthorizedContent" hidden
+                            onclick="ClearAttendenceModalData()"
+                            data-toggle="modal" data-target="#AddAttendanceModal">
+                        <i class="fa fa-plus me-1"></i> Add (Admin)
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form id="attendanceForm" novalidate>
-                        <div class="form-group">
-                            <label for="HelperName">Select Helper</label>
-                            <select class="form-select ClearAttendenceClass" id="HelperNameDDL" required></select>
-                            <div class="invalid-feedback ClearAttendenceClass">Please select the Helper</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="PatientName">Select Patient</label>
-                            <select class="form-select ClearAttendenceClass" id="PatientNameDDL" required></select>
-                            <div class="invalid-feedback ClearAttendenceClass">Please select the Patient</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="AttendanceDate">Select Date</label>
-                            <input type="datetime-local" class="form-control ClearAttendenceClass" id="AttendanceDate" required>
-                            <div class="invalid-feedback ClearAttendenceClass">Please select the date</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="TotalHours">Total Work Hours</label>
-                            <input type="text" class="form-control ClearAttendenceClass" id="TotalHours">
-                        </div>
-                        <div class="form-group">
-                            <label for="Description">Enter Description</label>
-                            <textarea class="form-control ClearAttendenceClass" id="Description" rows="4"></textarea>
-                        </div>
-                        <input type="hidden" class="ClearAttendenceClass" id="AttendanceId">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="AddandEditAttendence()" id="SaveAttendanceData">Save</button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="tableAttendance" class="display table-bordered rct-table" style="width:100%">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Helper Name</th>
+                                    <th>Patient Name</th>
+                                    <th>Check-In Time</th>
+                                    <th>Check-Out Time</th>
+                                    <th>Total Hrs</th>
+                                    <th>Status</th>
+                                    <th>Check-In Address</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Attendance Table -->
-    <div class="row mt-2">
-        <div class="col-md-12">
-            <table id="tableAttendance" class="display table-bordered rct-table" style="width:100%">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Helper Name</th>
-                        <th>Patient Name</th>
-                        <th>Check-In Time</th>
-                        <th>Status</th>
-                        <th>Address</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+        <!-- ── Tab 2: Pending Approvals (admin only) ──────────────── -->
+        <div class="tab-pane fade" id="pendingTabContent" role="tabpanel">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="tablePending" class="display table-bordered rct-table" style="width:100%">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Helper Name</th>
+                                    <th>Patient Name</th>
+                                    <th>Date</th>
+                                    <th>Check-In Time</th>
+                                    <th>Check-Out Time</th>
+                                    <th>Est. Hours</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+
+    </div><!-- /tab-content -->
+</div><!-- /container-fluid -->
 
 <script>
+    // ────────────────────────────────────────────────────────────────────────────
+    // Init
+    // ────────────────────────────────────────────────────────────────────────────
     $(document).ready(function () {
         $('#tableAttendance').DataTable();
+        $('#tablePending').DataTable();
+
         GetAttendanceData();
         HelpersDropDownList();
         PatientDropDownList();
         HelpersDropDownList1();
 
+        // Role-based tab visibility is handled by the layout's AuthorizedContent
+        // mechanism. If admin, also load pending count.
+        var role = localStorage.getItem('userRole');
+        if (role === 'admin') {
+            LoadPendingCount();
+        }
+
+        // Edit / Delete click handlers on main table
         $('#tableAttendance').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
             BindAttendanceData(fullData);
         });
-
         $('#tableAttendance').on('click', '.btn-delete', function () {
             var ID = $(this).attr('data-id');
             confirmDelete(ID);
         });
-
-        $('#search').on('click', function () { });
     });
 
-    // ──────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────────
+    // HELPER UTILITIES
+    // ────────────────────────────────────────────────────────────────────────────
+
+    function fmtDateTime(val) {
+        if (!val) return '—';
+        var d = new Date(val);
+        return isNaN(d.getTime()) ? val : d.toLocaleString();
+    }
+
+    function fmtDate(val) {
+        if (!val) return '—';
+        var d = new Date(val);
+        return isNaN(d.getTime()) ? val : d.toLocaleDateString();
+    }
+
+    function calcHours(checkIn, checkOut) {
+        if (!checkIn || !checkOut) return null;
+        var ci = new Date(checkIn), co = new Date(checkOut);
+        if (isNaN(ci) || isNaN(co)) return null;
+        return Math.round((co - ci) / 36000) / 100;   // 2-decimal hours
+    }
+
+    function statusBadge(status) {
+        if (!status) return '<span class="text-muted">—</span>';
+        if (status === 'Approved')         return '<span class="badge-approved">' + status + '</span>';
+        if (status === 'Rejected')         return '<span class="badge-rejected">' + status + '</span>';
+        if (status === 'Pending Approval') return '<span class="badge-pending">'  + status + '</span>';
+        return '<span>' + status + '</span>';
+    }
+
+    function setGpsStatus(boxId, type, html) {
+        var cls = { ok: 'gps-ok', wait: 'gps-wait', err: 'gps-err' }[type] || 'gps-wait';
+        $('#' + boxId).html('<span class="' + cls + '">' + html + '</span>');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
     // GPS CHECK-IN
-    // ──────────────────────────────────────────────────────────────────────────
-
-    var _gpsWatchId = null;
-
+    // ────────────────────────────────────────────────────────────────────────────
     function OpenCheckInModal() {
-        // Reset state
         $('#ciLatitude').val('');
         $('#ciLongitude').val('');
         $('#ciAccuracy').val('');
         $('#ciDescription').val('');
         $('#btnCheckIn').prop('disabled', true);
-        SetGpsStatus('wait', '<i class="fa fa-spinner fa-spin"></i> Acquiring GPS location…');
-
-        // Populate dropdowns for check-in modal
+        setGpsStatus('ciGpsStatusBox', 'wait', '<i class="fa fa-spinner fa-spin"></i> Acquiring GPS location…');
         PopulateCheckInDropdowns();
-
         $('#CheckInModal').modal('show');
 
-        // Start watching position
         if (!navigator.geolocation) {
-            SetGpsStatus('err', '<i class="fa fa-times-circle"></i> GPS is not supported on this device or browser.');
+            setGpsStatus('ciGpsStatusBox', 'err', '<i class="fa fa-times-circle"></i> GPS not supported on this device.');
             return;
         }
 
-        _gpsWatchId = navigator.geolocation.getCurrentPosition(
+        navigator.geolocation.getCurrentPosition(
             function (pos) {
                 var lat = pos.coords.latitude.toFixed(6);
                 var lon = pos.coords.longitude.toFixed(6);
@@ -216,34 +448,24 @@
                 $('#ciLatitude').val(lat);
                 $('#ciLongitude').val(lon);
                 $('#ciAccuracy').val(acc);
-                SetGpsStatus('ok',
-                    '<i class="fa fa-check-circle"></i> Location captured &mdash; accuracy <strong>' +
+                setGpsStatus('ciGpsStatusBox', 'ok',
+                    '<i class="fa fa-check-circle"></i> Location captured — accuracy <strong>' +
                     acc + ' m</strong>. Ready to check in.');
                 $('#btnCheckIn').prop('disabled', false);
+                console.log('[CheckIn] GPS captured — lat:', lat, 'lon:', lon, 'accuracy:', acc + 'm');
             },
             function (err) {
-                var msg = {
+                var msgs = {
                     1: 'Location permission denied. Please allow location access and try again.',
                     2: 'Location unavailable. Check your device GPS.',
                     3: 'GPS timed out. Move to an open area and try again.'
-                }[err.code] || 'Unknown GPS error.';
-                SetGpsStatus('err', '<i class="fa fa-times-circle"></i> ' + msg);
+                };
+                setGpsStatus('ciGpsStatusBox', 'err',
+                    '<i class="fa fa-times-circle"></i> ' + (msgs[err.code] || 'Unknown GPS error.'));
+                console.error('[CheckIn] GPS error code:', err.code, err.message);
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
-
-        // Clean up watch when modal closes
-        $('#CheckInModal').one('hidden.bs.modal', function () {
-            if (_gpsWatchId !== null) {
-                navigator.geolocation.clearWatch(_gpsWatchId);
-                _gpsWatchId = null;
-            }
-        });
-    }
-
-    function SetGpsStatus(type, html) {
-        var cls = { ok: 'gps-ok', wait: 'gps-wait', err: 'gps-err' }[type] || 'gps-wait';
-        $('#gpsStatusBox').html('<span class="' + cls + '">' + html + '</span>');
     }
 
     function SubmitCheckIn() {
@@ -263,73 +485,371 @@
             return;
         }
 
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+        console.log('[CheckIn] Submitting — userId:', userId, 'helperId:', helperId,
+                    'patientId:', patientId, 'lat:', lat, 'lon:', lon, 'acc:', acc);
+
         $('#btnCheckIn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Checking in…');
 
         $.ajax({
             url: '/Attendance/CheckIn',
             type: 'POST',
-            data: {
-                fkHelperId:  helperId,
-                fkNursingId: patientId,
-                latitude:    lat,
-                longitude:   lon,
-                gpsAccuracy: acc,
-                description: desc
-            },
+            data: { userId: userId, fkHelperId: helperId, fkNursingId: patientId,
+                    latitude: lat, longitude: lon, gpsAccuracy: acc, description: desc },
             success: function (res) {
+                console.log('[CheckIn] Success:', res);
                 $('#CheckInModal').modal('hide');
                 GetAttendanceData();
+                if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
                 Swal.fire({
-                    icon:  'success',
-                    title: 'Checked In!',
-                    html:  '<b>' + res.checkInTime + '</b><br><small>' + res.address + '</small><br>' +
-                           '<span class="badge-pending" style="display:inline-block;margin-top:6px">' + res.status + '</span>'
+                    icon: 'success', title: 'Checked In!',
+                    html: '<b>' + res.checkInTime + '</b><br><small>' + res.address + '</small><br>' +
+                          '<span class="badge-pending" style="display:inline-block;margin-top:6px">' + res.status + '</span>'
                 });
             },
             error: function (xhr) {
                 var msg = (xhr.responseJSON && xhr.responseJSON.message)
-                    ? xhr.responseJSON.message
-                    : 'An error occurred during check-in.';
+                    ? xhr.responseJSON.message : 'An error occurred during check-in.';
+                console.error('[CheckIn] Error:', xhr.status, msg);
                 Swal.fire({ icon: 'error', title: 'Check-In Failed', text: msg });
-                $('#btnCheckIn').prop('disabled', false).html('<i class="fa fa-map-marker"></i> Check In');
+                $('#btnCheckIn').prop('disabled', false)
+                                .html('<i class="fa fa-map-marker"></i> Check In');
             }
         });
     }
 
     function PopulateCheckInDropdowns() {
-        // Helper dropdown for Check-In modal
-        $.ajax({
-            url: '/Attendance/GetHelpers', type: 'GET',
+        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (res) {
                 var ddl = $('#ciHelperDDL').empty().append('<option value="">Select Helper</option>');
-                $.each(res.data, function (i, item) {
-                    ddl.append($('<option>', { value: item.id, text: item.name }));
-                });
+                $.each(res.data, function (i, item) { ddl.append($('<option>', { value: item.id, text: item.name })); });
             }
         });
-        // Patient dropdown for Check-In modal
-        $.ajax({
-            url: '/Attendance/GetPatientDetails', type: 'GET',
+        $.ajax({ url: '/Attendance/GetPatientDetails', type: 'GET',
             success: function (res) {
                 var ddl = $('#ciPatientDDL').empty().append('<option value="">Select Patient</option>');
-                $.each(res.data, function (i, item) {
-                    ddl.append($('<option>', { value: item.id, text: item.patientName }));
-                });
+                $.each(res.data, function (i, item) { ddl.append($('<option>', { value: item.id, text: item.patientName })); });
             }
         });
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────────
+    // GPS CHECK-OUT
+    // ────────────────────────────────────────────────────────────────────────────
+    function OpenCheckOutModal(attendanceId, helperName, patientName) {
+        $('#coAttendanceId').val(attendanceId);
+        $('#coLatitude').val('');
+        $('#coLongitude').val('');
+        $('#coAccuracy').val('');
+        $('#btnCheckOut').prop('disabled', true);
+        $('#coRecordInfo').html(
+            '<i class="fa fa-user me-1"></i><strong>' + helperName + '</strong>' +
+            ' &rarr; ' + patientName
+        );
+        setGpsStatus('coGpsStatusBox', 'wait',
+            '<i class="fa fa-spinner fa-spin"></i> Acquiring GPS location…');
+        $('#CheckOutModal').modal('show');
+
+        if (!navigator.geolocation) {
+            setGpsStatus('coGpsStatusBox', 'err',
+                '<i class="fa fa-times-circle"></i> GPS not supported on this device.');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            function (pos) {
+                var lat = pos.coords.latitude.toFixed(6);
+                var lon = pos.coords.longitude.toFixed(6);
+                var acc = pos.coords.accuracy.toFixed(1);
+                $('#coLatitude').val(lat);
+                $('#coLongitude').val(lon);
+                $('#coAccuracy').val(acc);
+                setGpsStatus('coGpsStatusBox', 'ok',
+                    '<i class="fa fa-check-circle"></i> Location captured — accuracy <strong>' +
+                    acc + ' m</strong>. Ready to check out.');
+                $('#btnCheckOut').prop('disabled', false);
+                console.log('[CheckOut] GPS captured — lat:', lat, 'lon:', lon, 'accuracy:', acc + 'm');
+            },
+            function (err) {
+                var msgs = {
+                    1: 'Location permission denied. Please allow location access and try again.',
+                    2: 'Location unavailable. Check your device GPS.',
+                    3: 'GPS timed out. Move to an open area and try again.'
+                };
+                setGpsStatus('coGpsStatusBox', 'err',
+                    '<i class="fa fa-times-circle"></i> ' + (msgs[err.code] || 'Unknown GPS error.'));
+                console.error('[CheckOut] GPS error code:', err.code, err.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    }
+
+    function SubmitCheckOut() {
+        var attendanceId = $('#coAttendanceId').val();
+        var lat          = $('#coLatitude').val();
+        var lon          = $('#coLongitude').val();
+        var acc          = $('#coAccuracy').val();
+
+        if (!lat || !lon) {
+            alert('GPS location has not been captured yet. Please wait.');
+            return;
+        }
+
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+        console.log('[CheckOut] Submitting — userId:', userId, 'attendanceId:', attendanceId,
+                    'lat:', lat, 'lon:', lon, 'acc:', acc);
+
+        $('#btnCheckOut').prop('disabled', true)
+                         .html('<i class="fa fa-spinner fa-spin"></i> Checking out…');
+
+        $.ajax({
+            url: '/Attendance/CheckOut',
+            type: 'POST',
+            data: { userId: userId, attendanceId: attendanceId, latitude: lat, longitude: lon, gpsAccuracy: acc },
+            success: function (res) {
+                console.log('[CheckOut] Success:', res);
+                $('#CheckOutModal').modal('hide');
+                GetAttendanceData();
+                if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
+                Swal.fire({
+                    icon: 'success', title: 'Checked Out!',
+                    html: '<b>' + res.checkOutTime + '</b><br>' +
+                          '<small>' + res.address + '</small><br>' +
+                          '<span class="badge-pending" style="display:inline-block;margin-top:6px">' +
+                          'Pending Approval</span>'
+                });
+            },
+            error: function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message : 'An error occurred during check-out.';
+                console.error('[CheckOut] Error:', xhr.status, msg);
+                Swal.fire({ icon: 'error', title: 'Check-Out Failed', text: msg });
+                $('#btnCheckOut').prop('disabled', false)
+                                 .html('<i class="fa fa-sign-out-alt"></i> Check Out');
+            }
+        });
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // MAIN ATTENDANCE TABLE
+    // ────────────────────────────────────────────────────────────────────────────
+    function GetAttendanceData() {
+        var table = $('#tableAttendance').DataTable();
+
+        $.ajax({
+            type: 'POST', url: '/Attendance/GetAttendanceData',
+            success: function (response) {
+                console.log('[Attendance] GetAttendanceData — records:', response.data.length);
+                table.clear();
+                response.data.forEach(function (item) {
+                    var checkInDisplay  = item.checkInTime  ? fmtDateTime(item.checkInTime)  : (item.attendanceDate || '—');
+                    var checkOutDisplay = item.checkOutTime ? fmtDateTime(item.checkOutTime) : '—';
+
+                    // Total hours: use approved value, or estimate if both times available
+                    var totalHrsDisplay;
+                    if (item.totalHours != null) {
+                        totalHrsDisplay = item.totalHours + ' hrs';
+                    } else {
+                        var est = calcHours(item.checkInTime, item.checkOutTime);
+                        totalHrsDisplay = est !== null ? '<em style="color:#aaa">' + est + ' hrs*</em>' : '—';
+                    }
+
+                    // Action buttons
+                    var actions = '<div class="text-center" style="white-space:nowrap">';
+
+                    // Check-Out button: show only when checked in but not yet out
+                    if (item.checkInTime && !item.checkOutTime && item.status === 'Pending Approval') {
+                        actions += '<button class="btn btn-sm btn-success me-1 mr-1" style="font-size:11px" ' +
+                            'onclick="OpenCheckOutModal(' + item.attendanceId + ',' +
+                            '\'' + escJs(item.helperName) + '\',\'' + escJs(item.patientName) + '\')">' +
+                            '<i class="fa fa-sign-out-alt"></i> Check Out</button>';
+                    }
+
+                    actions +=
+                        '<i class="fa fa-edit me-2 btn-edit" style="color:green;cursor:pointer" ' +
+                            'data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i> ' +
+                        '<i class="fa fa-trash btn-delete" style="color:red;cursor:pointer" ' +
+                            'data-id="' + item.attendanceId + '"></i>';
+                    actions += '</div>';
+
+                    table.row.add([
+                        item.helperName  || '—',
+                        item.patientName || '—',
+                        checkInDisplay,
+                        checkOutDisplay,
+                        totalHrsDisplay,
+                        statusBadge(item.status),
+                        (item.address     || '—'),
+                        actions
+                    ]).draw();
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('[Attendance] GetAttendanceData error:', error);
+            }
+        });
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // PENDING APPROVALS TABLE
+    // ────────────────────────────────────────────────────────────────────────────
+    function GetPendingData() {
+        var table  = $('#tablePending').DataTable();
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+
+        $.ajax({
+            url: '/Attendance/GetPendingAttendance', type: 'GET',
+            data: { userId: userId },
+            success: function (response) {
+                console.log('[Attendance] GetPendingAttendance — records:', response.data.length);
+                table.clear();
+                response.data.forEach(function (item) {
+                    var est = calcHours(item.checkInTime, item.checkOutTime);
+                    var estDisplay = est !== null ? est + ' hrs' : '—';
+
+                    var actions =
+                        '<div class="text-center" style="white-space:nowrap">' +
+                        '<button class="btn btn-sm btn-success mr-1" style="font-size:11px" ' +
+                            'onclick="OpenApprovalModal(' + JSON.stringify(item).replace(/'/g, "&#39;") + ',\'approve\')">' +
+                            '<i class="fa fa-check"></i> Approve</button> ' +
+                        '<button class="btn btn-sm btn-danger" style="font-size:11px" ' +
+                            'onclick="OpenApprovalModal(' + JSON.stringify(item).replace(/'/g, "&#39;") + ',\'reject\')">' +
+                            '<i class="fa fa-times"></i> Reject</button>' +
+                        '</div>';
+
+                    table.row.add([
+                        item.helperName  || '—',
+                        item.patientName || '—',
+                        fmtDate(item.attendanceDate || item.checkInTime),
+                        fmtDateTime(item.checkInTime),
+                        fmtDateTime(item.checkOutTime),
+                        estDisplay,
+                        actions
+                    ]).draw();
+                });
+
+                // Update pending count badge
+                UpdatePendingBadge(response.data.length);
+            },
+            error: function (xhr, status, error) {
+                console.error('[Attendance] GetPendingAttendance error:', error);
+            }
+        });
+    }
+
+    function LoadPendingCount() {
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+        $.ajax({
+            url: '/Attendance/GetPendingAttendance', type: 'GET',
+            data: { userId: userId },
+            success: function (res) { UpdatePendingBadge(res.data ? res.data.length : 0); }
+        });
+    }
+
+    function UpdatePendingBadge(count) {
+        if (count > 0) {
+            $('#pendingCountBadge').text(count).prop('hidden', false);
+        } else {
+            $('#pendingCountBadge').prop('hidden', true);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // APPROVE / REJECT
+    // ────────────────────────────────────────────────────────────────────────────
+    function OpenApprovalModal(item, action) {
+        console.log('[Approval] Opening modal — id:', item.attendanceId, 'action:', action);
+
+        $('#amAttendanceId').val(item.attendanceId);
+        $('#amAction').val(action);
+        $('#amRemarks').val('');
+
+        // Populate detail fields
+        $('#amHelperName').text(item.helperName  || '—');
+        $('#amPatientName').text(item.patientName || '—');
+        $('#amDate').text(fmtDate(item.attendanceDate || item.checkInTime));
+        $('#amCheckInTime').text(fmtDateTime(item.checkInTime));
+        $('#amCheckOutTime').text(fmtDateTime(item.checkOutTime));
+
+        var est = calcHours(item.checkInTime, item.checkOutTime);
+        $('#amTotalHours').text(est !== null ? est + ' hrs (calculated on approval)' : '—');
+
+        $('#amCheckInAddress').text(item.address    || '—');
+        $('#amCheckInLatLon').text(
+            (item.latitude  != null && item.longitude  != null)
+                ? item.latitude.toFixed(5) + ', ' + item.longitude.toFixed(5) : '—');
+        $('#amCheckInAccuracy').text(item.gpsAccuracy != null ? item.gpsAccuracy.toFixed(1) + ' m' : '—');
+
+        $('#amCheckOutAddress').text(item.checkOutAddress || '—');
+        $('#amCheckOutLatLon').text(
+            (item.checkOutLatitude  != null && item.checkOutLongitude  != null)
+                ? item.checkOutLatitude.toFixed(5) + ', ' + item.checkOutLongitude.toFixed(5) : '—');
+        $('#amCheckOutAccuracy').text(
+            item.checkOutGpsAccuracy != null ? item.checkOutGpsAccuracy.toFixed(1) + ' m' : '—');
+
+        // Style modal header + confirm button based on action
+        if (action === 'approve') {
+            $('#ApprovalModalLabel').html('<i class="fa fa-check-circle" style="color:#5cb85c"></i> Approve Attendance');
+            $('#approvalModalHeader').css('background-color', '#f0fff4');
+            $('#btnConfirmApproval').removeClass('btn-danger').addClass('btn-success').text('Approve');
+        } else {
+            $('#ApprovalModalLabel').html('<i class="fa fa-times-circle" style="color:#d9534f"></i> Reject Attendance');
+            $('#approvalModalHeader').css('background-color', '#fff5f5');
+            $('#btnConfirmApproval').removeClass('btn-success').addClass('btn-danger').text('Reject');
+        }
+
+        $('#ApprovalModal').modal('show');
+    }
+
+    function SubmitApproval() {
+        var id     = $('#amAttendanceId').val();
+        var action = $('#amAction').val();
+        var remarks = $('#amRemarks').val();
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+        var url    = action === 'approve'
+                     ? '/Attendance/ApproveAttendance'
+                     : '/Attendance/RejectAttendance';
+
+        // approvedBy is resolved server-side from userId — never sent by the client
+        console.log('[Approval] Submitting — id:', id, 'action:', action, 'userId:', userId);
+
+        $('#btnConfirmApproval').prop('disabled', true)
+                                .html('<i class="fa fa-spinner fa-spin"></i> Processing…');
+
+        $.ajax({
+            url: url, type: 'POST',
+            data: { id: id, userId: userId, remarks: remarks },
+            success: function (res) {
+                console.log('[Approval] Response:', res);
+                if (res.success) {
+                    $('#ApprovalModal').modal('hide');
+                    GetAttendanceData();
+                    GetPendingData();
+                    msgPopup(action === 'approve' ? 'success' : 'warning',
+                             action === 'approve' ? 'Attendance Approved' : 'Attendance Rejected');
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Action Failed', text: res.message });
+                }
+            },
+            error: function (xhr) {
+                console.error('[Approval] AJAX error:', xhr.status, xhr.responseText);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'An unexpected error occurred.' });
+            },
+            complete: function () {
+                $('#btnConfirmApproval').prop('disabled', false)
+                                        .text(action === 'approve' ? 'Approve' : 'Reject');
+            }
+        });
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────
     // EXISTING ADMIN FUNCTIONS (unchanged)
-    // ──────────────────────────────────────────────────────────────────────────
-
-    function GetAttendencehelper() { }
-
+    // ────────────────────────────────────────────────────────────────────────────
     function AddandEditAttendence() {
         var helperName    = $('#HelperNameDDL').val();
         var patientName   = $('#PatientNameDDL').val();
         var attendanceDate = $('#AttendanceDate').val();
-        var totalHours    = $('#TotalHours').val();
+        var totalHours    = $('#TotalHoursAdmin').val();
         var description   = $('#Description').val();
         var attendanceId  = $('#AttendanceId').val();
 
@@ -347,10 +867,8 @@
             success: function (response) {
                 if (response) {
                     GetAttendanceData();
-                    if (attendanceId == null || attendanceId == 0)
-                        alert('Success: data added successfully');
-                    else
-                        alert('Success: data updated successfully');
+                    if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
+                    alert(attendanceId ? 'Success: data updated successfully' : 'Success: data added successfully');
                     $('#AddAttendanceModal').modal('hide');
                 }
             },
@@ -365,14 +883,8 @@
             title: 'Confirm',
             content: 'Are you sure you want to delete this record?',
             buttons: {
-                Yes: {
-                    btnClass: 'btn btn-success',
-                    action: function () { deleteAttendance(id); }
-                },
-                No: {
-                    btnClass: 'btn btn-warning',
-                    action: function () { }
-                }
+                Yes: { btnClass: 'btn btn-success', action: function () { deleteAttendance(id); } },
+                No:  { btnClass: 'btn btn-warning',  action: function () { } }
             }
         });
     }
@@ -381,7 +893,7 @@
         $('#HelperNameDDL').val(data.fkHelperId);
         $('#PatientNameDDL').val(data.fknursing);
         $('#AttendanceDate').val(data.attendanceDate);
-        $('#TotalHours').val(data.time);
+        $('#TotalHoursAdmin').val(data.time);
         $('#Description').val(data.description);
         $('#AttendanceId').val(data.attendanceId);
         $('#AddAttendanceModal').modal('show');
@@ -389,71 +901,18 @@
 
     function deleteAttendance(id) {
         $.ajax({
-            type: 'POST',
-            url: '/Attendance/DeleteAttendence',
-            data: { id: id },
+            type: 'POST', url: '/Attendance/DeleteAttendence', data: { id: id },
             success: function () {
                 GetAttendanceData();
+                if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
                 alert('Record deleted successfully');
             },
-            error: function () {
-                alert('Error occurred deleting record');
-            }
-        });
-    }
-
-    function statusBadge(status) {
-        if (!status) return '<span class="text-muted">—</span>';
-        if (status === 'Approved')        return '<span class="badge-approved">' + status + '</span>';
-        if (status === 'Rejected')        return '<span class="badge-rejected">' + status + '</span>';
-        if (status === 'Pending Approval') return '<span class="badge-pending">'  + status + '</span>';
-        return '<span>' + status + '</span>';
-    }
-
-    function formatCheckInTime(item) {
-        // Prefer CheckInTime (GPS records); fall back to Date for old records
-        if (item.checkInTime) {
-            var d = new Date(item.checkInTime);
-            return isNaN(d) ? item.checkInTime : d.toLocaleString();
-        }
-        if (item.attendanceDate) return item.attendanceDate;
-        return '—';
-    }
-
-    function GetAttendanceData() {
-        var table = $('#tableAttendance').DataTable();
-
-        $.ajax({
-            type: 'POST',
-            url: '/Attendance/GetAttendanceData',
-            success: function (response) {
-                table.clear();
-                response.data.forEach(function (item) {
-                    table.row.add([
-                        item.helperName  || '—',
-                        item.patientName || '—',
-                        formatCheckInTime(item),
-                        statusBadge(item.status),
-                        item.address     || '—',
-                        item.description || '—',
-                        '<div class="text-center">' +
-                            '<i class="fa fa-edit me-4 btn-edit" style="color:green;cursor:pointer" ' +
-                                'data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i> ' +
-                            '<i class="fa fa-trash btn-delete" style="color:red;cursor:pointer" ' +
-                                'data-id="' + item.attendanceId + '"></i>' +
-                        '</div>'
-                    ]).draw();
-                });
-            },
-            error: function (xhr, status, error) {
-                alert('An error occurred: ' + error);
-            }
+            error: function () { alert('Error occurred deleting record'); }
         });
     }
 
     function PatientDropDownList() {
-        $.ajax({
-            url: '/Attendance/GetPatientDetails', type: 'GET',
+        $.ajax({ url: '/Attendance/GetPatientDetails', type: 'GET',
             success: function (response) {
                 var ddl = $('#PatientNameDDL').empty()
                     .append($('<option>', { value: '', text: 'Select Patient', selected: true }));
@@ -461,15 +920,12 @@
                     ddl.append($('<option>', { value: item.id, text: item.patientName }));
                 });
             },
-            error: function (xhr, status, error) {
-                console.error("Error fetching Patient Details:", error);
-            }
+            error: function (xhr, status, error) { console.error("Error fetching Patient Details:", error); }
         });
     }
 
     function HelpersDropDownList() {
-        $.ajax({
-            url: '/Attendance/GetHelpers', type: 'GET',
+        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (response) {
                 var ddl = $('#HelperNameDDL').empty()
                     .append($('<option>', { value: '', text: 'Select Helper', selected: true }));
@@ -477,15 +933,12 @@
                     ddl.append($('<option>', { value: item.id, text: item.name }));
                 });
             },
-            error: function (xhr, status, error) {
-                console.error("Error fetching Helpers Details:", error);
-            }
+            error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });
     }
 
     function HelpersDropDownList1() {
-        $.ajax({
-            url: '/Attendance/GetHelpers', type: 'GET',
+        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (response) {
                 var ddl = $('#ddlHelper').empty()
                     .append($('<option>', { value: '', text: 'Select Helper', selected: true }));
@@ -493,13 +946,16 @@
                     ddl.append($('<option>', { value: item.id, text: item.name }));
                 });
             },
-            error: function (xhr, status, error) {
-                console.error("Error fetching Helpers Details:", error);
-            }
+            error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });
     }
 
     function ClearAttendenceModalData() {
         $('.ClearAttendenceClass').val('');
+    }
+
+    // Escapes a string for safe embedding in a JS string literal inside an HTML attribute
+    function escJs(s) {
+        return (s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 </script>

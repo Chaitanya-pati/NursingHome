@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,17 +25,16 @@ namespace NursingHome.Db.Implementation
             try
             {
                 using var Db = new TaskContext(_dbConn);
-
-                users.IsFaceAdded = users.faceDescriptor != null ? true : false;
+                users.IsFaceAdded = users.faceDescriptor != null;
                 Db.Add(users);
                 Db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
-                return false;
+                // Re-throw so the controller can log the full stack trace and return a structured error
+                throw new Exception($"AddData failed: {ex.Message}", ex);
             }
-
         }
 
         public bool UpdateData(Users user)
@@ -85,13 +84,13 @@ namespace NursingHome.Db.Implementation
             if (IsUserExist != null)
             {
                 Db.Remove(IsUserExist);
+                Db.SaveChanges(); // fix: was missing — deletes were silently discarded
                 return true;
             }
             else
             {
                 return false;
             }
-
         }
 
         public bool SaveFaceDescriptor(string username, string faceid)

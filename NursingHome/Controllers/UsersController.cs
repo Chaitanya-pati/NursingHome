@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
@@ -44,25 +44,33 @@ namespace NursingHome.Controllers
             }
         }
 
+        [HttpPost]
         public IActionResult AddorEditUser([FromForm] Users userData)
         {
             try
             {
+                _logger.SaveLog("UsersController", "AddorEditUser",
+                    $"Request received — Id={userData.Id}, UserName={userData.UserName}, FirstName={userData.FirstName}");
+
                 if (userData.Id == 0)
                 {
-                    var IsAdded = _DbConn.AddData(userData);
-                    return Json(IsAdded);
+                    _logger.SaveLog("UsersController", "AddorEditUser", "Mode: ADD new user");
+                    var isAdded = _DbConn.AddData(userData);
+                    _logger.SaveLog("UsersController", "AddorEditUser", $"AddData result: {isAdded}");
+                    return Json(new { success = isAdded, message = isAdded ? "User added successfully." : "Failed to add user." });
                 }
                 else
                 {
-                    var IsUpdated = _DbConn.UpdateData(userData);
-                    return Json(IsUpdated);
+                    _logger.SaveLog("UsersController", "AddorEditUser", $"Mode: UPDATE user id={userData.Id}");
+                    var isUpdated = _DbConn.UpdateData(userData);
+                    _logger.SaveLog("UsersController", "AddorEditUser", $"UpdateData result: {isUpdated}");
+                    return Json(new { success = isUpdated, message = isUpdated ? "User updated successfully." : "User not found or update failed." });
                 }
             }
             catch (Exception ex)
             {
-                _logger.SaveLog("UsersController", "AddorEditUser", ex.Message);
-                return StatusCode(500, "Internal server error");
+                _logger.SaveLog("UsersController", "AddorEditUser", $"EXCEPTION: {ex.Message} | StackTrace: {ex.StackTrace}");
+                return Json(new { success = false, message = "An error occurred while saving. Please try again." });
             }
         }
 

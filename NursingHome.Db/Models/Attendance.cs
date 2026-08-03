@@ -19,7 +19,7 @@ public partial class Attendance
 
     public string Description { get; set; }
 
-    // GPS Check-In fields
+    // ── GPS Check-In fields ──────────────────────────────────────────
     public double? Latitude { get; set; }
 
     public double? Longitude { get; set; }
@@ -29,12 +29,36 @@ public partial class Attendance
     /// <summary>Server-recorded timestamp when the employee checked in.</summary>
     public DateTime? CheckInTime { get; set; }
 
-    /// <summary>Human-readable address from reverse geocoding.</summary>
+    /// <summary>Human-readable address from reverse geocoding at check-in.</summary>
     public string Address { get; set; }
 
     /// <summary>Approval status: 'Pending Approval', 'Approved', 'Rejected'.</summary>
     public string Status { get; set; }
 
+    // ── GPS Check-Out fields ─────────────────────────────────────────
+    /// <summary>Server-recorded timestamp when the employee checked out.</summary>
+    public DateTime? CheckOutTime { get; set; }
+
+    public double? CheckOutLatitude { get; set; }
+
+    public double? CheckOutLongitude { get; set; }
+
+    public double? CheckOutGpsAccuracy { get; set; }
+
+    /// <summary>Human-readable address from reverse geocoding at check-out.</summary>
+    public string CheckOutAddress { get; set; }
+
+    // ── Manager Approval fields ──────────────────────────────────────
+    /// <summary>Calculated total working hours, set on manager approval.</summary>
+    public double? TotalHours { get; set; }
+
+    public string ManagerRemarks { get; set; }
+
+    public string ApprovedBy { get; set; }
+
+    public DateTime? ApprovalTimestamp { get; set; }
+
+    // ── Navigation properties ────────────────────────────────────────
     public virtual Helpers fkHelper { get; set; }
 
     public virtual HomeNursing fkNursing { get; set; }
