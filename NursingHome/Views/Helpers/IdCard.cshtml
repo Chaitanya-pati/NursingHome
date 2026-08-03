@@ -104,38 +104,40 @@
 
         /* ── Header ── */
         .card-header {
-            padding: 2px 16px 10px;
+            padding: 4px 14px 10px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .header-logo {
-            width: 54px;
-            height: 54px;
+            width: 58px;
+            height: 58px;
             object-fit: contain;
             flex-shrink: 0;
             border-radius: 8px;
         }
         .header-text { flex: 1; }
         .header-company {
-            font-size: 16.5px;
+            font-size: 13px;
             font-weight: 900;
-            color: #1a3a6b;
-            letter-spacing: 0.6px;
-            line-height: 1.15;
+            color: #1565c0;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            text-transform: uppercase;
         }
         .header-service {
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 700;
-            color: #1a3a6b;
+            color: #1565c0;
             letter-spacing: 0.2px;
             line-height: 1.4;
+            text-transform: uppercase;
         }
         .header-tagline {
             font-size: 8.5px;
-            color: #4a6a9b;
+            color: #5b8ec7;
             font-style: italic;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
         /* ── Thin blue divider ── */
@@ -150,22 +152,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 14px 0 8px;
+            padding: 16px 0 6px;
         }
         .card-photo-ring {
-            width: 90px;
-            height: 90px;
+            width: 115px;
+            height: 115px;
             border-radius: 50%;
-            border: 3px solid #2563c0;
+            border: 2.5px solid #1976d2;
             padding: 3px;
             background: #fff;
-            box-shadow: 0 4px 14px rgba(26,58,107,0.25);
         }
         .card-photo {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
+            object-position: center top;
             background: #d8e8f8;
             display: block;
         }
@@ -178,7 +180,7 @@
             align-items: center;
             justify-content: center;
         }
-        .photo-placeholder i { font-size: 38px; color: #7fa0be; }
+        .photo-placeholder i { font-size: 44px; color: #7fa0be; }
 
         /* ── Name + ECG + Role ── */
         .name-section {
@@ -200,25 +202,25 @@
             max-width: 64px;
         }
         .card-name {
-            font-size: 17px;
+            font-size: 20px;
             font-weight: 800;
-            color: #1a3a6b;
+            color: #0d3b8c;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 160px;
+            max-width: 180px;
             text-align: center;
         }
         .role-badge {
-            margin-top: 5px;
+            margin-top: 6px;
             background: #e4edf8;
-            border: 1px solid #b8cce4;
-            color: #1a6bc0;
-            font-size: 9.5px;
+            border: 1.5px solid #b8cce4;
+            color: #1565c0;
+            font-size: 9px;
             font-weight: 800;
-            letter-spacing: 2.5px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            padding: 3px 20px;
+            padding: 3px 22px;
             border-radius: 20px;
         }
 
@@ -366,8 +368,8 @@
 
             <!-- Header: logo + company info -->
             <div class="card-header">
-                <img id="companyLogo" class="header-logo" src="/Images/Subramanya.png" alt="Logo"
-                     onerror="this.style.display='none'" />
+                <img id="companyLogo" class="header-logo" src="/Images/subramanya_latest-Logo.jpg" alt="Logo"
+                     onerror="this.src='/Images/Subramanya.png'" />
                 <div class="header-text">
                     <div class="header-company">SUBRAMANYA</div>
                     <div class="header-service">HOME HEALTHCARE SERVICE</div>
