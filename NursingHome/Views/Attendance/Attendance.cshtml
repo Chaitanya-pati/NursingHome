@@ -287,6 +287,15 @@
         </li>
     </ul>
 
+    <!-- Admin-only: Add Attendance button (shown after role loads) -->
+    <div class="row mb-2 mt-2 AuthorizedContent" hidden id="adminAddRow">
+        <div class="col-md-12 text-right">
+            <button type="button" class="customBtn" onclick="ClearAttendenceModalData(); $('#AddAttendanceModal').modal('show');">
+                <i class="fa fa-plus"></i> Add Attendance
+            </button>
+        </div>
+    </div>
+
     <div class="tab-content mt-2" id="attendanceTabsContent">
 
         <!-- ── Tab 1: Attendance Records ──────────────────────────── -->
@@ -361,13 +370,16 @@
         GetAttendanceData();
         HelpersDropDownList();
         PatientDropDownList();
-        HelpersDropDownList1();
-
-        // Role-based tab visibility is handled by the layout's AuthorizedContent
-        // mechanism. If admin, also load pending count.
+        // Role-based UI is driven by the layout's AuthorizedContent mechanism.
+        // Poll briefly for the role (set async by layout via AJAX) then update.
         var role = localStorage.getItem('userRole');
         if (role === 'admin') {
             LoadPendingCount();
+        } else {
+            // Role may not be in localStorage yet (first load); retry once after layout sets it
+            setTimeout(function () {
+                if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
+            }, 1500);
         }
 
         // Edit / Delete click handlers on main table
@@ -650,28 +662,46 @@
                     }
 
                     // Action buttons
+                    var role    = localStorage.getItem('userRole');
+                    var isAdmin = (role === 'admin');
                     var actions = '<div class="text-center" style="white-space:nowrap">';
 
                     // Check-Out button: show only when checked in but not yet out
                     if (item.checkInTime && !item.checkOutTime && item.status === 'Pending Approval') {
-                        actions += '<button class="btn btn-sm btn-success me-1 mr-1" style="font-size:11px" ' +
+                        actions += '<button class="btn btn-sm btn-success mr-1" style="font-size:11px" ' +
                             'onclick="OpenCheckOutModal(' + item.attendanceId + ',' +
                             '\'' + escJs(item.helperName) + '\',\'' + escJs(item.patientName) + '\')">' +
                             '<i class="fa fa-sign-out-alt"></i> Check Out</button>';
                     }
 
+                    // Admin-only: Edit and Delete
+                    if (isAdmin) {
+                        var fullDataJson = JSON.stringify(item).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                        actions += '<button class="btn btn-sm btn-warning btn-edit mr-1" style="font-size:11px" ' +
+                            'data-full-data=\'' + fullDataJson.replace(/'/g, '&#39;') + '\' ' +
+                            'title="Edit"><i class="fa fa-pencil-alt"></i></button>';
+                        actions += '<button class="btn btn-sm btn-danger btn-delete" style="font-size:11px" ' +
+                            'data-id="' + item.attendanceId + '" title="Delete"><i class="fa fa-trash"></i></button>';
+                    }
+
                     actions += '</div>';
 
-                    table.row.add([
+                    var labels = ['Helper Name','Patient Name','Check-In Time','Check-Out Time','Total Hrs','Status','Check-In Address',''];
+                    var cells  = [
                         item.helperName  || '—',
                         item.patientName || '—',
                         checkInDisplay,
                         checkOutDisplay,
                         totalHrsDisplay,
                         statusBadge(item.status),
-                        (item.address     || '—'),
+                        (item.address    || '—'),
                         actions
-                    ]).draw();
+                    ];
+                    var row = table.row.add(cells).draw();
+                    // Set data-label on each td for mobile card view
+                    $(row.node()).find('td').each(function (i) {
+                        if (labels[i]) $(this).attr('data-label', labels[i]);
+                    });
                 });
             },
             error: function (xhr, status, error) {
@@ -707,7 +737,8 @@
                             '<i class="fa fa-times"></i> Reject</button>' +
                         '</div>';
 
-                    table.row.add([
+                    var pendingLabels = ['Helper','Patient','Date','Check-In','Check-Out','Est. Hours',''];
+                    var pendingCells  = [
                         item.helperName  || '—',
                         item.patientName || '—',
                         fmtDate(item.attendanceDate || item.checkInTime),
@@ -715,7 +746,11 @@
                         fmtDateTime(item.checkOutTime),
                         estDisplay,
                         actions
-                    ]).draw();
+                    ];
+                    var pRow = table.row.add(pendingCells).draw();
+                    $(pRow.node()).find('td').each(function (i) {
+                        if (pendingLabels[i]) $(this).attr('data-label', pendingLabels[i]);
+                    });
                 });
 
                 // Update pending count badge
