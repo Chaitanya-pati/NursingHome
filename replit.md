@@ -1,36 +1,29 @@
-# Nursing Home Management System
+# NursingHome
 
-An ASP.NET Core 7 MVC web application for managing nursing home / home healthcare operations. Built by Codemind Software Solutions.
+An ASP.NET Core MVC (.NET 7) nursing home management web application.
 
-## Stack
-- **Backend:** ASP.NET Core 7 MVC (C#)
-- **Database:** SQL Server (external, hosted at bsite.net)
-- **Frontend:** Razor views, jQuery, Bootstrap, Font Awesome, face-api.js
+## Project structure
 
-## Modules
-- Users / Login
-- Old Age patients management
-- Nursing Home (home nursing) management
-- Attendance tracking
-- Cash Memo / billing
-- Salary Slip generation
-- Helpers management
-- Configuration (countries, etc.)
-- Reports / Dashboard
+- `NursingHome/` — main web app (controllers, views, static assets)
+- `NursingHome.Db/` — data-access library (interfaces + EF Core implementations)
 
 ## How to run
-The workflow **"Start application"** starts the app:
+
+The workflow **"Start application"** runs:
 ```
 cd NursingHome && dotnet run --urls=http://0.0.0.0:5000
 ```
-The app starts on port 5000 and opens at the Login page (`/Users/Login`).
+
+The app starts on port 5000. Default route goes to the Login page (`/Users/Login`).
 
 ## Database
-Connected to an external SQL Server on `sql.bsite.net`. Connection string is in `NursingHome/appsettings.json`.
+
+Connected to an external MS SQL Server hosted at `sql.bsite.net` (bsite.net free hosting).  
+Connection string is in `NursingHome/appsettings.json` under `"NursingHome"`.  
+No local database — all reads/writes go to the live remote database.
 
 ## Notes
-- Face recognition (face-api.js) requires WebGL — not available in Replit's sandboxed preview browser; works in a real browser
-- WASM backend for face-api also requires the wasm files to be served correctly
-- The app uses session-based login with no ASP.NET Core Identity — custom `UserService`
 
-## User preferences
+- `app.UseHttpsRedirection()` is commented out in `Program.cs` — Replit's reverse proxy handles TLS, so enabling it would cause redirect loops.
+- The face-api.js library requires WebGL; WebGL warnings in the browser console are expected in headless/preview environments and do not affect core functionality.
+- The app uses session-based authentication managed in JavaScript (stored in `sessionStorage` on the client side).
