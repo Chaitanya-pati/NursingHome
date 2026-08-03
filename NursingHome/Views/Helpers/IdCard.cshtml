@@ -529,9 +529,10 @@
 
             // Info rows
             document.getElementById('infoId').textContent = 'SHHS' + String(h.id).padStart(4, '0');
-            setRow('rowDob',     'infoDob',     fmtDate(h.dateOfBirth));
-            setRow('rowMobile',  'infoMobile',  h.mobileNo);
-            setRow('rowAadhaar', 'infoAadhaar', h.aadhaarNo);
+            setRow('rowDob',    'infoDob',    fmtDate(h.dateOfBirth));
+            // Mobile and Aadhar always visible — show '—' when not yet filled
+            document.getElementById('infoMobile').textContent  = h.mobileNo  || '—';
+            document.getElementById('infoAadhaar').textContent = h.aadhaarNo || '—';
 
             // Reveal card
             document.getElementById('loadingOverlay').style.display = 'none';
