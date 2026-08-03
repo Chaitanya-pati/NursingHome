@@ -297,11 +297,6 @@
                     <button type="button" class="customBtn mr-2" onclick="OpenCheckInModal()">
                         <i class="fa fa-map-marker"></i> Check In
                     </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm AuthorizedContent" hidden
-                            onclick="ClearAttendenceModalData()"
-                            data-toggle="modal" data-target="#AddAttendanceModal">
-                        <i class="fa fa-plus me-1"></i> Add (Admin)
-                    </button>
                 </div>
             </div>
 
@@ -665,11 +660,6 @@
                             '<i class="fa fa-sign-out-alt"></i> Check Out</button>';
                     }
 
-                    actions +=
-                        '<i class="fa fa-edit me-2 btn-edit" style="color:green;cursor:pointer" ' +
-                            'data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i> ' +
-                        '<i class="fa fa-trash btn-delete" style="color:red;cursor:pointer" ' +
-                            'data-id="' + item.attendanceId + '"></i>';
                     actions += '</div>';
 
                     table.row.add([
