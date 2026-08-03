@@ -464,6 +464,16 @@
     }
     function show(id, value) { if (value) document.getElementById(id).textContent = value; }
 
+    // ── Hide header/buttons when rendered inside a modal iframe ───
+    if (window.self !== window.top) {
+        var hdr = document.querySelector('.page-header');
+        var btns = document.querySelector('.action-buttons');
+        if (hdr)  hdr.style.display  = 'none';
+        if (btns) btns.style.display = 'none';
+        // shrink body padding so card is centred with less whitespace
+        document.body.style.padding = '20px 16px';
+    }
+
     // ── Fetch helper data ──────────────────────────────────────────
     $.ajax({
         url: '/Helpers/GetHelperById',
