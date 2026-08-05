@@ -601,6 +601,9 @@
                 $('#btnClearAllAssignments').show();
             }
 
+            // Auto-fill username and password when Full Name is typed
+            $('#nuFullName').on('input', autoFillFromName);
+
             // Live password-match hint for Create New User form
             $('#nuPassword, #nuConfirmPassword').on('input', function () {
                 var pwd  = $('#nuPassword').val();
@@ -1066,7 +1069,7 @@
                : '<span class="badge badge-light text-muted" style="font-size:11px;">None</span>';
 
            var adminAssignIcon = isAdmin
-               ? ' <i class="fa fa-user-cog ml-2 btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;cursor:pointer;font-size:15px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'"></i>'
+               ? ' <i class="fa fa-user-cog ml-2 btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;cursor:pointer;font-size:15px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'" data-dob="'+escAttr(item.dateOfBirth || '')+'"></i>'
                : '';
 
            table.row.add([
@@ -1198,7 +1201,8 @@
         $('#tblHelpers').on('click', '.btn-assign-user', function () {
             var helperId   = JSON.parse($(this).attr('dataId'));
             var helperName = $(this).attr('data-helper-name') || '';
-            openAssignUserModal(helperId, helperName);
+            var helperDob  = $(this).attr('data-dob') || '';
+            openAssignUserModal(helperId, helperName, helperDob);
         });
 
         // Delegate: Remove Assignment button
@@ -1267,11 +1271,36 @@
             showPopup('removeAssignmentModal');
         }
 
-        function openAssignUserModal(helperId, helperName) {
+        // Stored DOB year for auto-fill password generation
+        var _modalHelperDobYear = '';
+
+        function autoFillFromName() {
+            var fullName = $('#nuFullName').val() || '';
+            // Username: first word (before first space)
+            var firstWord = fullName.split(' ')[0] || '';
+            $('#nuUserName').val(firstWord);
+            // Password: first 4 chars of full name (lowercase) + DOB year
+            var namePart = fullName.substring(0, 4).toLowerCase();
+            var pwd = namePart + (_modalHelperDobYear || '');
+            if (pwd.length >= 4) {
+                $('#nuPassword').val(pwd);
+                $('#nuConfirmPassword').val(pwd);
+                $('#nuConfirmPwdHint').hide();
+            }
+        }
+
+        function openAssignUserModal(helperId, helperName, helperDob) {
             $('#assignHelperId').val(helperId);
             $('#assignModalTitle').text('Assign User — ' + (helperName || ''));
             _modalCurrentHelperId = helperId;
             _modalCurrentSuser = '';
+
+            // Extract DOB year for password generation
+            _modalHelperDobYear = '';
+            if (helperDob) {
+                var dobDate = new Date(helperDob);
+                if (!isNaN(dobDate)) _modalHelperDobYear = String(dobDate.getFullYear());
+            }
 
             // Reset state
             $('#nuFullName, #nuUserName, #nuMobile, #nuEmail, #nuPassword, #nuConfirmPassword').val('');
@@ -1301,10 +1330,12 @@
                         $('#assignNoBanner').hide();
                         // Pre-fill the "Full Name" field in Create New tab from helper name
                         $('#nuFullName').val(helperName || '');
+                        autoFillFromName();
                     } else {
                         $('#assignCurrentBanner').hide();
                         $('#assignNoBanner').show();
                         $('#nuFullName').val(helperName || '');
+                        autoFillFromName();
                     }
                 },
                 error: function () {
