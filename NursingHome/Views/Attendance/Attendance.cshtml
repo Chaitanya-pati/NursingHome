@@ -369,7 +369,17 @@
 
         GetAttendanceData();
         HelpersDropDownList();
+        HelpersDropDownList1();
         PatientDropDownList();
+
+        // Search button — apply date range + helper filter
+        $('#search').on('click', function () {
+            var start        = $('#startDate').val()  || null;
+            var end          = $('#endDate').val()    || null;
+            var helperId     = $('#ddlHelper').val()  || null;
+            GetAttendanceData(start, end, helperId);
+        });
+
         // Role-based UI is driven by the layout's AuthorizedContent mechanism.
         // Poll briefly for the role (set async by layout via AJAX) then update.
         var role = localStorage.getItem('userRole');
@@ -492,8 +502,7 @@
             return;
         }
 
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
-        console.log('[CheckIn] Submitting — userId:', userId, 'helperId:', helperId,
+        console.log('[CheckIn] Submitting — helperId:', helperId,
                     'patientId:', patientId, 'lat:', lat, 'lon:', lon, 'acc:', acc);
 
         $('#btnCheckIn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Checking in…');
@@ -501,7 +510,7 @@
         $.ajax({
             url: '/Attendance/CheckIn',
             type: 'POST',
-            data: { userId: userId, fkHelperId: helperId, fkNursingId: patientId,
+            data: { fkHelperId: helperId, fkNursingId: patientId,
                     latitude: lat, longitude: lon, gpsAccuracy: acc, description: desc },
             success: function (res) {
                 console.log('[CheckIn] Success:', res);
@@ -526,11 +535,8 @@
     }
 
     function PopulateCheckInDropdowns() {
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
-
-        // Load helpers — pass userId so server returns only the logged-in helper for non-admins,
-        // and an explicit isAdmin flag so the UI doesn't guess role from list length.
-        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET', data: { userId: userId },
+        // Server resolves identity from session — no userId needed in the request.
+        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (res) {
                 var ddl = $('#ciHelperDDL').empty();
                 $.each(res.data, function (i, item) { ddl.append($('<option>', { value: item.id, text: item.name })); });
@@ -617,8 +623,7 @@
             return;
         }
 
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
-        console.log('[CheckOut] Submitting — userId:', userId, 'attendanceId:', attendanceId,
+        console.log('[CheckOut] Submitting — attendanceId:', attendanceId,
                     'lat:', lat, 'lon:', lon, 'acc:', acc);
 
         $('#btnCheckOut').prop('disabled', true)
@@ -627,7 +632,7 @@
         $.ajax({
             url: '/Attendance/CheckOut',
             type: 'POST',
-            data: { userId: userId, attendanceId: attendanceId, latitude: lat, longitude: lon, gpsAccuracy: acc },
+            data: { attendanceId: attendanceId, latitude: lat, longitude: lon, gpsAccuracy: acc },
             success: function (res) {
                 console.log('[CheckOut] Success:', res);
                 $('#CheckOutModal').modal('hide');
@@ -655,11 +660,18 @@
     // ────────────────────────────────────────────────────────────────────────────
     // MAIN ATTENDANCE TABLE
     // ────────────────────────────────────────────────────────────────────────────
-    function GetAttendanceData() {
-        var table = $('#tableAttendance').DataTable();
+    function GetAttendanceData(startDate, endDate, filterHelperId) {
+        var table  = $('#tableAttendance').DataTable();
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+
+        var params = { userId: userId };
+        if (startDate)      params.startDate     = startDate;
+        if (endDate)        params.endDate       = endDate;
+        if (filterHelperId) params.filterHelperId = filterHelperId;
 
         $.ajax({
-            type: 'POST', url: '/Attendance/GetAttendanceData',
+            type: 'GET', url: '/Attendance/GetAttendanceData',
+            data: params,
             success: function (response) {
                 console.log('[Attendance] GetAttendanceData — records:', response.data.length);
                 table.clear();
@@ -730,11 +742,9 @@
     // ────────────────────────────────────────────────────────────────────────────
     function GetPendingData() {
         var table  = $('#tablePending').DataTable();
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
 
         $.ajax({
             url: '/Attendance/GetPendingAttendance', type: 'GET',
-            data: { userId: userId },
             success: function (response) {
                 console.log('[Attendance] GetPendingAttendance — records:', response.data.length);
                 table.clear();
@@ -778,10 +788,8 @@
     }
 
     function LoadPendingCount() {
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
         $.ajax({
             url: '/Attendance/GetPendingAttendance', type: 'GET',
-            data: { userId: userId },
             success: function (res) { UpdatePendingBadge(res.data ? res.data.length : 0); }
         });
     }
@@ -845,20 +853,19 @@
         var id     = $('#amAttendanceId').val();
         var action = $('#amAction').val();
         var remarks = $('#amRemarks').val();
-        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
         var url    = action === 'approve'
                      ? '/Attendance/ApproveAttendance'
                      : '/Attendance/RejectAttendance';
 
-        // approvedBy is resolved server-side from userId — never sent by the client
-        console.log('[Approval] Submitting — id:', id, 'action:', action, 'userId:', userId);
+        // approvedBy is resolved server-side from session — never sent by the client
+        console.log('[Approval] Submitting — id:', id, 'action:', action);
 
         $('#btnConfirmApproval').prop('disabled', true)
                                 .html('<i class="fa fa-spinner fa-spin"></i> Processing…');
 
         $.ajax({
             url: url, type: 'POST',
-            data: { id: id, userId: userId, remarks: remarks },
+            data: { id: id, remarks: remarks },
             success: function (res) {
                 console.log('[Approval] Response:', res);
                 if (res.success) {
@@ -965,6 +972,7 @@
     }
 
     function HelpersDropDownList() {
+        // Server resolves identity from session.
         $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (response) {
                 var ddl = $('#HelperNameDDL').empty()
@@ -978,6 +986,7 @@
     }
 
     function HelpersDropDownList1() {
+        // Server resolves identity from session — no userId sent by client.
         $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
             success: function (response) {
                 var ddl = $('#ddlHelper').empty()
@@ -985,6 +994,10 @@
                 $.each(response.data, function (i, item) {
                     ddl.append($('<option>', { value: item.id, text: item.name }));
                 });
+                // Non-admin: auto-select their assigned helper and lock the dropdown
+                if (!response.isAdmin && response.data.length === 1) {
+                    ddl.val(response.data[0].id).prop('disabled', true);
+                }
             },
             error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });

@@ -11,6 +11,18 @@ var dbConnectionString =
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Session: stores server-side identity after login so controllers
+// can resolve the authenticated user without trusting client parameters.
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout        = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly    = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+});
+
 builder.Services.AddTransient<IUserService,UserService>(provider =>
 {
     return new UserService(dbConnectionString);
@@ -67,6 +79,9 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Session must come after UseRouting and before MapControllerRoute.
+app.UseSession();
 
 app.UseAuthorization();
 

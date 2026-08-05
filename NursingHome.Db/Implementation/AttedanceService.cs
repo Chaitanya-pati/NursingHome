@@ -341,5 +341,11 @@ namespace NursingHome.Db.Implementation
 
             return result.Cast<object>().ToList();
         }
+
+        public Attendance GetAttendanceById(int id)
+        {
+            using var Db = new TaskContext(_dbConn);
+            return Db.Attendance.FirstOrDefault(a => a.Id == id);
+        }
     }
 }

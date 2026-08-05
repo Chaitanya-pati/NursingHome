@@ -687,33 +687,35 @@
                 });
             }
 
-            let id = localStorage.getItem('userID');
-            if (id == null) {
-                window.location.href = '/Users/Login';
-            } else {
-                $.ajax({
-                    type: "GET",
-                    url: '/Users/GetUserDataById',
-                    data: { id: id },
-                    success: function (response) {
-                        if (response != null) {
-                            localStorage.setItem('userRole', response.roles);
-                            localStorage.setItem('username', response.userName);
-                            if (response.roles == 'admin') {
-                                $('.AuthorizedContent').each((index, element) => {
-                                    $(element).prop('hidden', false);
-                                });
-                            }
-                            /* ── populate header user info ── */
-                            var nameEl  = document.getElementById('headerUsername');
-                            var badgeEl = document.getElementById('headerRoleBadge');
-                            if (nameEl)  nameEl.textContent  = response.userName || '—';
-                            if (badgeEl) badgeEl.textContent = response.roles   || '';
-                        }
-                    },
-                    error: function (response) { }
-                });
-            }
+            // Identity is always resolved from the server-side session — never from
+            // a client-supplied ID. GetCurrentUser reads HttpContext.Session and
+            // returns null if there is no active session.
+            $.ajax({
+                type: "GET",
+                url: '/Users/GetCurrentUser',
+                success: function (response) {
+                    if (response == null) {
+                        window.location.href = '/Users/Login';
+                        return;
+                    }
+                    // Keep localStorage only for display / legacy references that
+                    // are UI-only (not used for server-side authorization).
+                    localStorage.setItem('userID',   response.id);
+                    localStorage.setItem('userRole', response.roles);
+                    localStorage.setItem('username', response.userName);
+                    if (response.roles == 'admin') {
+                        $('.AuthorizedContent').each((index, element) => {
+                            $(element).prop('hidden', false);
+                        });
+                    }
+                    /* ── populate header user info ── */
+                    var nameEl  = document.getElementById('headerUsername');
+                    var badgeEl = document.getElementById('headerRoleBadge');
+                    if (nameEl)  nameEl.textContent  = response.userName || '—';
+                    if (badgeEl) badgeEl.textContent = response.roles   || '';
+                },
+                error: function () { window.location.href = '/Users/Login'; }
+            });
 
             /* ── page title in header ── */
             (function () {

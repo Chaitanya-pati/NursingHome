@@ -19,32 +19,40 @@ namespace NursingHome.Controllers
             _userService = userService;
         }
 
-        // ── Auth helpers ───────────────────────────────────────────────────────
+        // ── Auth helpers (session-based — client-supplied userId is NEVER trusted) ──
 
-        private IActionResult? RequireValidUser(int userId)
+        /// <summary>
+        /// Reads the authenticated user ID from the server-side session.
+        /// Returns null on success; an error IActionResult on failure.
+        /// </summary>
+        private IActionResult? RequireValidUser(out int sessionUserId)
         {
-            if (userId <= 0)
-                return StatusCode(401, new { message = "Unauthorized: missing user session." });
-            var user = _userService.GetUserDataById(userId);
+            sessionUserId = 0;
+            var id = HttpContext.Session.GetInt32("UserId");
+            if (id == null || id <= 0)
+                return StatusCode(401, new { message = "Unauthorized: no active session. Please log in." });
+            var user = _userService.GetUserDataById(id.Value);
             if (user == null)
-                return StatusCode(401, new { message = "Unauthorized: user not found." });
+                return StatusCode(401, new { message = "Unauthorized: session user not found." });
+            sessionUserId = id.Value;
             return null;
         }
 
-        private IActionResult? RequireAdmin(int userId)
+        private IActionResult? RequireAdmin(out int sessionUserId)
         {
-            if (userId <= 0)
-                return StatusCode(401, new { message = "Unauthorized: missing user session." });
-            var user = _userService.GetUserDataById(userId);
-            if (user == null)
-                return StatusCode(401, new { message = "Unauthorized: user not found." });
-            if (!string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+            var err = RequireValidUser(out sessionUserId);
+            if (err != null) return err;
+            var user = _userService.GetUserDataById(sessionUserId);
+            if (user == null || !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
                 return StatusCode(403, new { message = "Forbidden: admin access required." });
             return null;
         }
 
-        private string AdminUsername(int userId)
-            => _userService.GetUserDataById(userId)?.UserName ?? "unknown";
+        private string SessionAdminUsername()
+        {
+            var id = HttpContext.Session.GetInt32("UserId") ?? 0;
+            return _userService.GetUserDataById(id)?.UserName ?? "unknown";
+        }
 
         // ── Standard CRUD ─────────────────────────────────────────────────────
 
@@ -62,6 +70,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authError = RequireAdmin(out _);
+                if (authError != null) return authError;
+
                 bool result = helperData.Id == 0
                     ? _DbConn.AddData(helperData)
                     : _DbConn.UpdateData(helperData);
@@ -78,6 +89,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authError = RequireValidUser(out _);
+                if (authError != null) return authError;
+
                 var data = _DbConn.GetData(UserName);
                 return Json(new { data = data });
             }
@@ -92,6 +106,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authError = RequireAdmin(out _);
+                if (authError != null) return authError;
+
                 var isDelete = _DbConn.DeleteData(id);
                 return Json(isDelete);
             }
@@ -104,14 +121,14 @@ namespace NursingHome.Controllers
 
         // ── ID Card ───────────────────────────────────────────────────────────
 
-        public IActionResult IdCard(int id, int userId)
+        public IActionResult IdCard(int id)
         {
             try
             {
-                var authError = RequireValidUser(userId);
+                var authError = RequireValidUser(out int sessionUserId);
                 if (authError != null) return authError;
                 ViewBag.HelperId = id;
-                ViewBag.UserId   = userId;
+                ViewBag.UserId   = sessionUserId;
                 return View();
             }
             catch (Exception ex)
@@ -121,11 +138,11 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetHelperById(int id, int userId)
+        public IActionResult GetHelperById(int id)
         {
             try
             {
-                var authError = RequireValidUser(userId);
+                var authError = RequireValidUser(out _);
                 if (authError != null) return authError;
 
                 var h = _DbConn.GetData("admin").FirstOrDefault(x => x.Id == id);
@@ -153,11 +170,11 @@ namespace NursingHome.Controllers
 
         // ── Assign User: get user list ────────────────────────────────────────
 
-        public IActionResult GetUsersForAssign(int userId, int helperId = 0)
+        public IActionResult GetUsersForAssign(int helperId = 0)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 var allHelpers = _DbConn.GetData("admin");
@@ -195,11 +212,11 @@ namespace NursingHome.Controllers
 
         // ── Get assigned user info ────────────────────────────────────────────
 
-        public IActionResult GetAssignedUserInfo(int helperId, int userId)
+        public IActionResult GetAssignedUserInfo(int helperId)
         {
             try
             {
-                var authError = RequireValidUser(userId);
+                var authError = RequireValidUser(out _);
                 if (authError != null) return authError;
 
                 var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
@@ -236,11 +253,11 @@ namespace NursingHome.Controllers
 
         // ── Assign existing user ──────────────────────────────────────────────
 
-        public IActionResult AssignUserToHelper(int helperId, int targetUserId, int userId)
+        public IActionResult AssignUserToHelper(int helperId, int targetUserId)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 var targetUser = _userService.GetUserDataById(targetUserId);
@@ -271,7 +288,7 @@ namespace NursingHome.Controllers
                     HelperId         = helperId,
                     AssignedUserName = targetUser.UserName,
                     Action           = action,
-                    AssignedBy       = AdminUsername(userId),
+                    AssignedBy       = SessionAdminUsername(),
                     AssignedDate     = DateTime.Now,
                     Notes            = oldUser != null ? $"Previous user: {oldUser}" : null
                 });
@@ -296,17 +313,16 @@ namespace NursingHome.Controllers
             string mobileNo,
             string email,
             string role,
-            bool   isActive,
-            int    userId)
+            bool   isActive)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 // Prevent assigning a user that is already suser of another helper
-                var allHelpers     = _DbConn.GetData("admin");
-                var allSusers      = allHelpers
+                var allHelpers = _DbConn.GetData("admin");
+                var allSusers  = allHelpers
                     .Where(h => !string.IsNullOrWhiteSpace(h.suser))
                     .Select(h => h.suser)
                     .ToList();
@@ -331,15 +347,11 @@ namespace NursingHome.Controllers
                 // Verify the helper exists before assigning
                 var helper = allHelpers.FirstOrDefault(h => h.Id == helperId);
                 if (helper == null)
-                {
-                    // User was created but helper not found — still report failure for assignment
                     return Json(new { success = false, message = $"Helper #{helperId} not found. User was created but not assigned." });
-                }
 
                 var oldUser = helper.suser;
                 var action  = string.IsNullOrWhiteSpace(oldUser) ? "Assigned" : "Changed";
 
-                // Verify AssignUser actually succeeded
                 var assigned = _DbConn.AssignUser(helperId, newUser.UserName);
                 if (!assigned)
                     return Json(new { success = false, message = "User was created but could not be assigned to the helper. Please use 'Select Existing User' to assign the newly created user." });
@@ -350,7 +362,7 @@ namespace NursingHome.Controllers
                     HelperId         = helperId,
                     AssignedUserName = newUser.UserName,
                     Action           = action,
-                    AssignedBy       = AdminUsername(userId),
+                    AssignedBy       = SessionAdminUsername(),
                     AssignedDate     = DateTime.Now,
                     Notes            = !string.IsNullOrWhiteSpace(oldUser) ? $"Created new user; Previous: {oldUser}" : "Created new user"
                 });
@@ -366,11 +378,11 @@ namespace NursingHome.Controllers
 
         // ── Clear all user assignments ────────────────────────────────────────
 
-        public IActionResult ClearAllUserAssignments(int userId)
+        public IActionResult ClearAllUserAssignments()
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 var result = _DbConn.ClearAllUserAssignments();
@@ -383,7 +395,7 @@ namespace NursingHome.Controllers
                     HelperId         = 0,
                     AssignedUserName = "(all)",
                     Action           = "Removed",
-                    RemovedBy        = AdminUsername(userId),
+                    RemovedBy        = SessionAdminUsername(),
                     RemovedDate      = DateTime.Now,
                     Notes            = "Bulk clear: all helper user assignments removed by admin"
                 });
@@ -399,11 +411,11 @@ namespace NursingHome.Controllers
 
         // ── Remove assignment ─────────────────────────────────────────────────
 
-        public IActionResult RemoveUserAssignment(int helperId, int userId)
+        public IActionResult RemoveUserAssignment(int helperId)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
@@ -422,7 +434,7 @@ namespace NursingHome.Controllers
                     HelperId         = helperId,
                     AssignedUserName = oldUser,
                     Action           = "Removed",
-                    RemovedBy        = AdminUsername(userId),
+                    RemovedBy        = SessionAdminUsername(),
                     RemovedDate      = DateTime.Now
                 });
 
@@ -437,11 +449,11 @@ namespace NursingHome.Controllers
 
         // ── Reset password ────────────────────────────────────────────────────
 
-        public IActionResult ResetHelperPassword(int helperId, string newPassword, int userId)
+        public IActionResult ResetHelperPassword(int helperId, string newPassword)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 4)
@@ -464,7 +476,7 @@ namespace NursingHome.Controllers
                     HelperId         = helperId,
                     AssignedUserName = helper.suser,
                     Action           = "PasswordReset",
-                    AssignedBy       = AdminUsername(userId),
+                    AssignedBy       = SessionAdminUsername(),
                     AssignedDate     = DateTime.Now,
                     Notes            = "Password reset by admin"
                 });
@@ -480,22 +492,22 @@ namespace NursingHome.Controllers
 
         // ── Get assignment history ────────────────────────────────────────────
 
-        public IActionResult GetAssignmentHistory(int helperId, int userId)
+        public IActionResult GetAssignmentHistory(int helperId)
         {
             try
             {
-                var authError = RequireAdmin(userId);
+                var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
                 var history = _DbConn.GetAssignmentHistory(helperId);
                 var result  = history.Select(h => new {
-                    action          = h.Action,
+                    action           = h.Action,
                     assignedUserName = h.AssignedUserName,
-                    assignedBy      = h.AssignedBy,
-                    assignedDate    = h.AssignedDate,
-                    removedBy       = h.RemovedBy,
-                    removedDate     = h.RemovedDate,
-                    notes           = h.Notes
+                    assignedBy       = h.AssignedBy,
+                    assignedDate     = h.AssignedDate,
+                    removedBy        = h.RemovedBy,
+                    removedDate      = h.RemovedDate,
+                    notes            = h.Notes
                 });
                 return Json(new { success = true, data = result });
             }

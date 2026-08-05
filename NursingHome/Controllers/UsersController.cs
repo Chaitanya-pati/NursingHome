@@ -9,7 +9,7 @@ namespace NursingHome.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly IHomeService _logger; // Changed to IHomeService for SaveLog functionality
+        private readonly IHomeService _logger;
         private readonly IUserService _DbConn;
 
         public UsersController(IHomeService logger, IUserService dbConn)
@@ -18,12 +18,40 @@ namespace NursingHome.Controllers
             _DbConn = dbConn;
         }
 
+        // ── Session auth helpers ───────────────────────────────────────────────
+
+        /// <summary>
+        /// Reads the authenticated user ID exclusively from the server-side session.
+        /// Returns null on success; an error IActionResult on failure.
+        /// </summary>
+        private IActionResult? RequireValidUser(out int userId)
+        {
+            userId = 0;
+            var sessionId = HttpContext.Session.GetInt32("UserId");
+            if (sessionId == null || sessionId <= 0)
+                return StatusCode(401, new { message = "Unauthorized: no active session. Please log in." });
+            userId = sessionId.Value;
+            var user = _DbConn.GetUserDataById(userId);
+            if (user == null)
+                return StatusCode(401, new { message = "Unauthorized: session user not found." });
+            return null;
+        }
+
+        private IActionResult? RequireAdmin(out int userId)
+        {
+            var err = RequireValidUser(out userId);
+            if (err != null) return err;
+            var user = _DbConn.GetUserDataById(userId);
+            if (user == null || !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(403, new { message = "Forbidden: admin access required." });
+            return null;
+        }
+
+        // ── Pages ─────────────────────────────────────────────────────────────
+
         public IActionResult Privacy()
         {
-            try
-            {
-                return View();
-            }
+            try { return View(); }
             catch (Exception ex)
             {
                 _logger.SaveLog("UsersController", "Privacy", ex.Message);
@@ -33,10 +61,7 @@ namespace NursingHome.Controllers
 
         public IActionResult Users()
         {
-            try
-            {
-                return View();
-            }
+            try { return View(); }
             catch (Exception ex)
             {
                 _logger.SaveLog("UsersController", "Users", ex.Message);
@@ -44,11 +69,16 @@ namespace NursingHome.Controllers
             }
         }
 
+        // ── Admin-only CRUD ───────────────────────────────────────────────────
+
         [HttpPost]
         public IActionResult AddorEditUser([FromForm] Users userData)
         {
             try
             {
+                var authErr = RequireAdmin(out _);
+                if (authErr != null) return authErr;
+
                 _logger.SaveLog("UsersController", "AddorEditUser",
                     $"Request received — Id={userData.Id}, UserName={userData.UserName}, FirstName={userData.FirstName}");
 
@@ -78,6 +108,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authErr = RequireAdmin(out _);
+                if (authErr != null) return authErr;
+
                 var Data = _DbConn.GetData();
                 return Json(new { data = Data });
             }
@@ -92,6 +125,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authErr = RequireAdmin(out _);
+                if (authErr != null) return authErr;
+
                 var IsDeleted = _DbConn.DeleteUser(id);
                 return Json(IsDeleted);
             }
@@ -102,10 +138,15 @@ namespace NursingHome.Controllers
             }
         }
 
+        // ── Face recognition (requires valid session) ─────────────────────────
+
         public IActionResult GetFaceData(string username)
         {
             try
             {
+                var authErr = RequireValidUser(out _);
+                if (authErr != null) return authErr;
+
                 return Json(_DbConn.GetFaceDescriptor(username));
             }
             catch (Exception ex)
@@ -119,6 +160,9 @@ namespace NursingHome.Controllers
         {
             try
             {
+                var authErr = RequireValidUser(out _);
+                if (authErr != null) return authErr;
+
                 return Json(_DbConn.SaveFaceDescriptor(username, face));
             }
             catch (Exception ex)
@@ -128,12 +172,11 @@ namespace NursingHome.Controllers
             }
         }
 
+        // ── Login (unauthenticated) ───────────────────────────────────────────
+
         public IActionResult Login()
         {
-            try
-            {
-                return View();
-            }
+            try { return View(); }
             catch (Exception ex)
             {
                 _logger.SaveLog("UsersController", "Login", ex.Message);
@@ -149,6 +192,9 @@ namespace NursingHome.Controllers
 
                 if (user != null)
                 {
+                    // Establish server-side session — all subsequent authorization
+                    // reads from this session, never from client-supplied parameters.
+                    HttpContext.Session.SetInt32("UserId", user.Id);
                     return Json(new { success = true, userID = user.Id, isFaceAdded = user.IsFaceAdded });
                 }
                 else
@@ -163,10 +209,46 @@ namespace NursingHome.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns the currently authenticated user's data derived from the
+        /// server-side session. Used by the layout to set role/display info.
+        /// No client-supplied ID is trusted.
+        /// </summary>
+        public IActionResult GetCurrentUser()
+        {
+            try
+            {
+                var sessionId = HttpContext.Session.GetInt32("UserId");
+                if (sessionId == null)
+                    return Json(null);
+                var data = _DbConn.GetUserDataById(sessionId.Value);
+                return Json(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "GetCurrentUser", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Returns user data for a given ID. Restricted:
+        ///   - Admins may look up any user.
+        ///   - Non-admins may only look up their own record.
+        /// </summary>
         public IActionResult GetUserDataById(int id)
         {
             try
             {
+                var authErr = RequireValidUser(out int sessionUserId);
+                if (authErr != null) return authErr;
+
+                // Non-admin may only read their own record.
+                var caller = _DbConn.GetUserDataById(sessionUserId);
+                bool isAdmin = string.Equals(caller?.Roles, "admin", StringComparison.OrdinalIgnoreCase);
+                if (!isAdmin && id != sessionUserId)
+                    return StatusCode(403, new { message = "Forbidden: you may only access your own user record." });
+
                 var data = _DbConn.GetUserDataById(id);
                 return Json(data);
             }

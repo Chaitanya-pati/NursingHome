@@ -50,5 +50,11 @@ namespace NursingHome.Db.Interface
         /// and have both a check-in and a check-out time recorded.
         /// </summary>
         List<object> GetPendingAttendance();
+
+        /// <summary>
+        /// Returns a single raw Attendance record by its primary key,
+        /// or null if not found. Used for ownership checks in the controller.
+        /// </summary>
+        Attendance GetAttendanceById(int id);
     }
 }

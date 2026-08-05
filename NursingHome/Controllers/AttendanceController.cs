@@ -35,9 +35,66 @@ namespace NursingHome.Controllers
         public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
-        // ── Existing admin add/edit (unchanged) ───────────────────────────────
+        // ── Server-side authorization helpers ─────────────────────────────────
+
+        /// <summary>
+        /// Reads the authenticated user ID from the server-side session.
+        /// Returns null + populates userId/userName on success;
+        /// returns an error IActionResult on failure.
+        /// Client-supplied userId parameters are NEVER trusted for authorization.
+        /// </summary>
+        private IActionResult? RequireValidUser(out int userId, out string userName)
+        {
+            userId   = 0;
+            userName = string.Empty;
+
+            var sessionId = HttpContext.Session.GetInt32("UserId");
+            if (sessionId == null || sessionId <= 0)
+                return StatusCode(401, new { message = "Unauthorized: no active session. Please log in." });
+
+            userId = sessionId.Value;
+            var user = _userService.GetUserDataById(userId);
+            if (user == null)
+                return StatusCode(401, new { message = "Unauthorized: session user not found." });
+
+            userName = user.UserName ?? "user";
+            return null;
+        }
+
+        /// <summary>
+        /// Verifies that the session user has the 'admin' role.
+        /// Returns null on success; an error IActionResult on failure.
+        /// </summary>
+        private IActionResult? RequireAdmin(out int userId, out string userName)
+        {
+            var baseError = RequireValidUser(out userId, out userName);
+            if (baseError != null) return baseError;
+
+            var user = _userService.GetUserDataById(userId);
+            if (user == null || !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(403, new { message = "Forbidden: admin access required." });
+
+            userName = user.UserName ?? "admin";
+            return null;
+        }
+
+        /// <summary>
+        /// Returns true if the session user is an admin.
+        /// Requires a valid session (call RequireValidUser first).
+        /// </summary>
+        private bool SessionUserIsAdmin(int userId)
+        {
+            var user = _userService.GetUserDataById(userId);
+            return user != null && string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // ── Existing admin add/edit ────────────────────────────────────────────
         public IActionResult AddandUpdateAttendance(Attendance attendance)
         {
+            // Only admins may add or edit attendance records manually.
+            var authError = RequireAdmin(out _, out _);
+            if (authError != null) return authError;
+
             if (attendance == null)
                 return BadRequest("Attendance data cannot be null.");
 
@@ -53,27 +110,29 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetAttendanceData(int userId = 0, string? startDate = null, string? endDate = null, int? filterHelperId = null)
+        public IActionResult GetAttendanceData(string? startDate = null, string? endDate = null, int? filterHelperId = null)
         {
+            // Identity comes from session — never from a client-supplied userId parameter.
+            var authError = RequireValidUser(out int userId, out _);
+            if (authError != null) return authError;
+
             int? helperIdFilter = null;
-            if (userId > 0)
+
+            if (!SessionUserIsAdmin(userId))
             {
-                var user = _userService.GetUserDataById(userId);
-                if (user != null && !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Non-admin: only show attendance for the helper assigned to them;
-                    // ignore any client-supplied filterHelperId for safety.
-                    var myHelpers = _helpers.GetData(user.UserName ?? "");
-                    if (myHelpers.Count > 0)
-                        helperIdFilter = myHelpers[0].Id;
-                    else
-                        return Json(new { data = new List<object>() }); // no helper assigned — empty
-                }
-                else if (filterHelperId.HasValue && filterHelperId.Value > 0)
-                {
-                    // Admin with an explicit helper filter selected in the search bar
-                    helperIdFilter = filterHelperId.Value;
-                }
+                // Non-admin: only show attendance for the helper assigned to them.
+                // The client-supplied filterHelperId is ignored for safety.
+                var user      = _userService.GetUserDataById(userId);
+                var myHelpers = _helpers.GetData(user?.UserName ?? "");
+                if (myHelpers.Count > 0)
+                    helperIdFilter = myHelpers[0].Id;
+                else
+                    return Json(new { data = new List<object>() }); // no helper assigned — empty
+            }
+            else if (filterHelperId.HasValue && filterHelperId.Value > 0)
+            {
+                // Admin with an explicit helper filter selected in the search bar.
+                helperIdFilter = filterHelperId.Value;
             }
 
             DateTime? start = string.IsNullOrWhiteSpace(startDate) ? null : DateTime.TryParse(startDate, out var sd) ? sd : (DateTime?)null;
@@ -85,37 +144,48 @@ namespace NursingHome.Controllers
 
         public IActionResult DeleteAttendence(int id)
         {
+            // Only admins may delete attendance records.
+            var authError = RequireAdmin(out _, out _);
+            if (authError != null) return authError;
+
             var IsDeleted = _DbConn.DeleteAttendance(id);
             return Json(IsDeleted);
         }
 
-        public IActionResult GetHelpers(int userId = 0)
+        public IActionResult GetHelpers()
         {
-            if (userId > 0)
+            // Identity comes from session.
+            var authError = RequireValidUser(out int userId, out _);
+            if (authError != null) return authError;
+
+            if (!SessionUserIsAdmin(userId))
             {
-                var user = _userService.GetUserDataById(userId);
-                if (user != null && !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Non-admin: only return the helper assigned to them
-                    var myHelpers = _helpers.GetData(user.UserName ?? "")
-                                            .Select(h => new { id = h.Id, name = h.Name })
-                                            .ToList<object>();
-                    return Json(new { data = myHelpers, isAdmin = false });
-                }
+                // Non-admin: only return the helper assigned to them.
+                var user      = _userService.GetUserDataById(userId);
+                var myHelpers = _helpers.GetData(user?.UserName ?? "")
+                                        .Select(h => new { id = h.Id, name = h.Name })
+                                        .ToList<object>();
+                return Json(new { data = myHelpers, isAdmin = false });
             }
+
             return Json(new { data = _DbConn.GetHelpers(), isAdmin = true });
         }
-        public IActionResult GetPatientDetails()  => Json(new { data = _DbConn.PatientDetails() });
+
+        public IActionResult GetPatientDetails()
+        {
+            var authError = RequireValidUser(out _, out _);
+            if (authError != null) return authError;
+            return Json(new { data = _DbConn.PatientDetails() });
+        }
 
         // ── GPS Check-In ──────────────────────────────────────────────────────
         /// <summary>
         /// Server records the timestamp; GPS coords come from the browser.
-        /// Validates that the caller is a known user. Status is set to
-        /// 'Pending Approval' — no manual time entry allowed.
+        /// Identity is resolved from the server-side session.
+        /// Status is set to 'Pending Approval' — no manual time entry allowed.
         /// </summary>
         [HttpPost]
         public async Task<IActionResult> CheckIn(
-            int    userId,
             int    fkHelperId,
             int    fkNursingId,
             double latitude,
@@ -123,16 +193,16 @@ namespace NursingHome.Controllers
             double gpsAccuracy,
             string description = "")
         {
-            // Server-side: verify the caller is a valid user.
-            var authError = RequireValidUser(userId, out _);
+            // Resolve identity from session — never from a client-supplied userId.
+            var authError = RequireValidUser(out int userId, out _);
             if (authError != null) return authError;
 
             // Non-admin helpers may only check in under their own assigned helper record.
-            var callerUser = _userService.GetUserDataById(userId);
-            if (callerUser != null && !string.Equals(callerUser.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!SessionUserIsAdmin(userId))
             {
-                var assignedHelpers = _helpers.GetData(callerUser.UserName ?? "");
-                var assignedIds     = assignedHelpers.Select(h => h.Id).ToHashSet();
+                var callerUser     = _userService.GetUserDataById(userId);
+                var assignedHelpers = _helpers.GetData(callerUser?.UserName ?? "");
+                var assignedIds    = assignedHelpers.Select(h => h.Id).ToHashSet();
                 if (!assignedIds.Contains(fkHelperId))
                     return StatusCode(403, new { message = "You are not authorised to check in on behalf of another helper." });
             }
@@ -169,20 +239,34 @@ namespace NursingHome.Controllers
 
         // ── GPS Check-Out ─────────────────────────────────────────────────────
         /// <summary>
-        /// Server records the timestamp. Validates that the caller is a known
-        /// user. Status remains 'Pending Approval' until manager review.
+        /// Server records the timestamp. Identity is resolved from session.
+        /// Verifies that the attendance record belongs to the caller's assigned helper.
         /// </summary>
         [HttpPost]
         public async Task<IActionResult> CheckOut(
-            int    userId,
             int    attendanceId,
             double latitude,
             double longitude,
             double gpsAccuracy)
         {
-            // Verify the caller is a valid user.
-            var authError = RequireValidUser(userId, out _);
+            // Resolve identity from session.
+            var authError = RequireValidUser(out int userId, out _);
             if (authError != null) return authError;
+
+            // Non-admin: verify the attendance record belongs to their assigned helper.
+            if (!SessionUserIsAdmin(userId))
+            {
+                var record = _DbConn.GetAttendanceById(attendanceId);
+                if (record == null)
+                    return NotFound(new { message = "Attendance record not found." });
+
+                var callerUser      = _userService.GetUserDataById(userId);
+                var assignedHelpers = _helpers.GetData(callerUser?.UserName ?? "");
+                var assignedIds     = assignedHelpers.Select(h => h.Id).ToHashSet();
+
+                if (!assignedIds.Contains(record.fkHelperId ?? 0))
+                    return StatusCode(403, new { message = "You are not authorised to check out on behalf of another helper." });
+            }
 
             var checkOutTime = DateTime.Now;
             var address      = await ReverseGeocodeAsync(latitude, longitude);
@@ -204,12 +288,12 @@ namespace NursingHome.Controllers
 
         /// <summary>
         /// Returns pending records for manager review.
-        /// Requires the caller to be an admin user (validated server-side).
+        /// Requires the caller to be an admin (validated server-side via session).
         /// </summary>
         [HttpGet]
-        public IActionResult GetPendingAttendance(int userId)
+        public IActionResult GetPendingAttendance()
         {
-            var authError = RequireAdmin(userId, out _);
+            var authError = RequireAdmin(out _, out _);
             if (authError != null) return authError;
 
             var data = _DbConn.GetPendingAttendance();
@@ -218,12 +302,12 @@ namespace NursingHome.Controllers
 
         /// <summary>
         /// Approves a pending record. Calculates total working hours.
-        /// Requires admin role. approvedBy is resolved server-side from userId.
+        /// Requires admin role. approvedBy is resolved server-side from session.
         /// </summary>
         [HttpPost]
-        public IActionResult ApproveAttendance(int id, int userId, string remarks = "")
+        public IActionResult ApproveAttendance(int id, string remarks = "")
         {
-            var authError = RequireAdmin(userId, out var approvedBy);
+            var authError = RequireAdmin(out _, out string approvedBy);
             if (authError != null) return authError;
 
             var success = _DbConn.ApproveAttendance(id, approvedBy, remarks);
@@ -238,12 +322,12 @@ namespace NursingHome.Controllers
 
         /// <summary>
         /// Rejects a pending record with optional remarks.
-        /// Requires admin role. approvedBy is resolved server-side from userId.
+        /// Requires admin role. approvedBy is resolved server-side from session.
         /// </summary>
         [HttpPost]
-        public IActionResult RejectAttendance(int id, int userId, string remarks = "")
+        public IActionResult RejectAttendance(int id, string remarks = "")
         {
-            var authError = RequireAdmin(userId, out var approvedBy);
+            var authError = RequireAdmin(out _, out string approvedBy);
             if (authError != null) return authError;
 
             var success = _DbConn.RejectAttendance(id, approvedBy, remarks);
@@ -254,43 +338,6 @@ namespace NursingHome.Controllers
                     ? "Attendance rejected."
                     : "Failed to reject. Record may already be reviewed or not found."
             });
-        }
-
-        // ── Server-side authorization helpers ─────────────────────────────────
-
-        /// <summary>
-        /// Verifies that the userId maps to an existing user.
-        /// Returns null on success; an error IActionResult on failure.
-        /// </summary>
-        private IActionResult? RequireValidUser(int userId, out string userName)
-        {
-            userName = string.Empty;
-            if (userId <= 0)
-                return StatusCode(401, new { message = "Unauthorized: missing user session." });
-
-            var user = _userService.GetUserDataById(userId);
-            if (user == null)
-                return StatusCode(401, new { message = "Unauthorized: user not found." });
-
-            userName = user.UserName ?? "user";
-            return null;
-        }
-
-        /// <summary>
-        /// Verifies that the userId maps to an existing user with the 'admin' role.
-        /// Returns null on success; an error IActionResult on failure.
-        /// </summary>
-        private IActionResult? RequireAdmin(int userId, out string userName)
-        {
-            var baseError = RequireValidUser(userId, out userName);
-            if (baseError != null) return baseError;
-
-            var user = _userService.GetUserDataById(userId);
-            if (user == null || !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
-                return StatusCode(403, new { message = "Forbidden: admin access required." });
-
-            userName = user.UserName ?? "admin";
-            return null;
         }
 
         // ── Nominatim reverse geocoding ───────────────────────────────────────
