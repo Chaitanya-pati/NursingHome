@@ -4,6 +4,7 @@ using System.Diagnostics;
 using NursingHome.Db.Implementation;
 using NursingHome.Db.Interface;
 using NursingHome.Db.Models;
+using NursingHome.Db.Utils;
 using System.ComponentModel.Design;
 using System.Text.Json;
 
@@ -228,7 +229,7 @@ namespace NursingHome.Controllers
                     return StatusCode(403, new { message = "You are not authorised to check in on behalf of another helper." });
             }
 
-            var checkInTime = DateTime.Now;
+            var checkInTime = IndianTime.Now;
             var address     = await ReverseGeocodeAsync(latitude, longitude);
 
             var checkIn = new Attendance
@@ -289,7 +290,7 @@ namespace NursingHome.Controllers
                     return StatusCode(403, new { message = "You are not authorised to check out on behalf of another helper." });
             }
 
-            var checkOutTime = DateTime.Now;
+            var checkOutTime = IndianTime.Now;
             var address      = await ReverseGeocodeAsync(latitude, longitude);
 
             var success = _DbConn.RecordCheckOut(attendanceId, checkOutTime,

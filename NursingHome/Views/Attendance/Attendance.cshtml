@@ -364,8 +364,8 @@
     // Init
     // ────────────────────────────────────────────────────────────────────────────
     $(document).ready(function () {
-        $('#tableAttendance').DataTable();
-        $('#tablePending').DataTable();
+        $('#tableAttendance').DataTable({ order: [[2, 'desc']] });
+        $('#tablePending').DataTable({ order: [[3, 'desc']] });
 
         GetAttendanceData();
         HelpersDropDownList();

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NursingHome.Db.Interface;
 using NursingHome.Db.Models;
+using NursingHome.Db.Utils;
 using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
@@ -146,7 +147,7 @@ namespace NursingHome.Db.Implementation
 
                 record.Status            = "Approved";
                 record.ApprovedBy        = approvedBy;
-                record.ApprovalTimestamp = DateTime.Now;
+                record.ApprovalTimestamp = IndianTime.Now;
                 record.ManagerRemarks    = remarks;
 
                 Db.SaveChanges();
@@ -170,7 +171,7 @@ namespace NursingHome.Db.Implementation
 
                 record.Status            = "Rejected";
                 record.ApprovedBy        = approvedBy;
-                record.ApprovalTimestamp = DateTime.Now;
+                record.ApprovalTimestamp = IndianTime.Now;
                 record.ManagerRemarks    = remarks;
 
                 Db.SaveChanges();
