@@ -186,14 +186,16 @@
             },
             success: function (response) {
                 if (response.success) {
-                    if (response.isFaceAdded) {
+                    // Face validation disabled — proceed directly on successful login
+                    localStorage.setItem('userID', response.userID);
+                    window.location.href = '/Home/Index';
+                    /* if (response.isFaceAdded) {
                         localStorage.setItem('userID', response.userID);
                         window.location.href = '/Home/Index';
-                    }else{
+                    } else {
                         alert("Please Add Your face");
                         registerFace();
-                    }
-
+                    } */
                 } else {
                     $('#errorMessage').text(response.message);
                 }
