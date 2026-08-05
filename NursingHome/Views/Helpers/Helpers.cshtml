@@ -402,13 +402,14 @@
                         <div class="col-6">
                             <div class="form-group mb-2">
                                 <label class="small font-weight-bold">Password <span class="text-danger">*</span></label>
-                                <input type="password" id="nuPassword" class="form-control form-control-sm" placeholder="Password" />
+                                <input type="password" id="nuPassword" class="form-control form-control-sm" placeholder="Password" autocomplete="new-password" />
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group mb-2">
                                 <label class="small font-weight-bold">Confirm Password <span class="text-danger">*</span></label>
-                                <input type="password" id="nuConfirmPassword" class="form-control form-control-sm" placeholder="Confirm password" />
+                                <input type="password" id="nuConfirmPassword" class="form-control form-control-sm" placeholder="Confirm password" autocomplete="new-password" />
+                                <small id="nuConfirmPwdHint" class="text-danger" style="display:none;">Passwords do not match.</small>
                             </div>
                         </div>
                         <div class="col-6">
@@ -570,6 +571,17 @@
         $(document).ready(function () {
             GetData();
             GetCityDetails();
+
+            // Live password-match hint for Create New User form
+            $('#nuPassword, #nuConfirmPassword').on('input', function () {
+                var pwd  = $('#nuPassword').val();
+                var cpwd = $('#nuConfirmPassword').val();
+                if (cpwd.length === 0) {
+                    $('#nuConfirmPwdHint').hide();
+                } else {
+                    $('#nuConfirmPwdHint').toggle(pwd !== cpwd);
+                }
+            });
         });
 
         document.getElementById('downloadRegistrationForm').addEventListener('click', async function () {
@@ -1237,6 +1249,7 @@
             $('#nuRole').val('helper');
             $('#nuIsActive').val('true');
             $('#nuError').hide();
+            $('#nuConfirmPwdHint').hide();
             $('#assignUserDetails').hide();
             $('#auAlreadyAssignedWarn').hide();
             $('#assignCurrentBanner').hide();
