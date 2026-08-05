@@ -33,6 +33,22 @@ namespace NursingHome.Controllers
             return null;
         }
 
+        /// <summary>
+        /// Verifies that userId maps to a real database user whose role is "admin".
+        /// Returns null on success; a 401/403 IActionResult on failure.
+        /// </summary>
+        private IActionResult? RequireAdmin(int userId)
+        {
+            if (userId <= 0)
+                return StatusCode(401, new { message = "Unauthorized: missing user session." });
+            var user = _userService.GetUserDataById(userId);
+            if (user == null)
+                return StatusCode(401, new { message = "Unauthorized: user not found." });
+            if (!string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(403, new { message = "Forbidden: admin access required." });
+            return null;
+        }
+
         public IActionResult Helpers()
         {
             try
@@ -149,6 +165,62 @@ namespace NursingHome.Controllers
             catch (Exception ex)
             {
                 _logger.SaveLog("HelpersController", "GetHelperById", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Returns a safe list of all system users for the Assign User dropdown.
+        /// Requires the caller to be an admin (verified server-side via userId).
+        /// </summary>
+        public IActionResult GetUsersForAssign(int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                var users = _userService.GetData().Select(u => new {
+                    id       = u.Id,
+                    fullName = (u.FirstName + " " + u.LastName).Trim(),
+                    userName = u.UserName,
+                    role     = u.Roles,
+                    mobileNo = u.MobileNo
+                });
+
+                return Json(new { success = true, data = users });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "GetUsersForAssign", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Assigns a system user to a helper record.
+        /// Requires the caller to be an admin (verified server-side via userId).
+        /// The target user is resolved server-side by targetUserId — the client never
+        /// supplies a raw username, preventing username injection.
+        /// </summary>
+        public IActionResult AssignUserToHelper(int helperId, int targetUserId, int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                // Resolve the target user server-side — never trust a client-supplied username
+                var targetUser = _userService.GetUserDataById(targetUserId);
+                if (targetUser == null)
+                    return Json(new { success = false, message = "Selected user not found." });
+
+                var result = _DbConn.AssignUser(helperId, targetUser.UserName);
+                return Json(new { success = result, message = result ? "User assigned successfully." : "Failed to assign user." });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "AssignUserToHelper", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

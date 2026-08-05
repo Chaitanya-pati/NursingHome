@@ -88,5 +88,22 @@ namespace NursingHome.Db.Implementation
                 return false;
             }
         }
+
+        public bool AssignUser(int helperId, string userName)
+        {
+            try
+            {
+                using var Db = new TaskContext(_dbConn);
+                var helper = Db.Helpers.FirstOrDefault(x => x.Id == helperId);
+                if (helper == null) return false;
+                helper.suser = userName;
+                Db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

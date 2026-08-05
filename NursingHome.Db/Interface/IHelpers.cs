@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +14,6 @@ namespace NursingHome.Db.Interface
         bool UpdateData(Models.Helpers helperData);
         List<Models.Helpers> GetData(string username);
         bool DeleteData(int id);
+        bool AssignUser(int helperId, string userName);
     }
 }

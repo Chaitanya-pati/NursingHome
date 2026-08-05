@@ -1,5 +1,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .loader {
         display: none;
@@ -287,6 +289,46 @@
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="closeIdCardModal()">
                     <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign User Modal -->
+<div class="modal fade" id="assignUserModal" tabindex="-1" role="dialog" aria-labelledby="assignUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:500px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignUserModalLabel"><i class="fas fa-user-check me-2"></i> Assign User to Helper</h5>
+                <button type="button" class="close" onclick="closeAssignUserModal()" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="assignHelperId" />
+                <div class="form-group mb-3">
+                    <label class="font-weight-bold mb-1">Select Existing User</label>
+                    <select id="assignUserSelect" class="form-control" style="width:100%">
+                        <option value="">-- Search and select a user --</option>
+                    </select>
+                </div>
+                <!-- Selected user details card -->
+                <div id="assignUserDetails" class="card border-primary mt-3" style="display:none;">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-12 mb-1"><strong>Full Name:</strong> <span id="auDetailName"></span></div>
+                            <div class="col-12 mb-1"><strong>Username:</strong> <span id="auDetailUsername"></span></div>
+                            <div class="col-12 mb-1"><strong>Role:</strong> <span id="auDetailRole"></span></div>
+                            <div class="col-12"><strong>Mobile No:</strong> <span id="auDetailMobile"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignUserModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmAssignUser" onclick="confirmAssignUser()" disabled>
+                    <i class="fas fa-user-check"></i> Assign User
                 </button>
             </div>
         </div>
@@ -769,6 +811,7 @@
          item.languagesKnown,
      '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
     '<i class="fa fa-id-card ml-2 mr-4 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
+    (localStorage.getItem('userRole') === 'admin' ? '<button class="btn btn-sm btn-outline-secondary ml-2 mr-2 btn-assign-user" title="Assign User" style="padding:2px 8px;font-size:12px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'><i class="fa fa-user-plus mr-1"></i>Assign User</button>' : '') +
     '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
      ]).draw();
        });
@@ -873,6 +916,131 @@
                 },
                 error: function (xhr, status, error) {
                     console.error(xhr.responseText);
+                }
+            });
+        }
+
+        // ── Assign User ──────────────────────────────────────────────────────────
+
+        // Cache all users loaded for the modal
+        var _assignUsersCache = [];
+
+        $('#tblHelpers').on('click', '.btn-assign-user', function () {
+            var helperId = JSON.parse($(this).attr('dataId'));
+            openAssignUserModal(helperId);
+        });
+
+        function openAssignUserModal(helperId) {
+            $('#assignHelperId').val(helperId);
+
+            // Reset select & details
+            $('#assignUserSelect').val('').trigger('change');
+            $('#assignUserDetails').hide();
+            $('#btnConfirmAssignUser').prop('disabled', true);
+
+            // Initialise Select2 if not already done
+            if (!$('#assignUserSelect').hasClass('select2-hidden-accessible')) {
+                $('#assignUserSelect').select2({
+                    dropdownParent: $('#assignUserModal'),
+                    placeholder: '-- Search by name, username or role --',
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                // Show user details card when a selection is made
+                $('#assignUserSelect').on('select2:select', function () {
+                    var userId = $(this).val();
+                    if (!userId) {
+                        $('#assignUserDetails').hide();
+                        $('#btnConfirmAssignUser').prop('disabled', true);
+                        return;
+                    }
+                    var user = _assignUsersCache.find(function (u) { return String(u.id) === String(userId); });
+                    if (user) {
+                        $('#auDetailName').text(user.fullName || '—');
+                        $('#auDetailUsername').text(user.userName || '—');
+                        $('#auDetailRole').text(user.role || '—');
+                        $('#auDetailMobile').text(user.mobileNo || '—');
+                        $('#assignUserDetails').show();
+                        $('#btnConfirmAssignUser').prop('disabled', false);
+                    }
+                });
+
+                $('#assignUserSelect').on('select2:unselect select2:clear', function () {
+                    $('#assignUserDetails').hide();
+                    $('#btnConfirmAssignUser').prop('disabled', true);
+                });
+            }
+
+            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+
+            // Load users from server
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetUsersForAssign", "Helpers")',
+                data: { userId: uId },
+                success: function (response) {
+                    if (!response.success) {
+                        msgPopup('error', 'Failed to load users.');
+                        return;
+                    }
+                    _assignUsersCache = response.data;
+
+                    // Rebuild Select2 options
+                    var $select = $('#assignUserSelect');
+                    $select.find('option:not(:first)').remove();
+                    response.data.forEach(function (u) {
+                        var label = (u.fullName || u.userName) + ' (' + (u.role || 'N/A') + ') — ' + (u.mobileNo || '');
+                        $select.append(new Option(label, u.id, false, false));
+                    });
+                    $select.trigger('change');
+
+                    showPopup('assignUserModal');
+                },
+                error: function () {
+                    msgPopup('error', 'Error loading users. Please try again.');
+                }
+            });
+        }
+
+        function closeAssignUserModal() {
+            HidePopup('assignUserModal');
+        }
+
+        function confirmAssignUser() {
+            var helperId = $('#assignHelperId').val();
+            var selectedUserId = $('#assignUserSelect').val();
+            if (!selectedUserId) {
+                msgPopup('warning', 'Please select a user to assign.');
+                return;
+            }
+
+            var user = _assignUsersCache.find(function (u) { return String(u.id) === String(selectedUserId); });
+            if (!user) {
+                msgPopup('error', 'Selected user not found.');
+                return;
+            }
+
+            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            $('#btnConfirmAssignUser').prop('disabled', true).text('Assigning…');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AssignUserToHelper", "Helpers")',
+                data: { helperId: helperId, targetUserId: user.id, userId: uId },
+                success: function (response) {
+                    $('#btnConfirmAssignUser').prop('disabled', false).html('<i class="fas fa-user-check"></i> Assign User');
+                    if (response.success) {
+                        closeAssignUserModal();
+                        msgPopup('success', response.message || 'User assigned successfully.');
+                        GetData();
+                    } else {
+                        msgPopup('error', response.message || 'Failed to assign user.');
+                    }
+                },
+                error: function () {
+                    $('#btnConfirmAssignUser').prop('disabled', false).html('<i class="fas fa-user-check"></i> Assign User');
+                    msgPopup('error', 'Error assigning user. Please try again.');
                 }
             });
         }
