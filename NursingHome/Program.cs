@@ -4,53 +4,58 @@ using NursingHome.Db.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Prefer DB_CONNECTION_STRING environment variable (Replit secret) over appsettings.json value.
+var dbConnectionString =
+    Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+    ?? builder.Configuration.GetConnectionString("NursingHome");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IUserService,UserService>(provider =>
 {
-    return new UserService(builder.Configuration.GetConnectionString("NursingHome"));
+    return new UserService(dbConnectionString);
 });
 builder.Services.AddTransient<IConfig,Config>(provider =>
 {
-    return new Config(builder.Configuration.GetConnectionString("NursingHome"));
+    return new Config(dbConnectionString);
 });
 builder.Services.AddTransient<IOldAge,OldAge>(provider =>
 {
-    return new OldAge(builder.Configuration.GetConnectionString("NursingHome"));
+    return new OldAge(dbConnectionString);
 });
 builder.Services.AddTransient<INursingHome,HomeNursing>(provider =>
 {
-    return new HomeNursing(builder.Configuration.GetConnectionString("NursingHome"));
+    return new HomeNursing(dbConnectionString);
 });
 builder.Services.AddTransient<IHelpers,Helpers>(provider =>
 {
-    return new Helpers(builder.Configuration.GetConnectionString("NursingHome"));
+    return new Helpers(dbConnectionString);
 });
 builder.Services.AddTransient<ICashMemo,CashMemo>(provider =>
 {
-    return new CashMemo(builder.Configuration.GetConnectionString("NursingHome"));
+    return new CashMemo(dbConnectionString);
 });
 builder.Services.AddTransient<IAttedanceService,AttedanceService>(provider =>
 {
-    return new AttedanceService(builder.Configuration.GetConnectionString("NursingHome"));
+    return new AttedanceService(dbConnectionString);
 });
 builder.Services.AddTransient<ISalarySlipService, SalarySlipService>(provider =>
 {
-    return new SalarySlipService(builder.Configuration.GetConnectionString("NursingHome"));
+    return new SalarySlipService(dbConnectionString);
 });
 builder.Services.AddTransient<IHomeService, HomeService>(provider =>
 {
-    return new HomeService(builder.Configuration.GetConnectionString("NursingHome"));
+    return new HomeService(dbConnectionString);
 });
 
 var app = builder.Build();
 
 // ── Run Attendance GPS migrations at startup (idempotent — safe every restart) ──
-RunAttendanceMigrations(builder.Configuration.GetConnectionString("NursingHome"));
+RunAttendanceMigrations(dbConnectionString);
 // ── Add Helpers ID-card columns if missing ────────────────────────────────────
-RunHelpersMigrations(builder.Configuration.GetConnectionString("NursingHome"));
+RunHelpersMigrations(dbConnectionString);
 // ── Add User assignment / audit columns and tables ────────────────────────────
-RunUserAssignmentMigrations(builder.Configuration.GetConnectionString("NursingHome"));
+RunUserAssignmentMigrations(dbConnectionString);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

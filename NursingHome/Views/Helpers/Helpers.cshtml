@@ -307,6 +307,34 @@
             </div>
             <div class="modal-body p-0">
                 <input type="hidden" id="assignHelperId" />
+
+                <!-- Current Assignment Info Banner -->
+                <div id="assignCurrentBanner" class="px-3 pt-3 pb-2" style="display:none;">
+                    <div class="card border-0 mb-2" style="background:#f3f0fb;">
+                        <div class="card-body py-2 px-3">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <div>
+                                    <span class="small text-muted">Currently Assigned User:</span>
+                                    <span class="badge badge-success ml-1" id="acbUserName" style="font-size:12px;"></span>
+                                    <span class="small text-muted ml-2" id="acbUserRole"></span>
+                                </div>
+                                <div class="mt-1 mt-sm-0">
+                                    <button type="button" class="btn btn-outline-warning btn-sm mr-1" id="btnModalResetPwd" onclick="openResetFromModal()" title="Reset Password">
+                                        <i class="fas fa-key mr-1"></i> Reset Password
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnModalRemove" onclick="openRemoveFromModal()" title="Remove Assignment">
+                                        <i class="fas fa-user-times mr-1"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-1"><i class="fas fa-info-circle mr-1"></i> Select a different user below to change the assignment.</p>
+                </div>
+                <div id="assignNoBanner" class="px-3 pt-3 pb-1" style="display:none;">
+                    <p class="small text-muted mb-1"><i class="fas fa-user-plus mr-1"></i> No user is currently assigned to this helper.</p>
+                </div>
+
                 <!-- Tabs -->
                 <ul class="nav nav-tabs px-3 pt-2" id="assignUserTabs">
                     <li class="nav-item">
@@ -996,17 +1024,9 @@
                ? '<span class="badge badge-success" style="font-size:11px;cursor:pointer;" class="btn-view-assigned" data-helper-id="'+item.id+'" data-helper-name="'+escAttr(item.name)+'"><i class="fas fa-user-check mr-1"></i>'+escAttr(item.suser)+'</span>'
                : '<span class="badge badge-light text-muted" style="font-size:11px;">None</span>';
 
-           var adminBtns = '';
-           if (isAdmin) {
-               if (!hasUser) {
-                   adminBtns = '<button class="btn btn-sm btn-outline-primary ml-1 btn-assign-user" title="Assign User" style="padding:2px 7px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'"><i class="fa fa-user-plus mr-1"></i>Assign User</button>';
-               } else {
-                   adminBtns =
-                       '<button class="btn btn-sm btn-outline-secondary ml-1 btn-assign-user" title="Change User" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'"><i class="fa fa-exchange-alt mr-1"></i>Change</button>' +
-                       '<button class="btn btn-sm btn-outline-danger ml-1 btn-remove-user" title="Remove Assignment" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-suser="'+escAttr(item.suser)+'"><i class="fa fa-user-times"></i></button>' +
-                       '<button class="btn btn-sm btn-outline-warning ml-1 btn-reset-password" title="Reset Password" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-suser="'+escAttr(item.suser)+'"><i class="fa fa-key"></i></button>';
-               }
-           }
+           var adminAssignIcon = isAdmin
+               ? ' <i class="fa fa-user-cog ml-2 btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;cursor:pointer;font-size:15px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'"></i>'
+               : '';
 
            table.row.add([
          item.name,
@@ -1015,7 +1035,7 @@
          assignedBadge,
          '<i class="fa fa-edit me-2 ml-1 btn-edit" style="color:green;cursor:pointer;" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
          '<i class="fa fa-id-card ml-2 mr-1 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
-         adminBtns +
+         adminAssignIcon +
          ' <i class="fa fa-trash ml-1 btn-delete" style="color:red;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
      ]).draw();
        });
@@ -1186,9 +1206,31 @@
             }
         }
 
+        // Track current suser for modal remove/reset actions
+        var _modalCurrentSuser = '';
+        var _modalCurrentHelperId = 0;
+
+        function openResetFromModal() {
+            $('#resetHelperId').val(_modalCurrentHelperId);
+            $('#resetUserName').text(_modalCurrentSuser);
+            $('#resetNewPassword, #resetConfirmPassword').val('');
+            $('#resetError').hide();
+            HidePopup('assignUserModal');
+            showPopup('resetPasswordModal');
+        }
+
+        function openRemoveFromModal() {
+            $('#removeHelperId').val(_modalCurrentHelperId);
+            $('#removeAssignedUsername').text(_modalCurrentSuser);
+            HidePopup('assignUserModal');
+            showPopup('removeAssignmentModal');
+        }
+
         function openAssignUserModal(helperId, helperName) {
             $('#assignHelperId').val(helperId);
             $('#assignModalTitle').text('Assign User — ' + (helperName || ''));
+            _modalCurrentHelperId = helperId;
+            _modalCurrentSuser = '';
 
             // Reset state
             $('#nuFullName, #nuUserName, #nuMobile, #nuEmail, #nuPassword, #nuConfirmPassword').val('');
@@ -1197,8 +1239,36 @@
             $('#nuError').hide();
             $('#assignUserDetails').hide();
             $('#auAlreadyAssignedWarn').hide();
+            $('#assignCurrentBanner').hide();
+            $('#assignNoBanner').hide();
             $('#btnConfirmAssignUser').prop('disabled', true);
             switchAssignTab('existing');
+
+            // Load current assignment info to show banner
+            var uIdCheck = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAssignedUserInfo", "Helpers")',
+                data: { helperId: helperId, userId: uIdCheck },
+                success: function (r) {
+                    if (r.success && r.assigned) {
+                        _modalCurrentSuser = r.userName || '';
+                        $('#acbUserName').text(r.userName || '');
+                        $('#acbUserRole').text(r.role ? '(' + r.role + ')' : '');
+                        $('#assignCurrentBanner').show();
+                        $('#assignNoBanner').hide();
+                        // Pre-fill the "Full Name" field in Create New tab from helper name
+                        $('#nuFullName').val(helperName || '');
+                    } else {
+                        $('#assignCurrentBanner').hide();
+                        $('#assignNoBanner').show();
+                        $('#nuFullName').val(helperName || '');
+                    }
+                },
+                error: function () {
+                    $('#assignNoBanner').show();
+                }
+            });
 
             // Auto-fill helper name in Create New tab
             // (will be replaced after helper data fetched)

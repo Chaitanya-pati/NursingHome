@@ -322,12 +322,21 @@ namespace NursingHome.Controllers
                 if (!success)
                     return Json(new { success = false, message = error });
 
-                // Now assign the new user to the helper
-                var helper  = allHelpers.FirstOrDefault(h => h.Id == helperId);
-                var oldUser = helper?.suser;
+                // Verify the helper exists before assigning
+                var helper = allHelpers.FirstOrDefault(h => h.Id == helperId);
+                if (helper == null)
+                {
+                    // User was created but helper not found — still report failure for assignment
+                    return Json(new { success = false, message = $"Helper #{helperId} not found. User was created but not assigned." });
+                }
+
+                var oldUser = helper.suser;
                 var action  = string.IsNullOrWhiteSpace(oldUser) ? "Assigned" : "Changed";
 
-                _DbConn.AssignUser(helperId, newUser.UserName);
+                // Verify AssignUser actually succeeded
+                var assigned = _DbConn.AssignUser(helperId, newUser.UserName);
+                if (!assigned)
+                    return Json(new { success = false, message = "User was created but could not be assigned to the helper. Please use 'Select Existing User' to assign the newly created user." });
 
                 // Audit
                 _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
@@ -337,7 +346,7 @@ namespace NursingHome.Controllers
                     Action           = action,
                     AssignedBy       = AdminUsername(userId),
                     AssignedDate     = DateTime.Now,
-                    Notes            = oldUser != null ? $"Created new user; Previous: {oldUser}" : "Created new user"
+                    Notes            = !string.IsNullOrWhiteSpace(oldUser) ? $"Created new user; Previous: {oldUser}" : "Created new user"
                 });
 
                 return Json(new { success = true, message = "User created and assigned successfully." });
