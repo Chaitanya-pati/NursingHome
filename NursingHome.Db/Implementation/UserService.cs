@@ -195,5 +195,48 @@ namespace NursingHome.Db.Implementation
             }
             catch { /* non-critical */ }
         }
+
+        /// <summary>
+        /// Returns the first available username derived from <paramref name="firstName"/>.
+        /// Tries firstName → firstName2 → firstName3 … until one is not taken.
+        /// The base is lowercased and stripped of non-alphanumeric characters.
+        /// </summary>
+        public string SuggestUsername(string firstName)
+        {
+            if (string.IsNullOrWhiteSpace(firstName))
+                return string.Empty;
+
+            // Normalise: lowercase, keep only letters and digits
+            var baseSlug = new string(
+                firstName.ToLowerInvariant()
+                         .Where(c => char.IsLetterOrDigit(c))
+                         .ToArray());
+
+            if (string.IsNullOrEmpty(baseSlug))
+                return string.Empty;
+
+            using var db = new TaskContext(_dbConn);
+
+            // Fetch all existing usernames that start with the base slug so we
+            // can check in memory without repeated round-trips.
+            var taken = db.Users
+                          .Where(u => u.UserName != null && u.UserName.StartsWith(baseSlug))
+                          .Select(u => u.UserName.ToLower())
+                          .ToHashSet();
+
+            // Try base, then base2, base3, …
+            if (!taken.Contains(baseSlug))
+                return baseSlug;
+
+            for (int i = 2; i <= 9999; i++)
+            {
+                var candidate = baseSlug + i;
+                if (!taken.Contains(candidate))
+                    return candidate;
+            }
+
+            // Extremely unlikely fallback
+            return baseSlug + Guid.NewGuid().ToString("N").Substring(0, 4);
+        }
     }
 }

@@ -31,5 +31,11 @@ namespace NursingHome.Db.Interface
 
         bool UpdatePassword(string userName, string newPassword);
         void RecordLogin(string userName);
+
+        /// <summary>
+        /// Returns the first available username derived from <paramref name="firstName"/>.
+        /// Tries firstName → firstName2 → firstName3 … until one is not taken.
+        /// </summary>
+        string SuggestUsername(string firstName);
     }
 }

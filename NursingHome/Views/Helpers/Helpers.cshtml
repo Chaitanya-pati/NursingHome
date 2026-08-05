@@ -409,6 +409,7 @@
                             <div class="form-group mb-2">
                                 <label class="small font-weight-bold">Username <span class="text-danger">*</span></label>
                                 <input type="text" id="nuUserName" class="form-control form-control-sm" placeholder="Unique username" />
+                                <small id="nuUserNameHint" class="text-muted" style="display:none;"></small>
                             </div>
                         </div>
                         <div class="col-6">
@@ -1276,9 +1277,8 @@
 
         function autoFillFromName() {
             var fullName = $('#nuFullName').val() || '';
-            // Username: first word (before first space)
-            var firstWord = fullName.split(' ')[0] || '';
-            $('#nuUserName').val(firstWord);
+            var firstName = fullName.split(' ')[0] || '';
+
             // Password: first 4 chars of full name (lowercase) + DOB year
             var namePart = fullName.substring(0, 4).toLowerCase();
             var pwd = namePart + (_modalHelperDobYear || '');
@@ -1287,6 +1287,33 @@
                 $('#nuConfirmPassword').val(pwd);
                 $('#nuConfirmPwdHint').hide();
             }
+
+            // Ask the server for a guaranteed-unique username suggestion
+            if (!firstName) {
+                $('#nuUserName').val('');
+                $('#nuUserNameHint').hide();
+                return;
+            }
+
+            $.ajax({
+                url: '/Users/SuggestUsername',
+                type: 'GET',
+                data: { firstName: firstName },
+                success: function (res) {
+                    if (res && res.suggestion) {
+                        $('#nuUserName').val(res.suggestion);
+                        $('#nuUserNameHint')
+                            .html('<i class="fas fa-check-circle" style="color:#27ae60"></i> <em>' +
+                                  res.suggestion + '</em> — auto-suggested, you can change this')
+                            .show();
+                    }
+                },
+                error: function () {
+                    // Fallback: use the first word as before so the form still works
+                    $('#nuUserName').val(firstName.toLowerCase());
+                    $('#nuUserNameHint').hide();
+                }
+            });
         }
 
         function openAssignUserModal(helperId, helperName, helperDob) {

@@ -259,6 +259,31 @@ namespace NursingHome.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns a suggested unique username derived from the given first name.
+        /// Tries firstName → firstName2 → firstName3 … until one is not taken.
+        /// Used by the "New User" panel in the Helpers view to pre-fill the username field.
+        /// </summary>
+        public IActionResult SuggestUsername(string firstName)
+        {
+            try
+            {
+                var authErr = RequireAdmin(out _);
+                if (authErr != null) return authErr;
+
+                if (string.IsNullOrWhiteSpace(firstName))
+                    return Json(new { suggestion = string.Empty });
+
+                var suggestion = _DbConn.SuggestUsername(firstName.Trim());
+                return Json(new { suggestion });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("UsersController", "SuggestUsername", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
