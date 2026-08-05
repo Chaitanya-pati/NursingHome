@@ -153,29 +153,35 @@ namespace NursingHome.Controllers
 
         // ── Assign User: get user list ────────────────────────────────────────
 
-        public IActionResult GetUsersForAssign(int userId)
+        public IActionResult GetUsersForAssign(int userId, int helperId = 0)
         {
             try
             {
                 var authError = RequireAdmin(userId);
                 if (authError != null) return authError;
 
-                // Get all currently assigned susers to show which users are already taken
                 var allHelpers = _DbConn.GetData("admin");
-                var assignedSusers = allHelpers
-                    .Where(h => !string.IsNullOrWhiteSpace(h.suser))
+
+                // Find the suser currently assigned to THIS helper (allowed to re-select)
+                var thisHelperSuser = allHelpers
+                    .FirstOrDefault(h => h.Id == helperId)?.suser ?? "";
+
+                // Collect susers assigned to OTHER helpers — these are blocked
+                var assignedElsewhere = allHelpers
+                    .Where(h => h.Id != helperId && !string.IsNullOrWhiteSpace(h.suser))
                     .Select(h => h.suser)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                 var users = _userService.GetData().Select(u => new {
-                    id           = u.Id,
-                    fullName     = (u.FirstName + " " + u.LastName).Trim(),
-                    userName     = u.UserName,
-                    role         = u.Roles,
-                    mobileNo     = u.MobileNo,
-                    isAssigned   = assignedSusers.Contains(u.UserName ?? ""),
-                    isActive     = u.IsActive,
-                    createdDate  = u.CreatedDate
+                    id                   = u.Id,
+                    fullName             = (u.FirstName + " " + u.LastName).Trim(),
+                    userName             = u.UserName,
+                    role                 = u.Roles,
+                    mobileNo             = u.MobileNo,
+                    isAssignedElsewhere  = assignedElsewhere.Contains(u.UserName ?? ""),
+                    isThisHelper         = string.Equals(u.UserName, thisHelperSuser, StringComparison.OrdinalIgnoreCase),
+                    isActive             = u.IsActive,
+                    createdDate          = u.CreatedDate
                 });
 
                 return Json(new { success = true, data = users });
@@ -354,6 +360,39 @@ namespace NursingHome.Controllers
             catch (Exception ex)
             {
                 _logger.SaveLog("HelpersController", "CreateAndAssignUser", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Clear all user assignments ────────────────────────────────────────
+
+        public IActionResult ClearAllUserAssignments(int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                var result = _DbConn.ClearAllUserAssignments();
+                if (!result)
+                    return Json(new { success = false, message = "Failed to clear assignments." });
+
+                // Audit — one entry to mark the bulk clear
+                _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                {
+                    HelperId         = 0,
+                    AssignedUserName = "(all)",
+                    Action           = "Removed",
+                    RemovedBy        = AdminUsername(userId),
+                    RemovedDate      = DateTime.Now,
+                    Notes            = "Bulk clear: all helper user assignments removed by admin"
+                });
+
+                return Json(new { success = true, message = "All user assignments have been removed from helpers." });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "ClearAllUserAssignments", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

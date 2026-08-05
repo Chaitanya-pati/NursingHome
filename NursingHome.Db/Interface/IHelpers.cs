@@ -14,6 +14,7 @@ namespace NursingHome.Db.Interface
         // ── User assignment ───────────────────────────────────────────────────
         bool AssignUser(int helperId, string userName);
         bool RemoveUserAssignment(int helperId);
+        bool ClearAllUserAssignments();
 
         // ── Assignment history / audit ────────────────────────────────────────
         void RecordAssignmentHistory(HelperUserAssignmentHistory entry);

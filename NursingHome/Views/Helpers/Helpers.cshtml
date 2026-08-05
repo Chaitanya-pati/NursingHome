@@ -41,11 +41,35 @@
 </style>
 <div id="helpersLoader" class="loader"><div class="spinner"></div></div>
 <div class="container-fluid">
-    <div class="col-lg-2 col-md-3 col-sm-12 mt-4 mb-2 page-add-btn">
-
+    <div class="col-lg-12 col-md-12 col-sm-12 mt-4 mb-2 page-add-btn d-flex align-items-center flex-wrap gap-2">
         <button type="button" class="customBtn" onclick="ClearInputFields();">
             Add Helper
         </button>
+        <button type="button" class="btn btn-outline-danger btn-sm ml-2" id="btnClearAllAssignments" style="display:none;" onclick="openClearAllModal()">
+            <i class="fas fa-user-slash mr-1"></i> Clear All User Assignments
+        </button>
+    </div>
+</div>
+
+<!-- Clear All Assignments Confirmation Modal -->
+<div class="modal fade" id="clearAllAssignmentsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-user-slash mr-2"></i> Clear All User Assignments</h5>
+                <button type="button" class="close text-white" onclick="HidePopup('clearAllAssignmentsModal')"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">This will <strong>remove the assigned user from every helper</strong>.</p>
+                <p class="mb-0 text-muted small"><i class="fas fa-info-circle mr-1"></i> Users and helpers will not be deleted — only the link between them will be cleared.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="HidePopup('clearAllAssignmentsModal')">Cancel</button>
+                <button type="button" class="btn btn-danger btn-sm" id="btnConfirmClearAll" onclick="confirmClearAllAssignments()">
+                    <i class="fas fa-user-slash mr-1"></i> Yes, Clear All
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <!-- Modal -->
@@ -367,8 +391,8 @@
                             </div>
                         </div>
                     </div>
-                    <div id="auAlreadyAssignedWarn" class="alert alert-warning mt-2 py-2 small" style="display:none;">
-                        <i class="fas fa-exclamation-triangle mr-1"></i> This user is already assigned to another helper.
+                    <div id="auAlreadyAssignedWarn" class="alert alert-danger mt-2 py-2 small" style="display:none;">
+                        <i class="fas fa-ban mr-1"></i> This user is already assigned to another helper and cannot be selected.
                     </div>
                 </div>
 
@@ -571,6 +595,11 @@
         $(document).ready(function () {
             GetData();
             GetCityDetails();
+
+            // Show "Clear All Assignments" button only for admin
+            if (localStorage.getItem('userRole') === 'admin') {
+                $('#btnClearAllAssignments').show();
+            }
 
             // Live password-match hint for Create New User form
             $('#nuPassword, #nuConfirmPassword').on('input', function () {
@@ -1305,8 +1334,8 @@
                         $('#auDetailMobile').text(user.mobileNo || '—');
                         $('#assignUserDetails').show();
 
-                        // Warn if user is already assigned elsewhere
-                        if (user.isAssigned) {
+                        // Block if user is already assigned to a different helper
+                        if (user.isAssignedElsewhere) {
                             $('#auAlreadyAssignedWarn').show();
                             $('#btnConfirmAssignUser').prop('disabled', true);
                         } else {
@@ -1328,15 +1357,17 @@
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("GetUsersForAssign", "Helpers")',
-                data: { userId: uId },
+                data: { userId: uId, helperId: helperId },
                 success: function (response) {
                     if (!response.success) { msgPopup('error', 'Failed to load users.'); return; }
                     _assignUsersCache = response.data;
                     var $sel = $('#assignUserSelect');
                     $sel.find('option:not(:first)').remove();
+                    // Only include users NOT already assigned to another helper
                     response.data.forEach(function (u) {
+                        if (u.isAssignedElsewhere) return; // skip — already taken by another helper
                         var label = (u.fullName || u.userName) + ' (' + (u.role || 'N/A') + ') — ' + (u.mobileNo || '');
-                        if (u.isAssigned) label += ' [Assigned]';
+                        if (u.isThisHelper) label += ' [Currently Assigned]';
                         $sel.append(new Option(label, u.id, false, false));
                     });
                     $sel.trigger('change');
@@ -1357,7 +1388,7 @@
 
             var user = _assignUsersCache.find(function (u) { return String(u.id) === String(selectedUserId); });
             if (!user) { msgPopup('error', 'Selected user not found.'); return; }
-            if (user.isAssigned) { msgPopup('error', 'This user is already assigned to another helper.'); return; }
+            if (user.isAssignedElsewhere) { msgPopup('error', 'This user is already assigned to another helper and cannot be reassigned.'); return; }
 
             var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
             var $btn = $('#btnConfirmAssignUser').prop('disabled', true);
@@ -1536,6 +1567,37 @@
 
         function closeAssignedUserPanel() {
             $('#assignedUserPanel').hide();
+        }
+
+        // ── Clear All User Assignments ────────────────────────────────────────────
+        function openClearAllModal() {
+            showPopup('clearAllAssignmentsModal');
+        }
+
+        function confirmClearAllAssignments() {
+            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            var $btn = $('#btnConfirmClearAll').prop('disabled', true).text('Clearing…');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ClearAllUserAssignments", "Helpers")',
+                data: { userId: uId },
+                success: function (r) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-slash mr-1"></i> Yes, Clear All');
+                    HidePopup('clearAllAssignmentsModal');
+                    if (r.success) {
+                        msgPopup('success', r.message || 'All assignments cleared.');
+                        $('#assignedUserPanel').hide();
+                        GetData();
+                    } else {
+                        msgPopup('error', r.message || 'Failed to clear assignments.');
+                    }
+                },
+                error: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-slash mr-1"></i> Yes, Clear All');
+                    msgPopup('error', 'Server error. Please try again.');
+                }
+            });
         }
 </script>
 

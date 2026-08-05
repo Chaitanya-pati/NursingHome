@@ -114,6 +114,23 @@ namespace NursingHome.Db.Implementation
             }
         }
 
+        public bool ClearAllUserAssignments()
+        {
+            try
+            {
+                using var Db = new TaskContext(_dbConn);
+                var assigned = Db.Helpers.Where(h => h.suser != null).ToList();
+                foreach (var h in assigned)
+                    h.suser = null;
+                Db.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         // ── Assignment history / audit ────────────────────────────────────────
 
         public void RecordAssignmentHistory(HelperUserAssignmentHistory entry)
