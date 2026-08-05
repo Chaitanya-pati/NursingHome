@@ -201,12 +201,21 @@ static void RunAttendanceMigrations(string? connectionString)
         "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Attendance' AND COLUMN_NAME='ApprovalTimestamp') ALTER TABLE [dbo].[Attendance] ADD [ApprovalTimestamp] DATETIME NULL",
 
         // ── 002: Convert legacy Time column TIME(7) → FLOAT if needed ─────────
+        // Uses a staging column so existing values are preserved as decimal hours
+        // rather than being lost. The column is renamed back to [Time] at the end.
         @"IF EXISTS (
             SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME='Attendance' AND COLUMN_NAME='Time' AND DATA_TYPE='time')
           BEGIN
-              UPDATE [dbo].[Attendance] SET [Time] = NULL WHERE [Time] IS NOT NULL;
-              ALTER TABLE [dbo].[Attendance] ALTER COLUMN [Time] FLOAT NULL;
+              ALTER TABLE [dbo].[Attendance] ADD [_TimeFloat] FLOAT NULL;
+              UPDATE [dbo].[Attendance]
+              SET [_TimeFloat] =
+                  CAST(DATEPART(HOUR,   [Time]) AS FLOAT)
+                  + CAST(DATEPART(MINUTE, [Time]) AS FLOAT) / 60.0
+                  + CAST(DATEPART(SECOND, [Time]) AS FLOAT) / 3600.0
+              WHERE [Time] IS NOT NULL;
+              ALTER TABLE [dbo].[Attendance] DROP COLUMN [Time];
+              EXEC sp_rename 'dbo.Attendance._TimeFloat', 'Time', 'COLUMN';
           END"
     };
 

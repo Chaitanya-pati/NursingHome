@@ -1,0 +1,61 @@
+Tumhi Replit AI / Cursor sathi khalil prompt vapru shakta:
+
+> **Feature: User Assignment on Helper Page**
+>
+> In the **Nursing Home App**, update **only the existing Helper page**.
+>
+> ### Requirements
+>
+> 1. On the Helper list/page, **add a new "User Assign" icon** immediately **next to the existing ID Card icon**.
+> 2. When the **User Assign** icon is clicked, open a **User Assignment** popup/modal.
+> 3. In the popup, provide two options:
+>
+>    * **Select Existing User**
+>
+>      * Searchable dropdown.
+>      * Show all existing users.
+>      * Allow selecting one existing user and assign it to the helper.
+>    * **Create New User**
+>
+>      * Option/button to create a new user directly from the popup.
+>      * Include fields:
+>
+>        * Full Name (auto-fill from Helper if possible, editable)
+>        * Username
+>        * Email (optional)
+>        * Mobile Number
+>        * Role
+>        * Password
+>        * Confirm Password
+>        * Active/Inactive Status
+>      * After successful creation, automatically assign the newly created user to the selected helper.
+> 4. If the helper is already assigned to a user:
+>
+>    * Show the assigned user's name.
+>    * Allow changing the assignment to another existing user.
+>    * Allow removing the assignment if required.
+> 5. Prevent assigning the same user to multiple helpers (unless the system already supports multiple assignments).
+> 6. Show a success message after assignment/update.
+>
+> ### UI
+>
+> * Keep the existing Helper page design unchanged.
+> * Add only one **User Assign** icon beside the **ID Card** icon.
+> * Use the existing UI components and theme.
+> * Popup should be responsive and match the current application style.
+>
+> ### Backend
+>
+> * Reuse the existing User table.
+> * Store the assigned user ID in the Helper record (or existing mapping table if already available).
+> * Support both:
+>
+>   * Assign Existing User
+>   * Create New User & Assign
+> * Validate duplicate usernames and required fields.
+>
+> ### Important
+>
+> * Do **not** modify Login, Attendance, Patient, Payroll, Dashboard, or any unrelated modules.
+> * Change only the Helper module and the user assignment functionality.
+> * Do not redesign existing screens; only add the new User Assign feature beside the ID Card icon.

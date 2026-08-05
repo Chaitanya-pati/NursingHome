@@ -270,7 +270,7 @@ namespace NursingHome.Db.Implementation
                     return false;
 
                 existingAttendance.fkHelperId  = updatedAttendanceData.fkHelperId;
-                existingAttendance.fkNursing   = updatedAttendanceData.fkNursing;
+                existingAttendance.fkNursingId = updatedAttendanceData.fkNursingId;
                 existingAttendance.Date        = updatedAttendanceData.Date;
                 existingAttendance.Time        = updatedAttendanceData.Time;
                 existingAttendance.Description = updatedAttendanceData.Description;

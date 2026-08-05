@@ -6,9 +6,8 @@
 
 -- ── 1. Convert legacy Time column from TIME(7) to FLOAT ───────────────────
 --    The application model uses double? for Time (decimal hours, e.g. 7.5).
---    TIME(7) stores wall-clock times, not durations — convert to FLOAT.
---    If Time already contains wall-clock data, those values will be lost;
---    back up the column first if needed.
+--    Existing TIME(7) values are preserved as decimal hours (e.g. 08:30:00
+--    becomes 8.5) via a staging column — no data is lost.
 IF EXISTS (
     SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME = 'Attendance'
@@ -16,9 +15,19 @@ IF EXISTS (
       AND DATA_TYPE   = 'time'
 )
 BEGIN
-    -- Clear any existing TIME values before type conversion to avoid conversion errors
-    UPDATE [dbo].[Attendance] SET [Time] = NULL WHERE [Time] IS NOT NULL;
-    ALTER TABLE [dbo].[Attendance] ALTER COLUMN [Time] FLOAT NULL;
+    -- Step 1: add a FLOAT staging column
+    ALTER TABLE [dbo].[Attendance] ADD [_TimeFloat] FLOAT NULL;
+    -- Step 2: copy TIME values as decimal hours (HH + MM/60 + SS/3600)
+    UPDATE [dbo].[Attendance]
+    SET [_TimeFloat] =
+          CAST(DATEPART(HOUR,   [Time]) AS FLOAT)
+        + CAST(DATEPART(MINUTE, [Time]) AS FLOAT) / 60.0
+        + CAST(DATEPART(SECOND, [Time]) AS FLOAT) / 3600.0
+    WHERE [Time] IS NOT NULL;
+    -- Step 3: drop the original TIME column
+    ALTER TABLE [dbo].[Attendance] DROP COLUMN [Time];
+    -- Step 4: rename the staging column to [Time]
+    EXEC sp_rename 'dbo.Attendance._TimeFloat', 'Time', 'COLUMN';
 END
 GO
 
