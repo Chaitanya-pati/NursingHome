@@ -53,7 +53,7 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetAttendanceData(int userId = 0)
+        public IActionResult GetAttendanceData(int userId = 0, string? startDate = null, string? endDate = null, int? filterHelperId = null)
         {
             int? helperIdFilter = null;
             if (userId > 0)
@@ -61,15 +61,25 @@ namespace NursingHome.Controllers
                 var user = _userService.GetUserDataById(userId);
                 if (user != null && !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Non-admin: only show attendance for the helper assigned to them
+                    // Non-admin: only show attendance for the helper assigned to them;
+                    // ignore any client-supplied filterHelperId for safety.
                     var myHelpers = _helpers.GetData(user.UserName ?? "");
                     if (myHelpers.Count > 0)
                         helperIdFilter = myHelpers[0].Id;
                     else
                         return Json(new { data = new List<object>() }); // no helper assigned — empty
                 }
+                else if (filterHelperId.HasValue && filterHelperId.Value > 0)
+                {
+                    // Admin with an explicit helper filter selected in the search bar
+                    helperIdFilter = filterHelperId.Value;
+                }
             }
-            var data = _DbConn.GetHelperAttendance(helperIdFilter);
+
+            DateTime? start = string.IsNullOrWhiteSpace(startDate) ? null : DateTime.TryParse(startDate, out var sd) ? sd : (DateTime?)null;
+            DateTime? end   = string.IsNullOrWhiteSpace(endDate)   ? null : DateTime.TryParse(endDate,   out var ed) ? ed : (DateTime?)null;
+
+            var data = _DbConn.GetHelperAttendance(helperIdFilter, start, end);
             return Json(new { data });
         }
 

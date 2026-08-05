@@ -185,13 +185,15 @@ namespace NursingHome.Db.Implementation
         // ────────────────────────────────────────────────────────────────────
         // Data queries
         // ────────────────────────────────────────────────────────────────────
-        public List<object> GetHelperAttendance(int? helperIdFilter = null)
+        public List<object> GetHelperAttendance(int? helperIdFilter = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             using var Db = new TaskContext(_dbConn);
             var result = (from a in Db.Attendance
                           join h in Db.Helpers     on a.fkHelperId  equals h.Id
                           join o in Db.HomeNursing on a.fkNursingId equals o.Id
-                          where helperIdFilter == null || a.fkHelperId == helperIdFilter
+                          where (helperIdFilter == null || a.fkHelperId == helperIdFilter)
+                             && (startDate == null || a.CheckInTime >= startDate || (a.CheckInTime == null && a.Date >= startDate.Value.Date))
+                             && (endDate   == null || a.CheckInTime <= endDate   || (a.CheckInTime == null && a.Date <= endDate.Value.Date))
                           orderby a.CheckInTime descending, a.Date descending
                           select new
                           {
