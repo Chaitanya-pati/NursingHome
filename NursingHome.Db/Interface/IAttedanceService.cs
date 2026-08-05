@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,7 @@ namespace NursingHome.Db.Interface
         bool DeleteAttendance(int id);
         List<object> GetHelpers();
         List<object> PatientDetails();
-
-
+        int? GetHelperIdByUsername(string username);
+        int? GetAttendanceOwnerHelperId(int attendanceId);
     }
 }

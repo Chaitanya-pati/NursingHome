@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -174,10 +174,23 @@ namespace NursingHome.Db.Implementation
             return result.Cast<object>().ToList(); // Returns an anonymous type list
         }
 
+        public int? GetHelperIdByUsername(string username)
+        {
+            using var Db = new TaskContext(_dbConn);
+            var helper = Db.Helpers
+                           .Where(h => h.suser == username)
+                           .Select(h => (int?)h.Id)
+                           .FirstOrDefault();
+            return helper;
+        }
 
-       
-
-
-
+        public int? GetAttendanceOwnerHelperId(int attendanceId)
+        {
+            using var Db = new TaskContext(_dbConn);
+            return Db.Attendance
+                     .Where(a => a.Id == attendanceId)
+                     .Select(a => a.fkHelperId)
+                     .FirstOrDefault();
+        }
     }
 }

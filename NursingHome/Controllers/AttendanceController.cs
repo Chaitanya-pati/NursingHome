@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
@@ -36,32 +36,43 @@ namespace NursingHome.Controllers
                 return BadRequest("Attendance data cannot be null.");
             }
 
-            // Check if attendance.Id is 0 or null (indicating it's a new entry)
+            var sessionRole    = HttpContext.Session.GetString("UserRole") ?? "";
+            var sessionUsername = HttpContext.Session.GetString("Username");
+            var isAdmin        = sessionRole.Equals("admin", StringComparison.OrdinalIgnoreCase);
+
+            if (string.IsNullOrEmpty(sessionUsername))
+                return Unauthorized("Session expired. Please log in again.");
+
+            // Resolve the session-caller's helper ID (null for admin users who are not helpers)
+            int? callerHelperId = null;
+            if (!isAdmin)
+            {
+                callerHelperId = _DbConn.GetHelperIdByUsername(sessionUsername);
+                if (callerHelperId == null)
+                    return BadRequest("No helper record linked to your account.");
+
+                // Always use the server-derived helper ID — ignore whatever the client sent
+                attendance.fkHelperId = callerHelperId;
+            }
+
+            // New record
             if (attendance.Id == 0 || attendance.Id == null)
             {
                 var result = _DbConn.AddAttendance(attendance);
-
-                if (result)
-                {
-                    return Ok("Attendance added successfully.");
-                }
-                else
-                {
-                    return StatusCode(500, "Error adding attendance.");
-                }
+                return result ? Ok("Attendance added successfully.") : StatusCode(500, "Error adding attendance.");
             }
             else
             {
-                var result = _DbConn.UpdateAttendance(attendance);
+                // Update: non-admin must own the record they are editing
+                if (!isAdmin)
+                {
+                    var ownerHelperId = _DbConn.GetAttendanceOwnerHelperId(attendance.Id);
+                    if (ownerHelperId != callerHelperId)
+                        return StatusCode(403, "You can only edit your own attendance records.");
+                }
 
-                if (result)
-                {
-                    return Ok("Attendance updated successfully.");
-                }
-                else
-                {
-                    return NotFound("Attendance record not found for update.");
-                }
+                var result = _DbConn.UpdateAttendance(attendance);
+                return result ? Ok("Attendance updated successfully.") : NotFound("Attendance record not found for update.");
             }
         }
 
@@ -79,6 +90,21 @@ namespace NursingHome.Controllers
         }
         public IActionResult DeleteAttendence(int id)
         {
+            var sessionRole    = HttpContext.Session.GetString("UserRole") ?? "";
+            var sessionUsername = HttpContext.Session.GetString("Username");
+            var isAdmin        = sessionRole.Equals("admin", StringComparison.OrdinalIgnoreCase);
+
+            if (string.IsNullOrEmpty(sessionUsername))
+                return Unauthorized("Session expired. Please log in again.");
+
+            if (!isAdmin)
+            {
+                var callerHelperId = _DbConn.GetHelperIdByUsername(sessionUsername);
+                var ownerHelperId  = _DbConn.GetAttendanceOwnerHelperId(id);
+                if (callerHelperId == null || ownerHelperId != callerHelperId)
+                    return StatusCode(403, "You can only delete your own attendance records.");
+            }
+
             var IsDeleted = _DbConn.DeleteAttendance(id);
             return Json(IsDeleted);
         }
@@ -101,6 +127,16 @@ namespace NursingHome.Controllers
                 data = data,
 
             });
+        }
+
+        public IActionResult GetHelperIdByUsername()
+        {
+            var sessionUsername = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(sessionUsername))
+                return Unauthorized("Session expired. Please log in again.");
+
+            var helperId = _DbConn.GetHelperIdByUsername(sessionUsername);
+            return Json(new { helperId = helperId });
         }
 
 

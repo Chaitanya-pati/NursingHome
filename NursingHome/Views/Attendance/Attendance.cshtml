@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Attendance";
 }
 <style>
@@ -38,11 +38,12 @@
                 </div>
                 <div class="modal-body">
                     <form id="attendanceForm" novalidate>
-                        <div class="form-group">
+                        <div class="form-group" id="HelperDropdownGroup">
                             <label ClearAttendenceClass for="HelperName">Select Helper</label>
                             <select class="form-select ClearAttendenceClass" id="HelperNameDDL" required></select>
                             <div class="invalid-feedback ClearAttendenceClass">Please select the Helper</div>
                         </div>
+                        <input type="hidden" id="AutoHelperIdHidden" />
 
                         <div class="form-group">
                             <label for="PatientName">Select Patient</label>
@@ -98,16 +99,40 @@
 </div>
 
 <script>
+    var isHelper = false; // resolved after layout's GetUserDataById returns
+
     $(document).ready(function () {
         var table = $('#tableAttendance').DataTable();
         GetAttendanceData();
-        HelpersDropDownList();
         PatientDropDownList();
-        HelpersDropDownList1()
-        
+        HelpersDropDownList1();
 
-          
-        
+        // Determine role once the layout's async user-data call has populated localStorage.
+        // We poll briefly so the attendance page doesn't race with the layout's AJAX.
+        function initRoleAndDropdowns() {
+            var role = localStorage.getItem('userRole');
+            if (!role) {
+                // Layout AJAX hasn't finished yet — retry in 200 ms
+                setTimeout(initRoleAndDropdowns, 200);
+                return;
+            }
+            isHelper = role.toLowerCase() !== 'admin';
+            if (isHelper) {
+                $('#HelperDropdownGroup').hide();
+            } else {
+                HelpersDropDownList();
+            }
+        }
+        initRoleAndDropdowns();
+
+        // Defer helper-ID lookup to when the modal opens — by then the layout's
+        // GetUserDataById has already run and set the server-side session.
+        $('#AddAttendanceModal').on('show.bs.modal', function () {
+            if (isHelper && !$('#AutoHelperIdHidden').val()) {
+                $('#SaveAttendanceData').prop('disabled', true);
+                LoadHelperIdForCurrentUser();
+            }
+        });
 
         $('#tableAttendance').on('click', '.btn-edit', function () {
             var fullData = JSON.parse($(this).attr('data-full-data'));
@@ -126,12 +151,35 @@
     });
   
 
-    function GetAttendencehelper()
-    {
-
+    function LoadHelperIdForCurrentUser() {
+        $.ajax({
+            url: '/Attendance/GetHelperIdByUsername',
+            type: 'GET',
+            success: function (response) {
+                if (response.helperId) {
+                    $('#AutoHelperIdHidden').val(response.helperId);
+                    $('#SaveAttendanceData').prop('disabled', false);
+                } else {
+                    $('#SaveAttendanceData').prop('disabled', true);
+                    alert('No helper record is linked to your account. Please contact the administrator.');
+                }
+            },
+            error: function (xhr) {
+                $('#SaveAttendanceData').prop('disabled', true);
+                if (xhr.status === 401) {
+                    alert('Session expired. Please log in again.');
+                    window.location.href = '/Users/Login';
+                } else {
+                    alert('Failed to load your helper details. Please try again.');
+                }
+            }
+        });
     }
+
     function AddandEditAttendence() {
-        var helperName = $('#HelperNameDDL').val();
+        // For helpers the server enforces their own ID; we still send a value
+        // so the form field is populated, but the server ignores it for non-admins.
+        var helperName = isHelper ? $('#AutoHelperIdHidden').val() : $('#HelperNameDDL').val();
         var patientName = $('#PatientNameDDL').val();
         var attendanceDate = $('#AttendanceDate').val();
         var totalHours = $('#TotalHours').val();

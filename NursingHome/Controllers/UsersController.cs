@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
@@ -141,6 +141,11 @@ namespace NursingHome.Controllers
 
                 if (user != null)
                 {
+                    // Set server-side session identity only after credential validation
+                    HttpContext.Session.SetString("Username", user.UserName ?? "");
+                    HttpContext.Session.SetString("UserRole", user.Roles ?? "");
+                    HttpContext.Session.SetInt32("UserId", user.Id);
+
                     return Json(new { success = true, userID = user.Id, isFaceAdded = user.IsFaceAdded });
                 }
                 else
@@ -160,6 +165,7 @@ namespace NursingHome.Controllers
             try
             {
                 var data = _DbConn.GetUserDataById(id);
+                // Session identity is NOT set here — only LoginUser sets it after credential validation
                 return Json(data);
             }
             catch (Exception ex)
