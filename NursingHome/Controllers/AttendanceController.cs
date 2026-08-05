@@ -171,11 +171,32 @@ namespace NursingHome.Controllers
             return Json(new { data = _DbConn.GetHelpers(), isAdmin = true });
         }
 
-        public IActionResult GetPatientDetails()
+        public IActionResult GetPatientDetails(int? helperId = null)
         {
-            var authError = RequireValidUser(out _, out _);
+            var authError = RequireValidUser(out int userId, out _);
             if (authError != null) return authError;
-            return Json(new { data = _DbConn.PatientDetails() });
+
+            int? resolvedHelperId = null;
+
+            if (!SessionUserIsAdmin(userId))
+            {
+                // Non-admin: always filter to the helper assigned to their account.
+                // Client-supplied helperId is ignored for safety.
+                var user      = _userService.GetUserDataById(userId);
+                var myHelpers = _helpers.GetData(user?.UserName ?? "");
+                if (myHelpers.Count == 0)
+                    return Json(new { data = new List<object>() }); // no helper assigned — empty list
+
+                resolvedHelperId = myHelpers[0].Id;
+            }
+            else if (helperId.HasValue && helperId.Value > 0)
+            {
+                // Admin selected a specific helper in the dropdown.
+                resolvedHelperId = helperId;
+            }
+            // else admin with no filter → resolvedHelperId stays null → all patients returned
+
+            return Json(new { data = _DbConn.PatientDetails(resolvedHelperId) });
         }
 
         // ── GPS Check-In ──────────────────────────────────────────────────────

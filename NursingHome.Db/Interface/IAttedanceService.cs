@@ -15,7 +15,14 @@ namespace NursingHome.Db.Interface
         bool UpdateAttendance(Attendance updatedAttendanceData);
         bool DeleteAttendance(int id);
         List<object> GetHelpers();
-        List<object> PatientDetails();
+
+        /// <summary>
+        /// Returns patients from HomeNursing optionally filtered to those
+        /// assigned to the given helper (fkHelperId). Pass null to return all
+        /// patients — intended for admin use only; non-admin callers must always
+        /// supply a resolved helperId (or handle the empty-list path themselves).
+        /// </summary>
+        List<object> PatientDetails(int? helperId = null);
 
         /// <summary>
         /// Records a GPS-captured check-in. The caller must populate

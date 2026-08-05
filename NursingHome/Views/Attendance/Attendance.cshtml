@@ -534,6 +534,20 @@
         });
     }
 
+    function LoadPatientsByHelper(helperId) {
+        var url = '/Attendance/GetPatientDetails';
+        if (helperId) url += '?helperId=' + helperId;
+        $.ajax({
+            url: url, type: 'GET',
+            success: function (res) {
+                var ddl = $('#ciPatientDDL').empty().append('<option value="">Select Patient</option>');
+                $.each(res.data, function (i, item) {
+                    ddl.append($('<option>', { value: item.id, text: item.patientName }));
+                });
+            }
+        });
+    }
+
     function PopulateCheckInDropdowns() {
         // Server resolves identity from session — no userId needed in the request.
         $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
@@ -545,19 +559,22 @@
                     // Non-admin with an assigned helper — auto-select and hide the field
                     ddl.val(res.data[0].id);
                     $('#ciHelperGroup').hide();
+                    // Load only this helper's patients
+                    LoadPatientsByHelper(res.data[0].id);
                 } else {
                     // Admin (or unassigned non-admin): show the dropdown with a placeholder
                     ddl.prepend('<option value="">Select Helper</option>').val('');
                     $('#ciHelperGroup').show();
+                    // No helper selected yet — load all patients
+                    LoadPatientsByHelper(null);
                 }
             }
         });
 
-        $.ajax({ url: '/Attendance/GetPatientDetails', type: 'GET',
-            success: function (res) {
-                var ddl = $('#ciPatientDDL').empty().append('<option value="">Select Patient</option>');
-                $.each(res.data, function (i, item) { ddl.append($('<option>', { value: item.id, text: item.patientName })); });
-            }
+        // When admin changes the helper selection, refresh the patient list
+        $('#ciHelperDDL').off('change.checkin').on('change.checkin', function () {
+            var selectedHelper = $(this).val();
+            LoadPatientsByHelper(selectedHelper || null);
         });
     }
 

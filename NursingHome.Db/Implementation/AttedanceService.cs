@@ -308,19 +308,18 @@ namespace NursingHome.Db.Implementation
             }
         }
 
-        public List<object> PatientDetails()
+        public List<object> PatientDetails(int? helperId = null)
         {
             using var Db = new TaskContext(_dbConn);
-            var query = @"
-        SELECT 
-            Id,
-            PatientName
-        FROM HomeNursing";
 
-            var result = Db.HomeNursing
-                           .FromSqlRaw(query)
-                           .Select(p => new { p.Id, p.PatientName })
-                           .ToList();
+            var query = Db.HomeNursing.AsQueryable();
+
+            if (helperId.HasValue && helperId.Value > 0)
+                query = query.Where(p => p.fkHelperId == helperId.Value);
+
+            var result = query
+                .Select(p => new { p.Id, p.PatientName })
+                .ToList();
 
             return result.Cast<object>().ToList();
         }
