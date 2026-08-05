@@ -13,6 +13,7 @@ namespace NursingHome.Controllers
     {
         private readonly IAttedanceService _DbConn;
         private readonly IUserService      _userService;
+        private readonly IHelpers          _helpers;
 
         // Shared HttpClient for reverse-geocoding (Nominatim). Static to avoid
         // socket exhaustion — HttpClient is thread-safe.
@@ -21,10 +22,11 @@ namespace NursingHome.Controllers
             Timeout = TimeSpan.FromSeconds(8)
         };
 
-        public AttendanceController(IAttedanceService Db, IUserService userService)
+        public AttendanceController(IAttedanceService Db, IUserService userService, IHelpers helpers)
         {
             _DbConn      = Db;
             _userService = userService;
+            _helpers     = helpers;
         }
 
         // ── Page ─────────────────────────────────────────────────────────────
@@ -51,9 +53,23 @@ namespace NursingHome.Controllers
             }
         }
 
-        public IActionResult GetAttendanceData()
+        public IActionResult GetAttendanceData(int userId = 0)
         {
-            var data = _DbConn.GetHelperAttendance();
+            int? helperIdFilter = null;
+            if (userId > 0)
+            {
+                var user = _userService.GetUserDataById(userId);
+                if (user != null && !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Non-admin: only show attendance for the helper assigned to them
+                    var myHelpers = _helpers.GetData(user.UserName ?? "");
+                    if (myHelpers.Count > 0)
+                        helperIdFilter = myHelpers[0].Id;
+                    else
+                        return Json(new { data = new List<object>() }); // no helper assigned — empty
+                }
+            }
+            var data = _DbConn.GetHelperAttendance(helperIdFilter);
             return Json(new { data });
         }
 
@@ -63,7 +79,22 @@ namespace NursingHome.Controllers
             return Json(IsDeleted);
         }
 
-        public IActionResult GetHelpers()         => Json(new { data = _DbConn.GetHelpers() });
+        public IActionResult GetHelpers(int userId = 0)
+        {
+            if (userId > 0)
+            {
+                var user = _userService.GetUserDataById(userId);
+                if (user != null && !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Non-admin: only return the helper assigned to them
+                    var myHelpers = _helpers.GetData(user.UserName ?? "")
+                                            .Select(h => new { id = h.Id, name = h.Name })
+                                            .ToList<object>();
+                    return Json(new { data = myHelpers });
+                }
+            }
+            return Json(new { data = _DbConn.GetHelpers() });
+        }
         public IActionResult GetPatientDetails()  => Json(new { data = _DbConn.PatientDetails() });
 
         // ── GPS Check-In ──────────────────────────────────────────────────────

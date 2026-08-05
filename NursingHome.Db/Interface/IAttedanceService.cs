@@ -10,7 +10,7 @@ namespace NursingHome.Db.Interface
     public interface IAttedanceService
     {
         // ── Existing methods ────────────────────────────────────────────────
-        List<object> GetHelperAttendance();
+        List<object> GetHelperAttendance(int? helperIdFilter = null);
         bool AddAttendance(Attendance dto);
         bool UpdateAttendance(Attendance updatedAttendanceData);
         bool DeleteAttendance(int id);
