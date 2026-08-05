@@ -62,7 +62,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="form-group" id="ciHelperGroup">
                     <label for="ciHelperDDL">Select Helper</label>
                     <select class="form-select" id="ciHelperDDL" required></select>
                 </div>
@@ -526,12 +526,27 @@
     }
 
     function PopulateCheckInDropdowns() {
-        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
+        var userId = parseInt(localStorage.getItem('userID') || '0', 10);
+
+        // Load helpers — pass userId so server returns only the logged-in helper for non-admins,
+        // and an explicit isAdmin flag so the UI doesn't guess role from list length.
+        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET', data: { userId: userId },
             success: function (res) {
-                var ddl = $('#ciHelperDDL').empty().append('<option value="">Select Helper</option>');
+                var ddl = $('#ciHelperDDL').empty();
                 $.each(res.data, function (i, item) { ddl.append($('<option>', { value: item.id, text: item.name })); });
+
+                if (!res.isAdmin && res.data.length === 1) {
+                    // Non-admin with an assigned helper — auto-select and hide the field
+                    ddl.val(res.data[0].id);
+                    $('#ciHelperGroup').hide();
+                } else {
+                    // Admin (or unassigned non-admin): show the dropdown with a placeholder
+                    ddl.prepend('<option value="">Select Helper</option>').val('');
+                    $('#ciHelperGroup').show();
+                }
             }
         });
+
         $.ajax({ url: '/Attendance/GetPatientDetails', type: 'GET',
             success: function (res) {
                 var ddl = $('#ciPatientDDL').empty().append('<option value="">Select Patient</option>');

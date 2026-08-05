@@ -90,10 +90,10 @@ namespace NursingHome.Controllers
                     var myHelpers = _helpers.GetData(user.UserName ?? "")
                                             .Select(h => new { id = h.Id, name = h.Name })
                                             .ToList<object>();
-                    return Json(new { data = myHelpers });
+                    return Json(new { data = myHelpers, isAdmin = false });
                 }
             }
-            return Json(new { data = _DbConn.GetHelpers() });
+            return Json(new { data = _DbConn.GetHelpers(), isAdmin = true });
         }
         public IActionResult GetPatientDetails()  => Json(new { data = _DbConn.PatientDetails() });
 
@@ -116,6 +116,16 @@ namespace NursingHome.Controllers
             // Server-side: verify the caller is a valid user.
             var authError = RequireValidUser(userId, out _);
             if (authError != null) return authError;
+
+            // Non-admin helpers may only check in under their own assigned helper record.
+            var callerUser = _userService.GetUserDataById(userId);
+            if (callerUser != null && !string.Equals(callerUser.Roles, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                var assignedHelpers = _helpers.GetData(callerUser.UserName ?? "");
+                var assignedIds     = assignedHelpers.Select(h => h.Id).ToHashSet();
+                if (!assignedIds.Contains(fkHelperId))
+                    return StatusCode(403, new { message = "You are not authorised to check in on behalf of another helper." });
+            }
 
             var checkInTime = DateTime.Now;
             var address     = await ReverseGeocodeAsync(latitude, longitude);
