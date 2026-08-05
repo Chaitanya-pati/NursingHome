@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using NursingHome.Models;
 using System.Diagnostics;
-using NursingHome.Db.Implementation;
 using NursingHome.Db.Interface;
+using NursingHome.Db.Models;
 
 namespace NursingHome.Controllers
 {
     public class HelpersController : Controller
     {
         private readonly IHomeService _logger;
-        private readonly IHelpers _DbConn;
+        private readonly IHelpers    _DbConn;
         private readonly IUserService _userService;
 
         public HelpersController(IHomeService logger, IHelpers Db, IUserService userService)
@@ -19,10 +19,8 @@ namespace NursingHome.Controllers
             _userService = userService;
         }
 
-        /// <summary>
-        /// Verifies that userId maps to a real database user (same pattern as AttendanceController).
-        /// Returns null on success; a 401 IActionResult on failure.
-        /// </summary>
+        // ── Auth helpers ───────────────────────────────────────────────────────
+
         private IActionResult? RequireValidUser(int userId)
         {
             if (userId <= 0)
@@ -33,10 +31,6 @@ namespace NursingHome.Controllers
             return null;
         }
 
-        /// <summary>
-        /// Verifies that userId maps to a real database user whose role is "admin".
-        /// Returns null on success; a 401/403 IActionResult on failure.
-        /// </summary>
         private IActionResult? RequireAdmin(int userId)
         {
             if (userId <= 0)
@@ -49,12 +43,14 @@ namespace NursingHome.Controllers
             return null;
         }
 
+        private string AdminUsername(int userId)
+            => _userService.GetUserDataById(userId)?.UserName ?? "unknown";
+
+        // ── Standard CRUD ─────────────────────────────────────────────────────
+
         public IActionResult Helpers()
         {
-            try
-            {
-                return View();
-            }
+            try { return View(); }
             catch (Exception ex)
             {
                 _logger.SaveLog("HelpersController", "Helpers", ex.Message);
@@ -66,16 +62,10 @@ namespace NursingHome.Controllers
         {
             try
             {
-                if (helperData.Id == 0)
-                {
-                    var isAdded = _DbConn.AddData(helperData);
-                    return Json(isAdded);
-                }
-                else
-                {
-                    var isUpdated = _DbConn.UpdateData(helperData);
-                    return Json(isUpdated);
-                }
+                bool result = helperData.Id == 0
+                    ? _DbConn.AddData(helperData)
+                    : _DbConn.UpdateData(helperData);
+                return Json(result);
             }
             catch (Exception ex)
             {
@@ -112,16 +102,14 @@ namespace NursingHome.Controllers
             }
         }
 
-        /// <summary>
-        /// Renders the ID card page. Requires a valid userId from the client session.
-        /// </summary>
+        // ── ID Card ───────────────────────────────────────────────────────────
+
         public IActionResult IdCard(int id, int userId)
         {
             try
             {
                 var authError = RequireValidUser(userId);
                 if (authError != null) return authError;
-
                 ViewBag.HelperId = id;
                 ViewBag.UserId   = userId;
                 return View();
@@ -133,10 +121,6 @@ namespace NursingHome.Controllers
             }
         }
 
-        /// <summary>
-        /// Returns a safe DTO with the helper's details for ID card rendering.
-        /// Requires a valid userId from the client session.
-        /// </summary>
         public IActionResult GetHelperById(int id, int userId)
         {
             try
@@ -147,8 +131,6 @@ namespace NursingHome.Controllers
                 var h = _DbConn.GetData("admin").FirstOrDefault(x => x.Id == id);
                 if (h == null) return Json(null);
 
-                // Project to a DTO — keeps EF navigation properties out of the
-                // JSON response and avoids circular-reference serialisation errors.
                 return Json(new {
                     id               = h.Id,
                     name             = h.Name,
@@ -169,10 +151,8 @@ namespace NursingHome.Controllers
             }
         }
 
-        /// <summary>
-        /// Returns a safe list of all system users for the Assign User dropdown.
-        /// Requires the caller to be an admin (verified server-side via userId).
-        /// </summary>
+        // ── Assign User: get user list ────────────────────────────────────────
+
         public IActionResult GetUsersForAssign(int userId)
         {
             try
@@ -180,12 +160,22 @@ namespace NursingHome.Controllers
                 var authError = RequireAdmin(userId);
                 if (authError != null) return authError;
 
+                // Get all currently assigned susers to show which users are already taken
+                var allHelpers = _DbConn.GetData("admin");
+                var assignedSusers = allHelpers
+                    .Where(h => !string.IsNullOrWhiteSpace(h.suser))
+                    .Select(h => h.suser)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
                 var users = _userService.GetData().Select(u => new {
-                    id       = u.Id,
-                    fullName = (u.FirstName + " " + u.LastName).Trim(),
-                    userName = u.UserName,
-                    role     = u.Roles,
-                    mobileNo = u.MobileNo
+                    id           = u.Id,
+                    fullName     = (u.FirstName + " " + u.LastName).Trim(),
+                    userName     = u.UserName,
+                    role         = u.Roles,
+                    mobileNo     = u.MobileNo,
+                    isAssigned   = assignedSusers.Contains(u.UserName ?? ""),
+                    isActive     = u.IsActive,
+                    createdDate  = u.CreatedDate
                 });
 
                 return Json(new { success = true, data = users });
@@ -197,12 +187,49 @@ namespace NursingHome.Controllers
             }
         }
 
-        /// <summary>
-        /// Assigns a system user to a helper record.
-        /// Requires the caller to be an admin (verified server-side via userId).
-        /// The target user is resolved server-side by targetUserId — the client never
-        /// supplies a raw username, preventing username injection.
-        /// </summary>
+        // ── Get assigned user info ────────────────────────────────────────────
+
+        public IActionResult GetAssignedUserInfo(int helperId, int userId)
+        {
+            try
+            {
+                var authError = RequireValidUser(userId);
+                if (authError != null) return authError;
+
+                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                if (helper == null)
+                    return Json(new { success = false, message = "Helper not found." });
+
+                if (string.IsNullOrWhiteSpace(helper.suser))
+                    return Json(new { success = true, assigned = false });
+
+                var user = _userService.GetUserByUsername(helper.suser);
+                if (user == null)
+                    return Json(new { success = true, assigned = false });
+
+                return Json(new {
+                    success    = true,
+                    assigned   = true,
+                    id         = user.Id,
+                    fullName   = (user.FirstName + " " + user.LastName).Trim(),
+                    userName   = user.UserName,
+                    role       = user.Roles,
+                    isActive   = user.IsActive,
+                    lastLogin  = user.LastLogin,
+                    createdDate = user.CreatedDate,
+                    mobileNo   = user.MobileNo,
+                    email      = user.Email
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "GetAssignedUserInfo", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Assign existing user ──────────────────────────────────────────────
+
         public IActionResult AssignUserToHelper(int helperId, int targetUserId, int userId)
         {
             try
@@ -210,17 +237,223 @@ namespace NursingHome.Controllers
                 var authError = RequireAdmin(userId);
                 if (authError != null) return authError;
 
-                // Resolve the target user server-side — never trust a client-supplied username
                 var targetUser = _userService.GetUserDataById(targetUserId);
                 if (targetUser == null)
                     return Json(new { success = false, message = "Selected user not found." });
 
+                // Prevent assigning a user already assigned to another helper
+                var allHelpers = _DbConn.GetData("admin");
+                var alreadyAssigned = allHelpers.Any(h =>
+                    h.Id != helperId &&
+                    string.Equals(h.suser, targetUser.UserName, StringComparison.OrdinalIgnoreCase));
+
+                if (alreadyAssigned)
+                    return Json(new { success = false, message = $"User '{targetUser.UserName}' is already assigned to another helper." });
+
+                // Record what the old assignment was (for history)
+                var helper = allHelpers.FirstOrDefault(h => h.Id == helperId);
+                var oldUser = helper?.suser;
+                var action  = string.IsNullOrWhiteSpace(oldUser) ? "Assigned" : "Changed";
+
                 var result = _DbConn.AssignUser(helperId, targetUser.UserName);
-                return Json(new { success = result, message = result ? "User assigned successfully." : "Failed to assign user." });
+                if (!result)
+                    return Json(new { success = false, message = "Failed to assign user." });
+
+                // Audit log
+                _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                {
+                    HelperId         = helperId,
+                    AssignedUserName = targetUser.UserName,
+                    Action           = action,
+                    AssignedBy       = AdminUsername(userId),
+                    AssignedDate     = DateTime.Now,
+                    Notes            = oldUser != null ? $"Previous user: {oldUser}" : null
+                });
+
+                return Json(new { success = true, message = "User assigned successfully." });
             }
             catch (Exception ex)
             {
                 _logger.SaveLog("HelpersController", "AssignUserToHelper", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Create new user and assign ────────────────────────────────────────
+
+        public IActionResult CreateAndAssignUser(
+            int    helperId,
+            string firstName,
+            string lastName,
+            string userName,
+            string password,
+            string mobileNo,
+            string email,
+            string role,
+            bool   isActive,
+            int    userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                // Prevent assigning a user that is already suser of another helper
+                var allHelpers     = _DbConn.GetData("admin");
+                var allSusers      = allHelpers
+                    .Where(h => !string.IsNullOrWhiteSpace(h.suser))
+                    .Select(h => h.suser)
+                    .ToList();
+
+                // Build user object
+                var newUser = new Users
+                {
+                    FirstName = firstName?.Trim() ?? "",
+                    LastName  = lastName?.Trim() ?? "",
+                    UserName  = userName?.Trim() ?? "",
+                    Password  = password,
+                    Roles     = string.IsNullOrWhiteSpace(role) ? "helper" : role.Trim(),
+                    MobileNo  = mobileNo?.Trim(),
+                    Email     = string.IsNullOrWhiteSpace(email) ? null : email.Trim(),
+                    IsActive  = isActive
+                };
+
+                var (success, error) = _userService.CreateUserWithValidation(newUser, null, allSusers);
+                if (!success)
+                    return Json(new { success = false, message = error });
+
+                // Now assign the new user to the helper
+                var helper  = allHelpers.FirstOrDefault(h => h.Id == helperId);
+                var oldUser = helper?.suser;
+                var action  = string.IsNullOrWhiteSpace(oldUser) ? "Assigned" : "Changed";
+
+                _DbConn.AssignUser(helperId, newUser.UserName);
+
+                // Audit
+                _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                {
+                    HelperId         = helperId,
+                    AssignedUserName = newUser.UserName,
+                    Action           = action,
+                    AssignedBy       = AdminUsername(userId),
+                    AssignedDate     = DateTime.Now,
+                    Notes            = oldUser != null ? $"Created new user; Previous: {oldUser}" : "Created new user"
+                });
+
+                return Json(new { success = true, message = "User created and assigned successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "CreateAndAssignUser", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Remove assignment ─────────────────────────────────────────────────
+
+        public IActionResult RemoveUserAssignment(int helperId, int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                if (helper == null)
+                    return Json(new { success = false, message = "Helper not found." });
+
+                var oldUser = helper.suser;
+                if (string.IsNullOrWhiteSpace(oldUser))
+                    return Json(new { success = false, message = "No user is currently assigned to this helper." });
+
+                _DbConn.RemoveUserAssignment(helperId);
+
+                // Audit
+                _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                {
+                    HelperId         = helperId,
+                    AssignedUserName = oldUser,
+                    Action           = "Removed",
+                    RemovedBy        = AdminUsername(userId),
+                    RemovedDate      = DateTime.Now
+                });
+
+                return Json(new { success = true, message = "User assignment removed." });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "RemoveUserAssignment", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Reset password ────────────────────────────────────────────────────
+
+        public IActionResult ResetHelperPassword(int helperId, string newPassword, int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 4)
+                    return Json(new { success = false, message = "Password must be at least 4 characters." });
+
+                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                if (helper == null)
+                    return Json(new { success = false, message = "Helper not found." });
+
+                if (string.IsNullOrWhiteSpace(helper.suser))
+                    return Json(new { success = false, message = "No user is assigned to this helper." });
+
+                var result = _userService.UpdatePassword(helper.suser, newPassword);
+                if (!result)
+                    return Json(new { success = false, message = "Password reset failed." });
+
+                // Audit
+                _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                {
+                    HelperId         = helperId,
+                    AssignedUserName = helper.suser,
+                    Action           = "PasswordReset",
+                    AssignedBy       = AdminUsername(userId),
+                    AssignedDate     = DateTime.Now,
+                    Notes            = "Password reset by admin"
+                });
+
+                return Json(new { success = true, message = "Password reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "ResetHelperPassword", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // ── Get assignment history ────────────────────────────────────────────
+
+        public IActionResult GetAssignmentHistory(int helperId, int userId)
+        {
+            try
+            {
+                var authError = RequireAdmin(userId);
+                if (authError != null) return authError;
+
+                var history = _DbConn.GetAssignmentHistory(helperId);
+                var result  = history.Select(h => new {
+                    action          = h.Action,
+                    assignedUserName = h.AssignedUserName,
+                    assignedBy      = h.AssignedBy,
+                    assignedDate    = h.AssignedDate,
+                    removedBy       = h.RemovedBy,
+                    removedDate     = h.RemovedDate,
+                    notes           = h.Notes
+                });
+                return Json(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("HelpersController", "GetAssignmentHistory", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

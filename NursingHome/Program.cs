@@ -49,6 +49,8 @@ var app = builder.Build();
 RunAttendanceMigrations(builder.Configuration.GetConnectionString("NursingHome"));
 // ── Add Helpers ID-card columns if missing ────────────────────────────────────
 RunHelpersMigrations(builder.Configuration.GetConnectionString("NursingHome"));
+// ── Add User assignment / audit columns and tables ────────────────────────────
+RunUserAssignmentMigrations(builder.Configuration.GetConnectionString("NursingHome"));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -68,6 +70,56 @@ app.MapControllerRoute(
     pattern: "{controller=Users}/{action=Login}/{id?}");
 
 app.Run();
+
+// ────────────────────────────────────────────────────────────────────────────────
+// Adds User assignment columns to [Users] and creates [HelperUserAssignmentHistory].
+// Idempotent — safe on every boot.
+// ────────────────────────────────────────────────────────────────────────────────
+static void RunUserAssignmentMigrations(string? connectionString)
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        Console.WriteLine("[Migration] UserAssignment: Skipped — connection string is empty.");
+        return;
+    }
+    var statements = new[]
+    {
+        // Users: new profile columns
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Users' AND COLUMN_NAME='Email') ALTER TABLE [dbo].[Users] ADD [Email] NVARCHAR(200) NULL",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Users' AND COLUMN_NAME='IsActive') ALTER TABLE [dbo].[Users] ADD [IsActive] BIT NOT NULL DEFAULT 1",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Users' AND COLUMN_NAME='LastLogin') ALTER TABLE [dbo].[Users] ADD [LastLogin] DATETIME NULL",
+        "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Users' AND COLUMN_NAME='CreatedDate') ALTER TABLE [dbo].[Users] ADD [CreatedDate] DATETIME NULL",
+
+        // HelperUserAssignmentHistory table
+        @"IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='HelperUserAssignmentHistory')
+          CREATE TABLE [dbo].[HelperUserAssignmentHistory] (
+              [Id]               INT IDENTITY(1,1) PRIMARY KEY,
+              [HelperId]         INT NOT NULL,
+              [AssignedUserName] NVARCHAR(110) NULL,
+              [Action]           NVARCHAR(50)  NULL,
+              [AssignedBy]       NVARCHAR(110) NULL,
+              [AssignedDate]     DATETIME      NULL,
+              [RemovedBy]        NVARCHAR(110) NULL,
+              [RemovedDate]      DATETIME      NULL,
+              [Notes]            NVARCHAR(500) NULL
+          )"
+    };
+    try
+    {
+        using var conn = new SqlConnection(connectionString);
+        conn.Open();
+        foreach (var sql in statements)
+        {
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.ExecuteNonQuery();
+        }
+        Console.WriteLine("[Migration] UserAssignment migration complete.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Migration] UserAssignment WARNING: {ex.Message}");
+    }
+}
 
 // ────────────────────────────────────────────────────────────────────────────────
 // Adds ID-card columns to [Helpers] if they don't already exist.

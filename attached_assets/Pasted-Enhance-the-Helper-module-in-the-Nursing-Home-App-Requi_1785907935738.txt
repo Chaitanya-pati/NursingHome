@@ -1,0 +1,106 @@
+Enhance the Helper module in the Nursing Home App.
+
+Requirement:
+
+1. On the Helper details page, place a new button called "Assign User" next to the existing ID Card icon.
+   - The button should match the current UI design.
+   - It should be visible only to Admin users.
+
+2. When the Admin clicks "Assign User", open a modal/dialog.
+
+3. The modal should provide two options:
+
+   Option 1: Select Existing User
+   - Searchable dropdown.
+   - Show all existing system users.
+   - Display:
+     - Full Name
+     - Username
+     - Role
+     - Mobile Number
+   - Admin can select one user and assign it to the Helper.
+
+   Option 2: Create New User
+   - Allow creating a new login without leaving the page.
+   - Fields:
+     - Full Name (Auto-fill from Helper, editable)
+     - Username
+     - Mobile Number (Auto-fill if available)
+     - Email (Optional)
+     - Password
+     - Confirm Password
+     - Role (Default: Helper)
+     - Active Status
+
+4. After successful creation:
+   - Automatically create the user.
+   - Assign the newly created user to the current Helper.
+   - Close the modal.
+   - Refresh the page.
+
+5. After successful assignment:
+   - Show the assigned user's details on the Helper page.
+
+6. Display a new section on the Helper page:
+
+   Assigned User
+   ------------------------
+   Username
+   Role
+   Status
+   Last Login
+   Created Date
+
+7. If a Helper already has an assigned user:
+   - Show the assigned user information.
+   - Replace the "Assign User" button with:
+     - Change User
+     - Remove Assignment
+     - Reset Password
+
+8. Validation:
+   - One Helper can have only one assigned user.
+   - One User cannot be assigned to multiple Helpers.
+   - Prevent duplicate assignments.
+   - Username must be unique.
+   - Mobile number must be unique.
+   - Email (if entered) must be unique.
+
+9. Backend:
+   - Add helper_user_id reference in the Helper table (or appropriate mapping table).
+   - Store assignment history with:
+     - Assigned By
+     - Assigned Date
+     - Removed By
+     - Removed Date
+
+10. Audit Log:
+   Record:
+   - User Assigned
+   - User Changed
+   - User Removed
+   - Password Reset
+
+11. UI:
+   - Keep the current Helper page unchanged.
+   - Only add the "Assign User" button beside the ID Card icon.
+   - Use existing theme, colors, spacing, and reusable components.
+   - No duplicate pages.
+   - Fully responsive.
+
+Expected Flow:
+
+Helper Page
+      ↓
+Click "Assign User"
+      ↓
+Modal Opens
+      ↓
+Choose:
+   • Select Existing User
+          OR
+   • Create New User
+      ↓
+Assign User
+      ↓
+Show Assigned User Details on Helper Page

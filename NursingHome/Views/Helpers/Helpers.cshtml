@@ -295,40 +295,178 @@
     </div>
 </div>
 
-<!-- Assign User Modal -->
+<!-- Assign / Change User Modal (tabbed) -->
 <div class="modal fade" id="assignUserModal" tabindex="-1" role="dialog" aria-labelledby="assignUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:500px;" role="document">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:560px;" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignUserModalLabel"><i class="fas fa-user-check me-2"></i> Assign User to Helper</h5>
-                <button type="button" class="close" onclick="closeAssignUserModal()" aria-label="Close">
+            <div class="modal-header" style="background:#6750a4;color:#fff;">
+                <h5 class="modal-title" id="assignUserModalLabel"><i class="fas fa-user-check mr-2"></i> <span id="assignModalTitle">Assign User to Helper</span></h5>
+                <button type="button" class="close" style="color:#fff;" onclick="closeAssignUserModal()" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-0">
                 <input type="hidden" id="assignHelperId" />
-                <div class="form-group mb-3">
-                    <label class="font-weight-bold mb-1">Select Existing User</label>
-                    <select id="assignUserSelect" class="form-control" style="width:100%">
-                        <option value="">-- Search and select a user --</option>
-                    </select>
-                </div>
-                <!-- Selected user details card -->
-                <div id="assignUserDetails" class="card border-primary mt-3" style="display:none;">
-                    <div class="card-body p-3">
-                        <div class="row">
-                            <div class="col-12 mb-1"><strong>Full Name:</strong> <span id="auDetailName"></span></div>
-                            <div class="col-12 mb-1"><strong>Username:</strong> <span id="auDetailUsername"></span></div>
-                            <div class="col-12 mb-1"><strong>Role:</strong> <span id="auDetailRole"></span></div>
-                            <div class="col-12"><strong>Mobile No:</strong> <span id="auDetailMobile"></span></div>
+                <!-- Tabs -->
+                <ul class="nav nav-tabs px-3 pt-2" id="assignUserTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab-existing" href="#" onclick="switchAssignTab('existing');return false;">
+                            <i class="fas fa-search mr-1"></i> Select Existing User
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-new" href="#" onclick="switchAssignTab('new');return false;">
+                            <i class="fas fa-user-plus mr-1"></i> Create New User
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab: Select Existing User -->
+                <div id="panelExisting" class="p-3">
+                    <div class="form-group mb-2">
+                        <label class="font-weight-bold mb-1">Search &amp; Select User</label>
+                        <select id="assignUserSelect" class="form-control" style="width:100%">
+                            <option value="">-- Search by name, username, role or mobile --</option>
+                        </select>
+                    </div>
+                    <div id="assignUserDetails" class="card border-primary mt-2" style="display:none;">
+                        <div class="card-body p-3">
+                            <div class="row small">
+                                <div class="col-6 mb-1"><strong>Full Name:</strong> <span id="auDetailName"></span></div>
+                                <div class="col-6 mb-1"><strong>Username:</strong> <span id="auDetailUsername"></span></div>
+                                <div class="col-6 mb-1"><strong>Role:</strong> <span id="auDetailRole"></span></div>
+                                <div class="col-6"><strong>Mobile No:</strong> <span id="auDetailMobile"></span></div>
+                            </div>
                         </div>
                     </div>
+                    <div id="auAlreadyAssignedWarn" class="alert alert-warning mt-2 py-2 small" style="display:none;">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> This user is already assigned to another helper.
+                    </div>
+                </div>
+
+                <!-- Tab: Create New User -->
+                <div id="panelNew" class="p-3" style="display:none;">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="nuFullName" class="form-control form-control-sm" placeholder="Full name" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Username <span class="text-danger">*</span></label>
+                                <input type="text" id="nuUserName" class="form-control form-control-sm" placeholder="Unique username" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Mobile Number</label>
+                                <input type="text" id="nuMobile" class="form-control form-control-sm" placeholder="Mobile (unique)" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Email (Optional)</label>
+                                <input type="email" id="nuEmail" class="form-control form-control-sm" placeholder="Email (optional)" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Password <span class="text-danger">*</span></label>
+                                <input type="password" id="nuPassword" class="form-control form-control-sm" placeholder="Password" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" id="nuConfirmPassword" class="form-control form-control-sm" placeholder="Confirm password" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Role</label>
+                                <select id="nuRole" class="form-control form-control-sm">
+                                    <option value="helper">Helper</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="manager">Manager</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group mb-2">
+                                <label class="small font-weight-bold">Active Status</label>
+                                <select id="nuIsActive" class="form-control form-control-sm">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nuError" class="alert alert-danger py-2 small mt-1" style="display:none;"></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAssignUserModal()">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmAssignUser" onclick="confirmAssignUser()" disabled>
-                    <i class="fas fa-user-check"></i> Assign User
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeAssignUserModal()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnConfirmAssignUser" onclick="confirmAssignUser()" disabled>
+                    <i class="fas fa-user-check mr-1"></i> <span id="btnAssignLabel">Assign User</span>
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="btnCreateAndAssign" onclick="confirmCreateAndAssign()" style="display:none;">
+                    <i class="fas fa-user-plus mr-1"></i> Create &amp; Assign
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Assignment Confirmation Modal -->
+<div class="modal fade" id="removeAssignmentModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-user-times mr-2"></i> Remove Assignment</h5>
+                <button type="button" class="close text-white" onclick="HidePopup('removeAssignmentModal')"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove the assigned user from this helper?</p>
+                <p class="mb-0 text-muted small">Assigned user: <strong id="removeAssignedUsername"></strong></p>
+                <input type="hidden" id="removeHelperId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="HidePopup('removeAssignmentModal')">Cancel</button>
+                <button type="button" class="btn btn-danger btn-sm" id="btnConfirmRemove" onclick="confirmRemoveAssignment()">
+                    <i class="fas fa-user-times mr-1"></i> Remove Assignment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:380px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#6750a4;color:#fff;">
+                <h5 class="modal-title"><i class="fas fa-key mr-2"></i> Reset Password</h5>
+                <button type="button" class="close text-white" onclick="HidePopup('resetPasswordModal')"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-3">Reset password for: <strong id="resetUserName"></strong></p>
+                <input type="hidden" id="resetHelperId" />
+                <div class="form-group mb-2">
+                    <label class="small font-weight-bold">New Password <span class="text-danger">*</span></label>
+                    <input type="password" id="resetNewPassword" class="form-control form-control-sm" placeholder="New password (min 4 chars)" />
+                </div>
+                <div class="form-group mb-0">
+                    <label class="small font-weight-bold">Confirm Password <span class="text-danger">*</span></label>
+                    <input type="password" id="resetConfirmPassword" class="form-control form-control-sm" placeholder="Confirm new password" />
+                </div>
+                <div id="resetError" class="alert alert-danger py-2 small mt-2" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="HidePopup('resetPasswordModal')">Cancel</button>
+                <button type="button" class="btn btn-warning btn-sm" id="btnConfirmReset" onclick="confirmResetPassword()">
+                    <i class="fas fa-key mr-1"></i> Reset Password
                 </button>
             </div>
         </div>
@@ -341,13 +479,60 @@
             <tr>
                 <th>Candidate Name</th>
                 <th>Permanent Address</th>
-                <th>LanguagesKnown</th>
+                <th>Languages Known</th>
+                <th>Assigned User</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
+</div>
+
+<!-- Assigned User Info Panel -->
+<div class="col-12 container-fluid mt-3" id="assignedUserPanel" style="display:none;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#6750a4;color:#fff;">
+            <span><i class="fas fa-user-shield mr-2"></i> <strong>Assigned User</strong> — <span id="auPanelHelperName" style="font-weight:400;"></span></span>
+            <button class="btn btn-sm btn-outline-light py-0" onclick="closeAssignedUserPanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="card-body py-3">
+            <div class="row">
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Full Name</div>
+                    <div class="font-weight-bold" id="auPanelFullName">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Username</div>
+                    <div class="font-weight-bold" id="auPanelUserName">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Role</div>
+                    <div id="auPanelRole">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Status</div>
+                    <div id="auPanelStatus">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Last Login</div>
+                    <div id="auPanelLastLogin">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Created Date</div>
+                    <div id="auPanelCreatedDate">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Mobile No</div>
+                    <div id="auPanelMobile">—</div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-2">
+                    <div class="small text-muted">Email</div>
+                    <div id="auPanelEmail">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -805,14 +990,33 @@
             success: function (response) {
        table.clear().draw();
           response.data.forEach(function (item) {
+           var isAdmin = localStorage.getItem('userRole') === 'admin';
+           var hasUser = item.suser && item.suser.trim() !== '';
+           var assignedBadge = hasUser
+               ? '<span class="badge badge-success" style="font-size:11px;cursor:pointer;" class="btn-view-assigned" data-helper-id="'+item.id+'" data-helper-name="'+escAttr(item.name)+'"><i class="fas fa-user-check mr-1"></i>'+escAttr(item.suser)+'</span>'
+               : '<span class="badge badge-light text-muted" style="font-size:11px;">None</span>';
+
+           var adminBtns = '';
+           if (isAdmin) {
+               if (!hasUser) {
+                   adminBtns = '<button class="btn btn-sm btn-outline-primary ml-1 btn-assign-user" title="Assign User" style="padding:2px 7px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'"><i class="fa fa-user-plus mr-1"></i>Assign User</button>';
+               } else {
+                   adminBtns =
+                       '<button class="btn btn-sm btn-outline-secondary ml-1 btn-assign-user" title="Change User" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'"><i class="fa fa-exchange-alt mr-1"></i>Change</button>' +
+                       '<button class="btn btn-sm btn-outline-danger ml-1 btn-remove-user" title="Remove Assignment" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-suser="'+escAttr(item.suser)+'"><i class="fa fa-user-times"></i></button>' +
+                       '<button class="btn btn-sm btn-outline-warning ml-1 btn-reset-password" title="Reset Password" style="padding:2px 6px;font-size:11px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-suser="'+escAttr(item.suser)+'"><i class="fa fa-key"></i></button>';
+               }
+           }
+
            table.row.add([
          item.name,
          item.permanentAddress,
          item.languagesKnown,
-     '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-    '<i class="fa fa-id-card ml-2 mr-4 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
-    (localStorage.getItem('userRole') === 'admin' ? '<button class="btn btn-sm btn-outline-secondary ml-2 mr-2 btn-assign-user" title="Assign User" style="padding:2px 8px;font-size:12px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'><i class="fa fa-user-plus mr-1"></i>Assign User</button>' : '') +
-    '<i class="fa fa-trash ml-2 btn-delete"  style="color:red" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
+         assignedBadge,
+         '<i class="fa fa-edit me-2 ml-1 btn-edit" style="color:green;cursor:pointer;" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
+         '<i class="fa fa-id-card ml-2 mr-1 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
+         adminBtns +
+         ' <i class="fa fa-trash ml-1 btn-delete" style="color:red;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
      ]).draw();
        });
        $('#helpersLoader').hide();
@@ -920,86 +1124,142 @@
             });
         }
 
-        // ── Assign User ──────────────────────────────────────────────────────────
+        // ── Helpers ───────────────────────────────────────────────────────────────
+        function escAttr(v) { return v == null ? '' : String(v).replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+        function fmtDate(v) { if (!v) return '—'; var d = new Date(v); return isNaN(d) ? '—' : d.toLocaleDateString(); }
+        function fmtDateTime(v) { if (!v) return '—'; var d = new Date(v); return isNaN(d) ? '—' : d.toLocaleString(); }
 
-        // Cache all users loaded for the modal
+        // ── Assign / Change User ─────────────────────────────────────────────────
         var _assignUsersCache = [];
+        var _currentAssignTab = 'existing';
 
+        // Delegate: Assign User button
         $('#tblHelpers').on('click', '.btn-assign-user', function () {
-            var helperId = JSON.parse($(this).attr('dataId'));
-            openAssignUserModal(helperId);
+            var helperId   = JSON.parse($(this).attr('dataId'));
+            var helperName = $(this).attr('data-helper-name') || '';
+            openAssignUserModal(helperId, helperName);
         });
 
-        function openAssignUserModal(helperId) {
+        // Delegate: Remove Assignment button
+        $('#tblHelpers').on('click', '.btn-remove-user', function () {
+            var helperId = JSON.parse($(this).attr('dataId'));
+            var suser    = $(this).attr('data-suser') || '';
+            $('#removeHelperId').val(helperId);
+            $('#removeAssignedUsername').text(suser);
+            showPopup('removeAssignmentModal');
+        });
+
+        // Delegate: Reset Password button
+        $('#tblHelpers').on('click', '.btn-reset-password', function () {
+            var helperId = JSON.parse($(this).attr('dataId'));
+            var suser    = $(this).attr('data-suser') || '';
+            $('#resetHelperId').val(helperId);
+            $('#resetUserName').text(suser);
+            $('#resetNewPassword, #resetConfirmPassword').val('');
+            $('#resetError').hide();
+            showPopup('resetPasswordModal');
+        });
+
+        // Delegate: View assigned user info badge click
+        $('#tblHelpers').on('click', '.badge-success', function () {
+            var helperId   = $(this).attr('data-helper-id');
+            var helperName = $(this).attr('data-helper-name') || '';
+            if (helperId) loadAssignedUserPanel(helperId, helperName);
+        });
+
+        function switchAssignTab(tab) {
+            _currentAssignTab = tab;
+            if (tab === 'existing') {
+                $('#tab-existing').addClass('active');
+                $('#tab-new').removeClass('active');
+                $('#panelExisting').show();
+                $('#panelNew').hide();
+                $('#btnConfirmAssignUser').show();
+                $('#btnCreateAndAssign').hide();
+            } else {
+                $('#tab-new').addClass('active');
+                $('#tab-existing').removeClass('active');
+                $('#panelNew').show();
+                $('#panelExisting').hide();
+                $('#btnConfirmAssignUser').hide();
+                $('#btnCreateAndAssign').show();
+            }
+        }
+
+        function openAssignUserModal(helperId, helperName) {
             $('#assignHelperId').val(helperId);
+            $('#assignModalTitle').text('Assign User — ' + (helperName || ''));
 
-            // Reset select & details
-            $('#assignUserSelect').val('').trigger('change');
+            // Reset state
+            $('#nuFullName, #nuUserName, #nuMobile, #nuEmail, #nuPassword, #nuConfirmPassword').val('');
+            $('#nuRole').val('helper');
+            $('#nuIsActive').val('true');
+            $('#nuError').hide();
             $('#assignUserDetails').hide();
+            $('#auAlreadyAssignedWarn').hide();
             $('#btnConfirmAssignUser').prop('disabled', true);
+            switchAssignTab('existing');
 
-            // Initialise Select2 if not already done
+            // Auto-fill helper name in Create New tab
+            // (will be replaced after helper data fetched)
+
+            // Init Select2 once
             if (!$('#assignUserSelect').hasClass('select2-hidden-accessible')) {
                 $('#assignUserSelect').select2({
                     dropdownParent: $('#assignUserModal'),
-                    placeholder: '-- Search by name, username or role --',
+                    placeholder: '-- Search by name, username, role or mobile --',
                     allowClear: true,
                     width: '100%'
                 });
 
-                // Show user details card when a selection is made
                 $('#assignUserSelect').on('select2:select', function () {
-                    var userId = $(this).val();
-                    if (!userId) {
-                        $('#assignUserDetails').hide();
-                        $('#btnConfirmAssignUser').prop('disabled', true);
-                        return;
-                    }
-                    var user = _assignUsersCache.find(function (u) { return String(u.id) === String(userId); });
+                    var uid  = $(this).val();
+                    var user = _assignUsersCache.find(function (u) { return String(u.id) === String(uid); });
                     if (user) {
                         $('#auDetailName').text(user.fullName || '—');
                         $('#auDetailUsername').text(user.userName || '—');
                         $('#auDetailRole').text(user.role || '—');
                         $('#auDetailMobile').text(user.mobileNo || '—');
                         $('#assignUserDetails').show();
-                        $('#btnConfirmAssignUser').prop('disabled', false);
+
+                        // Warn if user is already assigned elsewhere
+                        if (user.isAssigned) {
+                            $('#auAlreadyAssignedWarn').show();
+                            $('#btnConfirmAssignUser').prop('disabled', true);
+                        } else {
+                            $('#auAlreadyAssignedWarn').hide();
+                            $('#btnConfirmAssignUser').prop('disabled', false);
+                        }
                     }
                 });
 
                 $('#assignUserSelect').on('select2:unselect select2:clear', function () {
                     $('#assignUserDetails').hide();
+                    $('#auAlreadyAssignedWarn').hide();
                     $('#btnConfirmAssignUser').prop('disabled', true);
                 });
             }
 
             var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
 
-            // Load users from server
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("GetUsersForAssign", "Helpers")',
                 data: { userId: uId },
                 success: function (response) {
-                    if (!response.success) {
-                        msgPopup('error', 'Failed to load users.');
-                        return;
-                    }
+                    if (!response.success) { msgPopup('error', 'Failed to load users.'); return; }
                     _assignUsersCache = response.data;
-
-                    // Rebuild Select2 options
-                    var $select = $('#assignUserSelect');
-                    $select.find('option:not(:first)').remove();
+                    var $sel = $('#assignUserSelect');
+                    $sel.find('option:not(:first)').remove();
                     response.data.forEach(function (u) {
                         var label = (u.fullName || u.userName) + ' (' + (u.role || 'N/A') + ') — ' + (u.mobileNo || '');
-                        $select.append(new Option(label, u.id, false, false));
+                        if (u.isAssigned) label += ' [Assigned]';
+                        $sel.append(new Option(label, u.id, false, false));
                     });
-                    $select.trigger('change');
-
+                    $sel.trigger('change');
                     showPopup('assignUserModal');
                 },
-                error: function () {
-                    msgPopup('error', 'Error loading users. Please try again.');
-                }
+                error: function () { msgPopup('error', 'Error loading users. Please try again.'); }
             });
         }
 
@@ -1008,41 +1268,191 @@
         }
 
         function confirmAssignUser() {
-            var helperId = $('#assignHelperId').val();
+            var helperId       = $('#assignHelperId').val();
             var selectedUserId = $('#assignUserSelect').val();
-            if (!selectedUserId) {
-                msgPopup('warning', 'Please select a user to assign.');
-                return;
-            }
+            if (!selectedUserId) { msgPopup('warning', 'Please select a user to assign.'); return; }
 
             var user = _assignUsersCache.find(function (u) { return String(u.id) === String(selectedUserId); });
-            if (!user) {
-                msgPopup('error', 'Selected user not found.');
-                return;
-            }
+            if (!user) { msgPopup('error', 'Selected user not found.'); return; }
+            if (user.isAssigned) { msgPopup('error', 'This user is already assigned to another helper.'); return; }
 
             var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
-            $('#btnConfirmAssignUser').prop('disabled', true).text('Assigning…');
+            var $btn = $('#btnConfirmAssignUser').prop('disabled', true);
+            $('#btnAssignLabel').text('Assigning…');
 
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("AssignUserToHelper", "Helpers")',
                 data: { helperId: helperId, targetUserId: user.id, userId: uId },
-                success: function (response) {
-                    $('#btnConfirmAssignUser').prop('disabled', false).html('<i class="fas fa-user-check"></i> Assign User');
-                    if (response.success) {
+                success: function (r) {
+                    $btn.prop('disabled', false);
+                    $('#btnAssignLabel').text('Assign User');
+                    if (r.success) {
                         closeAssignUserModal();
-                        msgPopup('success', response.message || 'User assigned successfully.');
+                        msgPopup('success', r.message || 'User assigned successfully.');
                         GetData();
                     } else {
-                        msgPopup('error', response.message || 'Failed to assign user.');
+                        msgPopup('error', r.message || 'Failed to assign user.');
                     }
                 },
                 error: function () {
-                    $('#btnConfirmAssignUser').prop('disabled', false).html('<i class="fas fa-user-check"></i> Assign User');
+                    $btn.prop('disabled', false);
+                    $('#btnAssignLabel').text('Assign User');
                     msgPopup('error', 'Error assigning user. Please try again.');
                 }
             });
+        }
+
+        function confirmCreateAndAssign() {
+            var helperId    = $('#assignHelperId').val();
+            var fullName    = $('#nuFullName').val().trim();
+            var userName    = $('#nuUserName').val().trim();
+            var mobile      = $('#nuMobile').val().trim();
+            var email       = $('#nuEmail').val().trim();
+            var password    = $('#nuPassword').val();
+            var confirmPwd  = $('#nuConfirmPassword').val();
+            var role        = $('#nuRole').val();
+            var isActive    = $('#nuIsActive').val() === 'true';
+
+            $('#nuError').hide();
+
+            if (!fullName)   { showNuError('Full Name is required.'); return; }
+            if (!userName)   { showNuError('Username is required.'); return; }
+            if (!password)   { showNuError('Password is required.'); return; }
+            if (password !== confirmPwd) { showNuError('Passwords do not match.'); return; }
+            if (password.length < 4)    { showNuError('Password must be at least 4 characters.'); return; }
+
+            // Split fullName into first/last
+            var nameParts = fullName.split(' ');
+            var firstName = nameParts[0] || fullName;
+            var lastName  = nameParts.slice(1).join(' ') || '';
+
+            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            var $btn = $('#btnCreateAndAssign').prop('disabled', true).text('Creating…');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateAndAssignUser", "Helpers")',
+                data: {
+                    helperId: helperId, firstName: firstName, lastName: lastName,
+                    userName: userName, password: password, mobileNo: mobile,
+                    email: email, role: role, isActive: isActive, userId: uId
+                },
+                success: function (r) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-plus mr-1"></i> Create &amp; Assign');
+                    if (r.success) {
+                        closeAssignUserModal();
+                        msgPopup('success', r.message || 'User created and assigned.');
+                        GetData();
+                    } else {
+                        showNuError(r.message || 'Failed to create user.');
+                    }
+                },
+                error: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-plus mr-1"></i> Create &amp; Assign');
+                    showNuError('Server error. Please try again.');
+                }
+            });
+        }
+
+        function showNuError(msg) {
+            $('#nuError').text(msg).show();
+        }
+
+        // ── Remove Assignment ─────────────────────────────────────────────────────
+        function confirmRemoveAssignment() {
+            var helperId = $('#removeHelperId').val();
+            var uId      = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            var $btn = $('#btnConfirmRemove').prop('disabled', true).text('Removing…');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("RemoveUserAssignment", "Helpers")',
+                data: { helperId: helperId, userId: uId },
+                success: function (r) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-times mr-1"></i> Remove Assignment');
+                    HidePopup('removeAssignmentModal');
+                    if (r.success) {
+                        msgPopup('success', r.message || 'Assignment removed.');
+                        $('#assignedUserPanel').hide();
+                        GetData();
+                    } else {
+                        msgPopup('error', r.message || 'Failed to remove assignment.');
+                    }
+                },
+                error: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-user-times mr-1"></i> Remove Assignment');
+                    msgPopup('error', 'Error removing assignment.');
+                }
+            });
+        }
+
+        // ── Reset Password ────────────────────────────────────────────────────────
+        function confirmResetPassword() {
+            var helperId   = $('#resetHelperId').val();
+            var newPwd     = $('#resetNewPassword').val();
+            var confirmPwd = $('#resetConfirmPassword').val();
+            $('#resetError').hide();
+
+            if (!newPwd)              { $('#resetError').text('Password is required.').show(); return; }
+            if (newPwd.length < 4)    { $('#resetError').text('Password must be at least 4 characters.').show(); return; }
+            if (newPwd !== confirmPwd) { $('#resetError').text('Passwords do not match.').show(); return; }
+
+            var uId  = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            var $btn = $('#btnConfirmReset').prop('disabled', true).text('Resetting…');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ResetHelperPassword", "Helpers")',
+                data: { helperId: helperId, newPassword: newPwd, userId: uId },
+                success: function (r) {
+                    $btn.prop('disabled', false).html('<i class="fas fa-key mr-1"></i> Reset Password');
+                    if (r.success) {
+                        HidePopup('resetPasswordModal');
+                        msgPopup('success', r.message || 'Password reset successfully.');
+                    } else {
+                        $('#resetError').text(r.message || 'Failed to reset password.').show();
+                    }
+                },
+                error: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-key mr-1"></i> Reset Password');
+                    $('#resetError').text('Server error. Please try again.').show();
+                }
+            });
+        }
+
+        // ── Assigned User Info Panel ──────────────────────────────────────────────
+        function loadAssignedUserPanel(helperId, helperName) {
+            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAssignedUserInfo", "Helpers")',
+                data: { helperId: helperId, userId: uId },
+                success: function (r) {
+                    if (!r.success || !r.assigned) {
+                        $('#assignedUserPanel').hide();
+                        return;
+                    }
+                    $('#auPanelHelperName').text(helperName || '');
+                    $('#auPanelFullName').text(r.fullName || '—');
+                    $('#auPanelUserName').text(r.userName || '—');
+                    $('#auPanelRole').text(r.role || '—');
+                    $('#auPanelStatus').html(r.isActive
+                        ? '<span class="badge badge-success">Active</span>'
+                        : '<span class="badge badge-secondary">Inactive</span>');
+                    $('#auPanelLastLogin').text(fmtDateTime(r.lastLogin));
+                    $('#auPanelCreatedDate').text(fmtDate(r.createdDate));
+                    $('#auPanelMobile').text(r.mobileNo || '—');
+                    $('#auPanelEmail').text(r.email || '—');
+                    $('#assignedUserPanel').show();
+                    $('html, body').animate({ scrollTop: $('#assignedUserPanel').offset().top - 80 }, 400);
+                },
+                error: function () { /* non-critical */ }
+            });
+        }
+
+        function closeAssignedUserPanel() {
+            $('#assignedUserPanel').hide();
         }
 </script>
 
