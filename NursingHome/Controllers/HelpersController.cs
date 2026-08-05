@@ -3,6 +3,7 @@ using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Interface;
 using NursingHome.Db.Models;
+using NursingHome.Db.Utils;
 
 namespace NursingHome.Controllers
 {
@@ -73,10 +74,92 @@ namespace NursingHome.Controllers
                 var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
-                bool result = helperData.Id == 0
-                    ? _DbConn.AddData(helperData)
-                    : _DbConn.UpdateData(helperData);
-                return Json(result);
+                // ── UPDATE existing helper ────────────────────────────────────
+                if (helperData.Id != 0)
+                {
+                    var updated = _DbConn.UpdateData(helperData);
+                    return Json(new { success = updated, message = updated ? "Helper updated successfully." : "Update failed." });
+                }
+
+                // ── ADD new helper ────────────────────────────────────────────
+                var ok = _DbConn.AddData(helperData);
+                // EF Core populates helperData.Id after SaveChanges inside AddData.
+                if (!ok || helperData.Id == 0)
+                    return Json(new { success = false, message = "Failed to add helper." });
+
+                // ── Auto-create & assign a user account for this new helper ───
+                var fullName  = (helperData.Name ?? "").Trim();
+                var nameParts = fullName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                var firstName = nameParts.Length > 0 ? nameParts[0] : "helper";
+                var lastName  = nameParts.Length > 1 ? nameParts[1] : "";
+
+                // Username: server-guaranteed unique slug
+                var userName = _userService.SuggestUsername(firstName);
+
+                // Password: first 4 chars of full name (lowercase) + DOB year
+                // e.g. "Anand Malleshappa" born 1990  →  "anad1990"
+                var nameSlug = fullName.Length >= 4
+                    ? fullName.Substring(0, 4).ToLowerInvariant()
+                    : fullName.ToLowerInvariant();
+                var dobYear  = helperData.DateOfBirth.HasValue
+                    ? helperData.DateOfBirth.Value.Year.ToString()
+                    : "";
+                var password = string.IsNullOrEmpty(dobYear)
+                    ? nameSlug + "@123"   // fallback when DOB is absent
+                    : nameSlug + dobYear;
+
+                // Collect existing susers so uniqueness check stays consistent
+                var allSusers = _DbConn.GetData("admin")
+                    .Where(h => !string.IsNullOrWhiteSpace(h.suser))
+                    .Select(h => h.suser)
+                    .ToList();
+
+                var newUser = new Users
+                {
+                    FirstName = firstName,
+                    LastName  = lastName,
+                    UserName  = userName,
+                    Password  = password,
+                    Roles     = "helper",
+                    MobileNo  = helperData.MobileNo?.Trim(),
+                    IsActive  = true
+                };
+
+                var (userCreated, userError) = _userService.CreateUserWithValidation(newUser, null, allSusers);
+
+                if (userCreated)
+                {
+                    _DbConn.AssignUser(helperData.Id, userName);
+
+                    _DbConn.RecordAssignmentHistory(new HelperUserAssignmentHistory
+                    {
+                        HelperId         = helperData.Id,
+                        AssignedUserName = userName,
+                        Action           = "Assigned",
+                        AssignedBy       = SessionAdminUsername(),
+                        AssignedDate     = IndianTime.Now,
+                        Notes            = "Auto-created on helper registration"
+                    });
+
+                    return Json(new
+                    {
+                        success      = true,
+                        message      = "Helper added successfully.",
+                        autoUser     = new { userName, password }
+                    });
+                }
+
+                // Helper was saved — user creation failed (e.g. username already taken)
+                _logger.SaveLog("HelpersController", "AddorEditHelper",
+                    $"Auto user-create failed for helper {helperData.Id}: {userError}");
+
+                return Json(new
+                {
+                    success       = true,
+                    message       = "Helper added successfully.",
+                    autoUser      = (object)null,
+                    autoUserError = userError
+                });
             }
             catch (Exception ex)
             {

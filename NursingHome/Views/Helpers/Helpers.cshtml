@@ -1005,13 +1005,39 @@
                     url: '@Url.Action("AddorEditHelper", "Helpers")',
                     data: data,
                     success: function (response) {
-                        if (response) {
-                            let msg = $('#helperId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
+                        var isNew = $('#helperId').val() == '';
+                        var ok    = response === true || (response && response.success);
+                        if (ok) {
                             HidePopup('helperModal');
-                            msgPopup("success", msg);
                             GetData();
+
+                            if (isNew && response.autoUser) {
+                                // Show auto-generated credentials so admin can hand them to the helper
+                                $.alert({
+                                    title: '<i class="fa fa-user-check" style="color:#27ae60"></i> Helper Added — Login Credentials',
+                                    content:
+                                        '<p class="mb-2">A login account has been automatically created for this helper.</p>' +
+                                        '<table class="table table-sm table-bordered mb-2">' +
+                                          '<tr><th style="width:110px">Username</th><td><strong id="credUser">' + (response.autoUser.userName || '') + '</strong></td></tr>' +
+                                          '<tr><th>Password</th><td><strong id="credPass">' + (response.autoUser.password || '') + '</strong></td></tr>' +
+                                        '</table>' +
+                                        '<p class="small text-muted mb-0">Please note these down and share with the helper.<br>The password can be changed anytime from the helper\'s profile.</p>',
+                                    type: 'green',
+                                    boxWidth: '440px',
+                                    useBootstrap: false,
+                                    buttons: {
+                                        OK: { text: 'Got it', btnClass: 'btn btn-success' }
+                                    }
+                                });
+                            } else if (isNew && response.autoUserError) {
+                                // Helper saved, but auto user-creation failed
+                                msgPopup("success", "Helper added. Note: auto user-creation failed — " + response.autoUserError + ". Please assign a user manually.");
+                            } else {
+                                msgPopup("success", isNew ? "Helper Added Successfully" : "Data Updated Successfully");
+                            }
                         } else {
-                            msgPopup("error", "Error! Please Try Again");
+                            var errMsg = (response && response.message) ? response.message : "Error! Please Try Again";
+                            msgPopup("error", errMsg);
                         }
                     },
                     error: function (response) {
