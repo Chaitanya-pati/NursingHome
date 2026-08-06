@@ -801,13 +801,16 @@
     // PENDING APPROVALS TABLE
     // ────────────────────────────────────────────────────────────────────────────
     function GetPendingData() {
-        var table  = $('#tablePending').DataTable();
+        var table        = $('#tablePending').DataTable();
+        var pendingLabels = ['Helper','Patient','Date','Check-In','Check-Out','Est. Hours',''];
 
         $.ajax({
             url: '/Attendance/GetPendingAttendance', type: 'GET',
             success: function (response) {
                 console.log('[Attendance] GetPendingAttendance — records:', response.data.length);
+
                 table.clear();
+
                 response.data.forEach(function (item) {
                     var est = calcHours(item.checkInTime, item.checkOutTime);
                     var estDisplay = est !== null ? est + ' hrs' : '—';
@@ -825,8 +828,7 @@
                             '<i class="fa fa-times"></i> Reject</button>' +
                         '</div>';
 
-                    var pendingLabels = ['Helper','Patient','Date','Check-In','Check-Out','Est. Hours',''];
-                    var pendingCells  = [
+                    var pendingCells = [
                         item.helperName  || '—',
                         item.patientName || '—',
                         fmtDate(item.attendanceDate || item.checkInTime),
@@ -835,13 +837,19 @@
                         estDisplay,
                         actions
                     ];
-                    var pRow = table.row.add(pendingCells).draw();
-                    $(pRow.node()).find('td').each(function (i) {
+                    table.row.add(pendingCells);
+                });
+
+                // Always draw once after all rows are added (or after clear when 0 records)
+                table.draw();
+
+                // Apply mobile data-labels after draw
+                $('#tablePending tbody tr').each(function () {
+                    $(this).find('td').each(function (i) {
                         if (pendingLabels[i]) $(this).attr('data-label', pendingLabels[i]);
                     });
                 });
 
-                // Update pending count badge
                 UpdatePendingBadge(response.data.length);
             },
             error: function (xhr, status, error) {
