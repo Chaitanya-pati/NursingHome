@@ -1092,8 +1092,8 @@
            var isAdmin = localStorage.getItem('userRole') === 'admin';
            var hasUser = item.suser && item.suser.trim() !== '';
            var assignedBadge = hasUser
-               ? '<span class="badge badge-success" style="font-size:11px;cursor:pointer;" class="btn-view-assigned" data-helper-id="'+item.id+'" data-helper-name="'+escAttr(item.name)+'"><i class="fas fa-user-check mr-1"></i>'+escAttr(item.suser)+'</span>'
-               : '<span class="badge badge-light text-muted" style="font-size:11px;">None</span>';
+               ? '<span class="badge btn-view-assigned" style="font-size:11px;cursor:pointer;background:#d4edda;color:#155724;border:1px solid #c3e6cb;font-weight:600;" data-helper-id="'+item.id+'" data-helper-name="'+escAttr(item.name)+'"><i class="fas fa-user-check mr-1"></i>'+escAttr(item.suser)+'</span>'
+               : '<span class="badge" style="font-size:11px;background:#f8f9fa;color:#6c757d;border:1px solid #dee2e6;">None</span>';
 
            var adminAssignIcon = isAdmin
                ? ' <i class="fa fa-user-cog ml-2 btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;cursor:pointer;font-size:15px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'" data-dob="'+escAttr(item.dateOfBirth || '')+'"></i>'
