@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Nursing Home";
@@ -351,6 +351,7 @@
 
 <script>
         var HomeNursingIdproof = "";
+        var _pendingHelperVal = null; // stores fkHelperId to pre-select once dropdown loads
         $(document).ready(function () {
             GetData();
             GetHelperData();
@@ -483,8 +484,7 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GetData", "Helpers")',
-               data:{ UserName: UserName },
-                // data: data,
+                data: { UserName: UserName },
                 success: function (response) {
                     let option = "";
                     $('#helperDropdown').empty();
@@ -495,10 +495,13 @@
 
                     $('#helperDropdown').append(option);
 
+                    // Apply pre-select stored by an edit click that arrived before options loaded
+                    if (_pendingHelperVal !== null) {
+                        $('#helperDropdown').val(_pendingHelperVal);
+                        _pendingHelperVal = null;
+                    }
                 },
-                error: function (response) {
-
-                }
+                error: function (response) { }
             });
         }
 
@@ -665,6 +668,15 @@
             $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
             $('#monthlyPayment').val(data.monthlyPayment);
             $('#registrationCharges').val(data.registrationCharges);
+
+            // Helper dropdown: set immediately if options already exist,
+            // otherwise store so GetHelperData's AJAX callback applies it after loading.
+            var helperVal = data.fkHelperId != null ? String(data.fkHelperId) : '';
+            if ($('#helperDropdown option').length > 0) {
+                $('#helperDropdown').val(helperVal);
+            } else {
+                _pendingHelperVal = helperVal;
+            }
 
             // Client Signature
             if (data.clientSign && data.clientSign.trim() !== "") {

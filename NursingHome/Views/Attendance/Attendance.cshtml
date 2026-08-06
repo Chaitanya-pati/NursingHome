@@ -361,6 +361,12 @@
 
 <script>
     // ────────────────────────────────────────────────────────────────────────────
+    // Pending pre-select values — set by BindAttendanceData when dropdowns not yet loaded
+    // ────────────────────────────────────────────────────────────────────────────
+    var _pendingAttendanceHelperVal  = null;
+    var _pendingAttendancePatientVal = null;
+
+    // ────────────────────────────────────────────────────────────────────────────
     // Init
     // ────────────────────────────────────────────────────────────────────────────
     $(document).ready(function () {
@@ -954,8 +960,23 @@
     }
 
     function BindAttendanceData(data) {
-        $('#HelperNameDDL').val(data.fkHelperId);
-        $('#PatientNameDDL').val(data.fknursing);
+        var helperVal  = data.fkHelperId != null ? String(data.fkHelperId) : '';
+        var patientVal = data.fknursing  != null ? String(data.fknursing)  : '';
+
+        // Helper dropdown: set immediately if options already exist,
+        // otherwise store so HelpersDropDownList's AJAX callback applies it after loading.
+        if ($('#HelperNameDDL option[value!=""]').length > 0) {
+            $('#HelperNameDDL').val(helperVal);
+        } else {
+            _pendingAttendanceHelperVal = helperVal;
+        }
+
+        // Patient dropdown: same pattern
+        if ($('#PatientNameDDL option[value!=""]').length > 0) {
+            $('#PatientNameDDL').val(patientVal);
+        } else {
+            _pendingAttendancePatientVal = patientVal;
+        }
         $('#AttendanceDate').val(data.attendanceDate);
         $('#TotalHoursAdmin').val(data.time);
         $('#Description').val(data.description);
@@ -983,6 +1004,11 @@
                 $.each(response.data, function (i, item) {
                     ddl.append($('<option>', { value: item.id, text: item.patientName }));
                 });
+                // Apply pre-select stored by an edit click that arrived before options loaded
+                if (_pendingAttendancePatientVal !== null) {
+                    $('#PatientNameDDL').val(_pendingAttendancePatientVal);
+                    _pendingAttendancePatientVal = null;
+                }
             },
             error: function (xhr, status, error) { console.error("Error fetching Patient Details:", error); }
         });
@@ -997,6 +1023,11 @@
                 $.each(response.data, function (i, item) {
                     ddl.append($('<option>', { value: item.id, text: item.name }));
                 });
+                // Apply pre-select stored by an edit click that arrived before options loaded
+                if (_pendingAttendanceHelperVal !== null) {
+                    $('#HelperNameDDL').val(_pendingAttendanceHelperVal);
+                    _pendingAttendanceHelperVal = null;
+                }
             },
             error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });
