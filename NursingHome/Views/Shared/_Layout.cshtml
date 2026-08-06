@@ -603,7 +603,7 @@
                     </a>
                     <span class="tooltip">Cash Memo</span>
                 </li>
-                <li>
+                <li class="attendance-nav">
                     <a class="" asp-area="" asp-controller="Attendance" asp-action="Attendance">
                         <i class="fa-solid fa-users"></i>
                         <span class="links_name">Attendance</span>
@@ -707,6 +707,14 @@
                         $('.AuthorizedContent').each((index, element) => {
                             $(element).prop('hidden', false);
                         });
+                    }
+                    // Helpers: hide everything except Attendance and redirect if on wrong page
+                    if (response.roles && response.roles.toLowerCase() === 'helper') {
+                        $('.nav-list li:not(.attendance-nav):not(.profile)').hide();
+                        var path = window.location.pathname.toLowerCase();
+                        if (path.indexOf('/attendance') === -1) {
+                            window.location.href = '/Attendance/Attendance';
+                        }
                     }
                     /* ── populate header user info ── */
                     var nameEl  = document.getElementById('headerUsername');

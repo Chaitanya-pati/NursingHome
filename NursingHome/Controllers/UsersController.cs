@@ -195,7 +195,7 @@ namespace NursingHome.Controllers
                     // Establish server-side session — all subsequent authorization
                     // reads from this session, never from client-supplied parameters.
                     HttpContext.Session.SetInt32("UserId", user.Id);
-                    return Json(new { success = true, userID = user.Id, isFaceAdded = user.IsFaceAdded });
+                    return Json(new { success = true, userID = user.Id, isFaceAdded = user.IsFaceAdded, role = user.Roles });
                 }
                 else
                 {

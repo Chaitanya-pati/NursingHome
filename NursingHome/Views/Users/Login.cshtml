@@ -188,7 +188,12 @@
                 if (response.success) {
                     // Face validation disabled — proceed directly on successful login
                     localStorage.setItem('userID', response.userID);
-                    window.location.href = '/Home/Index';
+                    // Helpers go straight to Attendance; everyone else goes to the dashboard
+                    if (response.role && response.role.toLowerCase() === 'helper') {
+                        window.location.href = '/Attendance/Attendance';
+                    } else {
+                        window.location.href = '/Home/Index';
+                    }
                     /* if (response.isFaceAdded) {
                         localStorage.setItem('userID', response.userID);
                         window.location.href = '/Home/Index';
