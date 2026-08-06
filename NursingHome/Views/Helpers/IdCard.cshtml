@@ -1,3 +1,7 @@
+@*
+    Subramanya Home Healthcare Service - Helper ID Card CSHTML Template
+    High-Definition PVC Portrait Card Design with Vector Logo & Exact Print Layout
+*@
 @{
     Layout = null;
     var helperId = ViewBag.HelperId;
@@ -8,7 +12,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Helper ID Card</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,8 +20,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #eaf2fa;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #eef4fc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -26,312 +30,155 @@
         }
 
         /* ── Page header ── */
-        .page-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .page-header h1 {
-            font-size: 24px;
-            color: #1a3a6b;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .page-header p {
-            color: #5a6a80;
-            font-size: 13px;
-            margin-top: 4px;
-        }
+        .page-header { text-align: center; margin-bottom: 24px; }
+        .page-header h1 { font-size: 24px; color: #0052a5; font-weight: 800; letter-spacing: -0.3px; }
+        .page-header p { color: #5a6a80; font-size: 13px; margin-top: 4px; }
 
         /* ── Action buttons ── */
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        .action-buttons { display: flex; gap: 12px; margin-bottom: 28px; justify-content: center; flex-wrap: wrap; }
         .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 24px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
             text-decoration: none;
         }
-        .btn-print  { background: #1a3a6b; color: #fff; }
-        .btn-print:hover  { background: #142d55; }
-        .btn-pdf    { background: #c0392b; color: #fff; }
-        .btn-pdf:hover    { background: #a93226; }
-        .btn-back   { background: #fff; color: #1a3a6b; border: 2px solid #1a3a6b; }
-        .btn-back:hover   { background: #f0f4ff; }
+        .btn-print { background: #0052a5; color: #fff; }
+        .btn-print:hover { background: #004184; }
+        .btn-pdf   { background: #c0392b; color: #fff; }
+        .btn-pdf:hover   { background: #a93226; }
+        .btn-back  { background: #fff; color: #0052a5; border: 2px solid #0052a5; }
+        .btn-back:hover  { background: #f0f4ff; }
 
-        /* ── Card wrapper ── */
         .card-wrapper { display: flex; justify-content: center; }
 
         /* ══════════════════════════════════════
-           THE ID CARD
-           Portrait PVC — 324 px wide, auto height
+           THE PVC ID CARD
+           Width: 340px, Height: 530px (CR-80 Standard)
            ══════════════════════════════════════ */
         .id-card {
-            width: 324px;
-            background-color: #ffffff;
-            border-radius: 18px;
+            width: 340px;
+            height: 530px;
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #f4f8ff 70%, #e8f1fd 100%);
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+            box-shadow: 0 16px 40px rgba(0, 52, 120, 0.18);
+            border: 1px solid rgba(220, 235, 255, 0.9);
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            position: relative;
         }
 
-        /* ── Punch hole ── */
-        .punch-hole {
-            display: flex;
-            justify-content: center;
-            padding-top: 10px;
-            padding-bottom: 2px;
+        /* Honeycomb Overlay Background */
+        .id-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#0052a5 0.75px, transparent 0.75px);
+            background-size: 12px 12px;
+            opacity: 0.06;
+            pointer-events: none;
         }
+
+        /* Punch Hole */
+        .punch-hole { display: flex; justify-content: center; padding-top: 10px; z-index: 2; }
         .punch-hole-inner {
-            width: 30px;
-            height: 12px;
-            background: rgba(200,220,245,0.9);
-            border-radius: 8px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.18);
+            width: 32px; height: 12px; background: rgba(220,230,245,0.9);
+            border-radius: 8px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
         }
 
-        /* ── Header ── */
-        .card-header {
-            padding: 4px 14px 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .header-logo {
-            width: 58px;
-            height: 58px;
-            object-fit: contain;
-            flex-shrink: 0;
-            border-radius: 8px;
-        }
-        .header-text { flex: 1; }
-        .header-company {
-            font-size: 13px;
-            font-weight: 900;
-            color: #1565c0;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-            text-transform: uppercase;
-        }
-        .header-service {
-            font-size: 10px;
-            font-weight: 700;
-            color: #1565c0;
-            letter-spacing: 0.2px;
-            line-height: 1.4;
-            text-transform: uppercase;
-        }
-        .header-tagline {
-            font-size: 8.5px;
-            color: #5b8ec7;
-            font-style: italic;
-            margin-top: 2px;
-        }
+        /* Header */
+        .card-header { padding: 4px 16px 6px; display: flex; align-items: center;justify-content:center; gap: 12px; z-index: 2; }
+        .header-logo { width: 56px; height: 56px; flex-shrink: 0; }
+        .header-company { font-size: 20px; font-weight: 900; color: #0052a5; letter-spacing: -0.5px; text-transform: uppercase; line-height: 1; }
+        .header-service { font-size: 10.5px; font-weight: 700; color: #1e293b; letter-spacing: 0.2px; text-transform: uppercase; margin-top: 2px; }
+        .header-tagline { font-size: 9.5px; color: #1d6bf3; font-style: italic; font-weight: 600; margin-top: 2px; }
 
-        /* ── Thin blue divider ── */
-        .header-divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 5%, #2563c0 30%, #2563c0 70%, transparent 95%);
-            margin: 0 12px 0;
-        }
-
-        /* ── Photo section ── */
-        .card-photo-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 0 6px;
-        }
+        /* Photo */
+        .card-photo-section { display: flex; justify-content: center; z-index: 2; margin: 2px 0; }
         .card-photo-ring {
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
-            border: 2.5px solid #1976d2;
-            padding: 3px;
-            background: #fff;
+            width: 122px; height: 122px; border-radius: 50%;
+            border: 2.5px solid #1d6bf3; padding: 2.5px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        .card-photo {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: center top;
-            background: #d8e8f8;
-            display: block;
-        }
-        .photo-placeholder {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #c8dced;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .card-photo { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: top; background: #d8e8f8; display: block; }
+        .photo-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #c8dced; display: flex; align-items: center; justify-content: center; }
         .photo-placeholder i { font-size: 44px; color: #7fa0be; }
 
-        /* ── Name + ECG + Role ── */
-        .name-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 10px 4px;
-        }
-        .name-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            width: 100%;
-            justify-content: center;
-        }
-        .ecg-svg {
-            flex: 1;
-            height: 22px;
-            max-width: 64px;
-        }
-        .card-name {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0d3b8c;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 180px;
-            text-align: center;
-        }
-        .role-badge {
-            margin-top: 6px;
-            background: #e4edf8;
-            border: 1.5px solid #b8cce4;
-            color: #1565c0;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            padding: 3px 22px;
-            border-radius: 20px;
-        }
+        /* Name + ECG + Role */
+        .name-section { text-align: center; padding: 0 12px; z-index: 2; }
+        .name-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .ecg-svg { width: 54px; height: 20px; stroke: #2563eb; opacity: 0.7; }
+        .card-name { font-size: 22px; font-weight: 900; color: #0052a5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        .role-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 2px; }
+        .role-line { height: 1.5px; width: 28px; background: rgba(37, 99, 235, 0.3); border-radius: 2px; }
+        .role-badge { color: #1d6bf3; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* ── Info divider ── */
-        .info-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent 5%, #b8cce4 30%, #b8cce4 70%, transparent 95%);
-            margin: 8px 14px 6px;
-        }
-
-        /* ── Info rows ── */
-        .card-info {
-            padding: 0 14px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .info-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        /* Info Rows */
+        .card-info { padding: 4px 24px; display: flex; flex-direction: column; gap: 8px; z-index: 2; font-size: 12px; }
+        .info-row { display: flex; align-items: center; }
         .info-icon-box {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #1a3a6b 0%, #2563c0 100%);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            width: 24px; height: 24px; background: #0052a5; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 12px; color: #fff;
         }
-        .info-icon-box i { font-size: 10px; color: #fff; }
-        .info-label {
-            width: 70px;
-            font-size: 10px;
-            color: #2a3f66;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        .info-colon {
-            font-size: 10px;
-            color: #2a3f66;
-            font-weight: 700;
-            width: 8px;
-            flex-shrink: 0;
-        }
-        .info-value {
-            font-size: 10.5px;
-            color: #111e38;
-            font-weight: 700;
-            flex: 1;
-        }
+        .info-icon-box i { font-size: 11px; }
+        .info-label { width: 84px; font-size: 12px; color: #334155; font-weight: 700; flex-shrink: 0; }
+        .info-colon { font-size: 12px; color: #334155; font-weight: 700; margin-right: 14px; }
+        .info-value { font-size: 12.5px; color: #0f172a; font-weight: 800; }
 
-        /* ── Footer ── */
+        /* Footer */
         .card-footer {
-            background: linear-gradient(135deg, #1a3a6b 0%, #2563c0 100%);
-            padding: 10px 14px 11px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            margin-top: auto;
+            background: linear-gradient(90deg, #004b99 0%, #0052a5 50%, #0066cc 100%);
+            padding: 10px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px; z-index: 2; margin-top: auto; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
         }
-        .footer-row {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 9.5px;
-            color: #fff;
-            font-weight: 500;
-        }
-        .footer-row i { font-size: 9px; color: rgba(255,255,255,0.85); }
+        .footer-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; font-weight: 700; }
+        .footer-row.web { font-size: 10.5px; color: rgba(224, 242, 254, 0.9); font-weight: 500; }
 
-        /* ── Loading ── */
-        #loadingOverlay {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-            padding: 40px;
-            color: #1a3a6b;
-        }
-        .spinner {
-            width: 44px; height: 44px;
-            border: 4px solid #d0dce8;
-            border-top-color: #2563c0;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        /* Loading Overlay */
+        #loadingOverlay { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 40px; color: #0052a5; }
+        .spinner { width: 44px; height: 44px; border: 4px solid #d0dce8; border-top-color: #0052a5; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @@keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Print ── */
+        /* Print Override - High Definition exact dimensions without clipping */
         @@media print {
-            body { background: #fff; padding: 0; }
-            .page-header, .action-buttons { display: none !important; }
-            .card-wrapper { justify-content: center; }
-            .id-card {
-                width: 54mm;
-                box-shadow: none;
-                border-radius: 4mm;
-                page-break-inside: avoid;
+            @@page {
+                size: portrait;
+                margin: 0;
             }
-            .card-name   { font-size: 8.5pt; }
-            .header-company { font-size: 7.5pt; }
-            .header-service { font-size: 4.5pt; }
-            .header-tagline { font-size: 4pt; }
-            .role-badge  { font-size: 4.5pt; letter-spacing: 1.5px; padding: 2px 10px; }
-            .info-label, .info-colon, .info-value { font-size: 5pt; }
-            .footer-row  { font-size: 4.5pt; }
-            .card-photo-ring { width: 42px; height: 42px; }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .page-header, .action-buttons, #loadingOverlay {
+                display: none !important;
+            }
+            .card-wrapper {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                min-height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .id-card {
+                box-shadow: none !important;
+                border: 1px solid #c8dce8 !important;
+                width: 340px !important;
+                height: 530px !important;
+                min-width: 340px !important;
+                min-height: 530px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
     </style>
 </head>
@@ -347,7 +194,7 @@
             <i class="fas fa-arrow-left"></i> Back
         </button>
         <button class="btn-action btn-print" onclick="window.print()">
-            <i class="fas fa-print"></i> Print
+            <i class="fas fa-print"></i> Print Card
         </button>
         <button class="btn-action btn-pdf" onclick="downloadPDF(event)">
             <i class="fas fa-file-pdf"></i> Download PDF
@@ -360,25 +207,33 @@
             <span>Loading helper details…</span>
         </div>
 
-        <!-- THE ID CARD — hidden until data loads -->
+        <!-- THE PVC ID CARD -->
         <div id="idCardEl" class="id-card" style="display:none;">
 
             <!-- Punch hole -->
             <div class="punch-hole"><div class="punch-hole-inner"></div></div>
 
-            <!-- Header: logo + company info -->
+            <!-- Header: Vector House Logo + Company Info -->
             <div class="card-header">
-                <img id="companyLogo" class="header-logo" src="/Images/subramanya_latest-Logo.jpg" alt="Logo"
-                     onerror="this.src='/Images/Subramanya.png'" />
-                <div class="header-text">
+                <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 8 L90 40 L82 46 L50 20 L18 46 L10 40 Z" fill="#0052a5"/>
+                    <path d="M18 44 V80 H30 V88 H10 V40 L18 44 Z" fill="#0052a5"/>
+                    <path d="M12 80 H88 V88 H12 Z" fill="#0052a5"/>
+                    <circle cx="44" cy="40" r="6" fill="#0052a5"/>
+                    <path d="M34 58 C34 48, 48 48, 54 54 C58 58, 58 72, 58 78 H32 C32 72, 34 62, 34 58 Z" fill="#0052a5"/>
+                    <circle cx="56" cy="46" r="4.5" fill="#0052a5"/>
+                    <path d="M48 62 C48 54, 60 54, 64 60 C66 64, 66 74, 66 78 H46 Z" fill="#0052a5"/>
+                    <g transform="translate(68, 60)">
+                        <rect x="0" y="8" width="24" height="8" rx="2" fill="#0052a5"/>
+                        <rect x="8" y="0" width="8" height="24" rx="2" fill="#0052a5"/>
+                    </g>
+                </svg>
+                <div>
                     <div class="header-company">SUBRAMANYA</div>
                     <div class="header-service">HOME HEALTHCARE SERVICE</div>
                     <div class="header-tagline">Your Care, Our Commitment</div>
                 </div>
             </div>
-
-            <!-- Blue divider line -->
-            <div class="header-divider"></div>
 
             <!-- Circular photo -->
             <div class="card-photo-section">
@@ -390,40 +245,33 @@
             <!-- Name flanked by ECG lines, then role badge -->
             <div class="name-section">
                 <div class="name-row">
-                    <!-- Left ECG pulse -->
-                    <svg class="ecg-svg" viewBox="0 0 64 22" xmlns="http://www.w3.org/2000/svg">
-                        <polyline
-                            points="0,11 12,11 16,5 20,17 24,3 28,19 32,11 64,11"
-                            fill="none" stroke="#2563c0" stroke-width="1.6"
-                            stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none">
+                        <path d="M0 12 L28 12 L32 5 L36 19 L40 3 L44 21 L48 12 L70 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
 
                     <div class="card-name" id="helperName">—</div>
 
-                    <!-- Right ECG pulse -->
-                    <svg class="ecg-svg" viewBox="0 0 64 22" xmlns="http://www.w3.org/2000/svg">
-                        <polyline
-                            points="0,11 32,11 36,5 40,17 44,3 48,19 52,11 64,11"
-                            fill="none" stroke="#2563c0" stroke-width="1.6"
-                            stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none">
+                        <path d="M70 12 L42 12 L38 5 L34 19 L30 3 L26 21 L22 12 L0 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <div class="role-badge" id="helperRole">HELPER</div>
+                <div class="role-row">
+                    <div class="role-line"></div>
+                    <div class="role-badge" id="helperRole">HELPER</div>
+                    <div class="role-line"></div>
+                </div>
             </div>
-
-            <!-- Section divider -->
-            <div class="info-divider"></div>
 
             <!-- Info rows -->
             <div class="card-info">
                 <div class="info-row" id="rowId">
-                    <div class="info-icon-box"><i class="fas fa-id-badge"></i></div>
+                    <div class="info-icon-box"><i class="fas fa-user"></i></div>
                     <span class="info-label">ID No.</span>
                     <span class="info-colon">:</span>
                     <span class="info-value" id="infoId">—</span>
                 </div>
                 <div class="info-row" id="rowRole">
-                    <div class="info-icon-box"><i class="fas fa-user-tie"></i></div>
+                    <div class="info-icon-box"><i class="fas fa-user-check"></i></div>
                     <span class="info-label">Role</span>
                     <span class="info-colon">:</span>
                     <span class="info-value" id="infoRole">Helper</span>
@@ -454,7 +302,7 @@
                     <i class="fas fa-phone-alt"></i>
                     <span id="companyPhone">+91 90360 39555</span>
                 </div>
-                <div class="footer-row">
+                <div class="footer-row web">
                     <i class="fas fa-globe"></i>
                     <span id="companyWeb">www.subramanyahomehealthcare.com</span>
                 </div>
@@ -467,7 +315,7 @@
     var helperId = @helperId;
     var userId   = @(ViewBag.UserId ?? 0);
 
-    // ── Iframe detection: hide page-level chrome when shown inside modal ──
+    // ── Iframe detection ──
     if (window.self !== window.top) {
         var hdr  = document.querySelector('.page-header');
         var btns = document.querySelector('.action-buttons');
@@ -480,7 +328,6 @@
         if (!val) return null;
         var d = new Date(val);
         if (isNaN(d.getTime())) return null;
-        // dd-mm-yyyy (matches reference card format)
         return String(d.getDate()).padStart(2,'0') + '-' +
                String(d.getMonth() + 1).padStart(2,'0') + '-' +
                d.getFullYear();
@@ -526,8 +373,7 @@
 
             // Info rows
             document.getElementById('infoId').textContent = 'SHHS' + String(h.id).padStart(4, '0');
-            setRow('rowDob',    'infoDob',    fmtDate(h.dateOfBirth));
-            // Mobile and Aadhar always visible — show '—' when not yet filled
+            setRow('rowDob', 'infoDob', fmtDate(h.dateOfBirth));
             document.getElementById('infoMobile').textContent  = h.mobileNo  || '—';
             document.getElementById('infoAadhaar').textContent = h.aadhaarNo || '—';
 
@@ -541,7 +387,7 @@
         }
     });
 
-    // ── Fetch company details (phone / website) ────────────────────
+    // ── Fetch company details ────────────────────
     $.ajax({
         url: '/Configuration/CityDetails',
         type: 'GET',
@@ -555,7 +401,7 @@
                 document.getElementById('companyWeb').textContent = c.email;
             }
         },
-        error: function () { /* silently ignore — fallback text already shown */ }
+        error: function () { }
     });
 
     function makePlaceholder() {
@@ -566,33 +412,59 @@
     }
 
     // ── Download PDF ────────────────────────────────────────────────
-    async function downloadPDF(e) {
-        var card = document.getElementById('idCardEl');
-        if (!card) return;
-        var btn = e ? e.currentTarget : null;
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…'; }
-        try {
-            var canvas = await html2canvas(card, {
-                scale:           3,
-                useCORS:         true,
-                allowTaint:      true,
-                logging:         false,
-                backgroundColor: '#ffffff'
-            });
-            // Scale to match card's actual proportions at 54 mm wide
-            var PDF_W   = 54;
-            var PDF_H   = Math.round(card.offsetHeight / card.offsetWidth * PDF_W);
-            var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-            var doc = new jsPDFCtor({ unit: 'mm', format: [PDF_W, PDF_H], orientation: 'portrait' });
-            doc.addImage(canvas.toDataURL('image/jpeg', 0.97), 'JPEG', 0, 0, PDF_W, PDF_H);
-            var name = document.getElementById('helperName').textContent.replace(/\s+/g, '_') || 'Helper';
-            doc.save('IDCard_' + name + '.pdf');
-        } catch (err) {
-            alert('PDF generation failed. Please try Print instead.');
-        } finally {
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF'; }
+           // ── Download PDF (Exact 1:1 circular photo crop matching viewer) ─────────────
+        async function downloadPDF(e) {
+            var card = document.getElementById('idCardEl');
+            if (!card) return;
+            var btn = e ? e.currentTarget : null;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+            }
+            try {
+                var canvas = await html2canvas(card, {
+                    scale:           3,
+                    useCORS:         true,
+                    allowTaint:      true,
+                    logging:         false,
+                    backgroundColor: '#ffffff',
+                    onclone: function(clonedDoc) {
+                        var clonedPhoto = clonedDoc.getElementById('helperPhoto');
+                        if (clonedPhoto && clonedPhoto.tagName === 'IMG' && clonedPhoto.src) {
+                            var imgUrl = clonedPhoto.src;
+                            var parent = clonedPhoto.parentNode;
+                            var div = clonedDoc.createElement('div');
+                            div.id = 'helperPhoto';
+                            div.className = clonedPhoto.className;
+                            div.style.width = '100%';
+                            div.style.height = '100%';
+                            div.style.borderRadius = '50%';
+                            div.style.backgroundImage = 'url("' + imgUrl + '")';
+                            div.style.backgroundSize = 'cover';
+                            div.style.backgroundPosition = 'top center';
+                            div.style.backgroundRepeat = 'no-repeat';
+                            if (parent) parent.replaceChild(div, clonedPhoto);
+                        }
+                    }
+                });
+
+                var PDF_W = 54; // mm (CR-80 standard card width)
+                var PDF_H = Math.round(card.offsetHeight / card.offsetWidth * PDF_W);
+                var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                var doc = new jsPDFCtor({ unit: 'mm', format: [PDF_W, PDF_H], orientation: 'portrait' });
+                doc.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, PDF_W, PDF_H);
+
+                var name = (document.getElementById('helperName').textContent || 'Helper').trim().replace(/\s+/g, '_');
+                doc.save('IDCard_' + name + '.pdf');
+            } catch (err) {
+                alert('PDF generation failed. Please try Print instead.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+                }
+            }
         }
-    }
 </script>
 </body>
 </html>
