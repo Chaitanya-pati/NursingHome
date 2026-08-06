@@ -37,14 +37,84 @@
     .gps-wait { color: #e67e22; }
     .gps-err  { color: #e74c3c; }
 
-    /* ── Approval modal detail grid ─────────────────────────── */
-    .approval-detail-row { display: flex; gap: 12px; margin-bottom: 8px; }
-    .approval-detail-row .detail-label  { font-weight: 600; min-width: 130px; color: #555; font-size: 13px; }
-    .approval-detail-row .detail-value  { font-size: 13px; word-break: break-word; }
-    .approval-section-header { font-weight: 700; font-size: 13px; text-transform: uppercase;
-                                letter-spacing: .5px; color: #6750a4; margin: 10px 0 4px; border-bottom: 1px solid #ddd; }
     /* ── Pending badge on tab ───────────────────────────────── */
     #pendingCountBadge { font-size: 11px; padding: 2px 6px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       APPROVAL MODAL REDESIGN
+       ═══════════════════════════════════════════════════════════ */
+    .approval-modal-card .modal-content { border-radius: 14px; overflow: hidden; border: none; box-shadow: 0 12px 40px rgba(0,0,0,0.18); }
+    .approval-modal-card .modal-header  { border-bottom: none; padding: 18px 20px 14px; transition: background-color 0.3s ease; }
+    .approval-modal-card .modal-title   { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .approval-modal-card .modal-body    { padding: 0 20px 8px; max-height: 72vh; overflow-y: auto; }
+    .approval-modal-card .modal-footer  { border-top: 1px solid #eee; padding: 12px 20px; }
+
+    /* Hero — helper & patient */
+    .am-hero {
+        display: flex; align-items: center; justify-content: center;
+        gap: 14px; background: #f5f6fb; border-radius: 12px;
+        padding: 14px 16px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .am-person-card { display: flex; align-items: center; gap: 10px; min-width: 120px; }
+    .am-avatar {
+        width: 42px; height: 42px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 17px; flex-shrink: 0;
+    }
+    .am-avatar-helper  { background: #dbeafe; color: #2563eb; }
+    .am-avatar-patient { background: #dcfce7; color: #16a34a; }
+    .am-person-label   { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 0.6px; }
+    .am-person-name    { font-size: 14px; font-weight: 700; color: #111827; line-height: 1.3; }
+    .am-divider-arrow  { color: #c4c4cc; font-size: 16px; }
+
+    /* Date chip */
+    .am-date-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #ede9fe; color: #6750a4; border-radius: 20px;
+        padding: 5px 14px; font-size: 13px; font-weight: 600;
+        margin: 0 auto 14px; display: flex; justify-content: center;
+    }
+
+    /* Time cards */
+    .am-time-grid  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .am-time-card  { border-radius: 10px; padding: 12px 10px; text-align: center; }
+    .am-time-in    { background: #ecfdf5; border: 1px solid #bbf7d0; }
+    .am-time-out   { background: #fef2f2; border: 1px solid #fecaca; }
+    .am-time-dur   { background: #eef2ff; border: 1px solid #c7d2fe; }
+    .am-time-icon  { font-size: 20px; margin-bottom: 5px; }
+    .am-time-in  .am-time-icon { color: #16a34a; }
+    .am-time-out .am-time-icon { color: #dc2626; }
+    .am-time-dur .am-time-icon { color: #6750a4; }
+    .am-time-label { font-size: 10px; text-transform: uppercase; font-weight: 700; color: #6b7280; letter-spacing: 0.5px; }
+    .am-time-value { font-size: 13px; font-weight: 700; color: #111827; margin-top: 4px; word-break: break-word; line-height: 1.3; }
+
+    /* GPS sections */
+    .am-gps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .am-gps-block {
+        background: #f8f9fc; border-radius: 10px; padding: 12px 14px;
+        border-left: 3px solid #ddd;
+    }
+    .am-gps-block.checkin  { border-left-color: #16a34a; }
+    .am-gps-block.checkout { border-left-color: #dc2626; }
+    .am-gps-title   { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+    .am-gps-address { font-size: 12px; color: #374151; line-height: 1.55; margin-bottom: 7px; }
+    .am-gps-meta    { display: flex; flex-direction: column; gap: 3px; }
+    .am-gps-meta span { font-size: 11px; color: #9ca3af; display: flex; align-items: flex-start; gap: 5px; }
+    .am-gps-meta i  { color: #c4c4cc; font-size: 10px; margin-top: 2px; flex-shrink: 0; }
+
+    /* Remarks */
+    .am-remarks-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .am-remarks-label i { color: #6750a4; }
+
+    /* Mobile */
+    @@media (max-width: 575px) {
+        .am-time-grid  { grid-template-columns: 1fr 1fr; }
+        .am-time-dur   { grid-column: span 2; }
+        .am-gps-grid   { grid-template-columns: 1fr; }
+        .am-hero       { gap: 10px; }
+        .am-divider-arrow { transform: rotate(90deg); }
+        .approval-modal-card .modal-body { max-height: 75vh; }
+    }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -129,84 +199,109 @@
      APPROVE / REJECT DETAIL MODAL
      ═══════════════════════════════════════════════════════════════ -->
 <div class="modal fade" id="ApprovalModal" tabindex="-1" role="dialog" aria-labelledby="ApprovalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg approval-modal-card" role="document">
         <div class="modal-content">
+
+            <!-- Header -->
             <div class="modal-header" id="approvalModalHeader">
-                <h5 class="modal-title" id="ApprovalModalLabel">Review Attendance</h5>
+                <h5 class="modal-title" id="ApprovalModalLabel">
+                    <i class="fa fa-check-circle"></i> Review Attendance
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" style="max-height:65vh;overflow-y:auto">
 
-                <!-- Employee summary -->
-                <div class="approval-section-header">Employee &amp; Shift</div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Employee</span>
-                    <span class="detail-value" id="amHelperName">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Patient</span>
-                    <span class="detail-value" id="amPatientName">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Date</span>
-                    <span class="detail-value" id="amDate">—</span>
-                </div>
+            <!-- Body -->
+            <div class="modal-body">
 
-                <!-- Times & hours -->
-                <div class="approval-section-header">Times &amp; Duration</div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Check-In Time</span>
-                    <span class="detail-value" id="amCheckInTime">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Check-Out Time</span>
-                    <span class="detail-value" id="amCheckOutTime">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Total Hours</span>
-                    <span class="detail-value" id="amTotalHours">—</span>
+                <!-- Hero: Helper → Patient -->
+                <div class="am-hero">
+                    <div class="am-person-card">
+                        <div class="am-avatar am-avatar-helper">
+                            <i class="fas fa-user-nurse"></i>
+                        </div>
+                        <div>
+                            <div class="am-person-label">Helper</div>
+                            <div class="am-person-name" id="amHelperName">—</div>
+                        </div>
+                    </div>
+                    <div class="am-divider-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="am-person-card">
+                        <div class="am-avatar am-avatar-patient">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="am-person-label">Patient</div>
+                            <div class="am-person-name" id="amPatientName">—</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Check-In GPS -->
-                <div class="approval-section-header">Check-In Location</div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Address</span>
-                    <span class="detail-value" id="amCheckInAddress">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Latitude / Longitude</span>
-                    <span class="detail-value" id="amCheckInLatLon">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">GPS Accuracy</span>
-                    <span class="detail-value" id="amCheckInAccuracy">—</span>
+                <!-- Date chip -->
+                <div class="am-date-chip">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="amDate">—</span>
                 </div>
 
-                <!-- Check-Out GPS -->
-                <div class="approval-section-header">Check-Out Location</div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Address</span>
-                    <span class="detail-value" id="amCheckOutAddress">—</span>
+                <!-- Time cards -->
+                <div class="am-time-grid">
+                    <div class="am-time-card am-time-in">
+                        <div class="am-time-icon"><i class="fas fa-sign-in-alt"></i></div>
+                        <div class="am-time-label">Check-In</div>
+                        <div class="am-time-value" id="amCheckInTime">—</div>
+                    </div>
+                    <div class="am-time-card am-time-dur">
+                        <div class="am-time-icon"><i class="fas fa-clock"></i></div>
+                        <div class="am-time-label">Duration</div>
+                        <div class="am-time-value" id="amTotalHours">—</div>
+                    </div>
+                    <div class="am-time-card am-time-out">
+                        <div class="am-time-icon"><i class="fas fa-sign-out-alt"></i></div>
+                        <div class="am-time-label">Check-Out</div>
+                        <div class="am-time-value" id="amCheckOutTime">—</div>
+                    </div>
                 </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">Latitude / Longitude</span>
-                    <span class="detail-value" id="amCheckOutLatLon">—</span>
-                </div>
-                <div class="approval-detail-row">
-                    <span class="detail-label">GPS Accuracy</span>
-                    <span class="detail-value" id="amCheckOutAccuracy">—</span>
+
+                <!-- GPS sections -->
+                <div class="am-gps-grid">
+                    <div class="am-gps-block checkin">
+                        <div class="am-gps-title">
+                            <i class="fas fa-map-marker-alt" style="color:#16a34a"></i> Check-In Location
+                        </div>
+                        <div class="am-gps-address" id="amCheckInAddress">—</div>
+                        <div class="am-gps-meta">
+                            <span><i class="fas fa-crosshairs"></i><span id="amCheckInLatLon">—</span></span>
+                            <span><i class="fas fa-bullseye"></i> Accuracy: <span id="amCheckInAccuracy">—</span></span>
+                        </div>
+                    </div>
+                    <div class="am-gps-block checkout">
+                        <div class="am-gps-title">
+                            <i class="fas fa-map-marker-alt" style="color:#dc2626"></i> Check-Out Location
+                        </div>
+                        <div class="am-gps-address" id="amCheckOutAddress">—</div>
+                        <div class="am-gps-meta">
+                            <span><i class="fas fa-crosshairs"></i><span id="amCheckOutLatLon">—</span></span>
+                            <span><i class="fas fa-bullseye"></i> Accuracy: <span id="amCheckOutAccuracy">—</span></span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Remarks -->
-                <div class="approval-section-header">Manager Remarks (optional)</div>
-                <textarea class="form-control" id="amRemarks" rows="3" placeholder="Enter remarks…"></textarea>
-            </div>
+                <div class="am-remarks-label">
+                    <i class="fas fa-comment-dots"></i> Remarks <small class="text-muted fw-normal">(optional)</small>
+                </div>
+                <textarea class="form-control" id="amRemarks" rows="2" placeholder="Enter remarks…"></textarea>
+
+            </div><!-- /.modal-body -->
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Cancel
+                </button>
                 <button type="button" class="btn" id="btnConfirmApproval" onclick="SubmitApproval()">Confirm</button>
             </div>
+
             <input type="hidden" id="amAttendanceId">
             <input type="hidden" id="amAction">
         </div>
