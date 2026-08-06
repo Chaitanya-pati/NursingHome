@@ -282,12 +282,6 @@
                     <span class="info-colon">:</span>
                     <span class="info-value" id="infoDob">—</span>
                 </div>
-                <div class="info-row" id="rowMobile">
-                    <div class="info-icon-box"><i class="fas fa-phone"></i></div>
-                    <span class="info-label">Mobile No.</span>
-                    <span class="info-colon">:</span>
-                    <span class="info-value" id="infoMobile">—</span>
-                </div>
             </div>
 
             <!-- Footer -->
@@ -368,7 +362,7 @@
             // Info rows
             document.getElementById('infoId').textContent = 'SHHS' + String(h.id).padStart(4, '0');
             setRow('rowDob', 'infoDob', fmtDate(h.dateOfBirth));
-            document.getElementById('infoMobile').textContent = h.mobileNo || '—';
+
 
             // Reveal card
             document.getElementById('loadingOverlay').style.display = 'none';
