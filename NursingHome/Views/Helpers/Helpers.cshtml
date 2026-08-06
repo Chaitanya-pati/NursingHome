@@ -1096,19 +1096,24 @@
                : '<span class="badge" style="font-size:11px;background:#f8f9fa;color:#6c757d;border:1px solid #dee2e6;">None</span>';
 
            var adminAssignIcon = isAdmin
-               ? ' <i class="fa fa-user-cog ml-2 btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;cursor:pointer;font-size:15px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'" data-dob="'+escAttr(item.dateOfBirth || '')+'"></i>'
+               ? '<button class="btn btn-sm btn-assign-user" title="' + (hasUser ? 'Change / Remove User Assignment' : 'Assign User') + '" style="color:#6750a4;background:#f3eeff;border:1px solid #d0bcff;padding:4px 7px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g,"&#39;") + '\' data-helper-name="'+escAttr(item.name)+'" data-suser="'+escAttr(item.suser || '')+'" data-dob="'+escAttr(item.dateOfBirth || '')+'"><i class="fa fa-user-cog"></i></button>'
                : '';
 
+           var actionHtml =
+               '<div style="display:flex;gap:6px;align-items:center;flex-wrap:nowrap;">' +
+               '<button class="btn btn-sm btn-edit"       title="Edit"           style="color:#fff;background:#28a745;border:none;padding:4px 8px;" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'><i class="fa fa-edit"></i></button>' +
+               '<button class="btn btn-sm btn-idcard"     title="Generate ID Card" style="color:#fff;background:#1a5fcc;border:none;padding:4px 8px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'><i class="fa fa-id-card"></i></button>' +
+               adminAssignIcon +
+               '<button class="btn btn-sm btn-delete"     title="Delete"         style="color:#fff;background:#dc3545;border:none;padding:4px 8px;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'><i class="fa fa-trash"></i></button>' +
+               '</div>';
+
            table.row.add([
-         item.name,
-         item.permanentAddress,
-         item.languagesKnown,
-         assignedBadge,
-         '<i class="fa fa-edit me-2 ml-1 btn-edit" style="color:green;cursor:pointer;" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-         '<i class="fa fa-id-card ml-2 mr-1 btn-idcard" title="Generate ID Card" style="color:#1a5fcc;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
-         adminAssignIcon +
-         ' <i class="fa fa-trash ml-1 btn-delete" style="color:red;cursor:pointer;" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>'
-     ]).draw();
+               item.name,
+               item.permanentAddress,
+               item.languagesKnown,
+               assignedBadge,
+               actionHtml
+           ]).draw();
        });
        $('#helpersLoader').hide();
             },
