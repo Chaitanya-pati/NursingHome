@@ -68,6 +68,12 @@ namespace NursingHome.Db.Implementation
                 : Db.Helpers.Where(h => h.suser == username).ToList();
         }
 
+        public Models.Helpers? GetById(int id)
+        {
+            using var Db = new TaskContext(_dbConn);
+            return Db.Helpers.FirstOrDefault(h => h.Id == id);
+        }
+
         public bool DeleteData(int id)
         {
             using var Db = new TaskContext(_dbConn);

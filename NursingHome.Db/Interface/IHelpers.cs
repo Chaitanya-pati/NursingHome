@@ -9,6 +9,7 @@ namespace NursingHome.Db.Interface
         bool AddData(Helpers helpers);
         bool UpdateData(Models.Helpers helperData);
         List<Models.Helpers> GetData(string username);
+        Models.Helpers? GetById(int id);
         bool DeleteData(int id);
 
         // ── User assignment ───────────────────────────────────────────────────

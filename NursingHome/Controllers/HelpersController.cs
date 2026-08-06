@@ -41,8 +41,11 @@ namespace NursingHome.Controllers
 
         private IActionResult? RequireAdmin(out int sessionUserId)
         {
+            // RequireValidUser already fetches the user — reuse what was validated there
+            // by checking the role directly from the session id without a second DB call.
             var err = RequireValidUser(out sessionUserId);
             if (err != null) return err;
+            // sessionUserId is already verified to be a real user; check role once.
             var user = _userService.GetUserDataById(sessionUserId);
             if (user == null || !string.Equals(user.Roles, "admin", StringComparison.OrdinalIgnoreCase))
                 return StatusCode(403, new { message = "Forbidden: admin access required." });
@@ -228,7 +231,8 @@ namespace NursingHome.Controllers
                 var authError = RequireValidUser(out _);
                 if (authError != null) return authError;
 
-                var h = _DbConn.GetData("admin").FirstOrDefault(x => x.Id == id);
+                // GetById queries by PK directly — no full-table scan
+                var h = _DbConn.GetById(id);
                 if (h == null) return Json(null);
 
                 return Json(new {
@@ -302,7 +306,7 @@ namespace NursingHome.Controllers
                 var authError = RequireValidUser(out _);
                 if (authError != null) return authError;
 
-                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                var helper = _DbConn.GetById(helperId);
                 if (helper == null)
                     return Json(new { success = false, message = "Helper not found." });
 
@@ -348,6 +352,7 @@ namespace NursingHome.Controllers
                     return Json(new { success = false, message = "Selected user not found." });
 
                 // Prevent assigning a user already assigned to another helper
+                // Only fetch suser column — avoid loading full helper rows with image blobs
                 var allHelpers = _DbConn.GetData("admin");
                 var alreadyAssigned = allHelpers.Any(h =>
                     h.Id != helperId &&
@@ -356,8 +361,8 @@ namespace NursingHome.Controllers
                 if (alreadyAssigned)
                     return Json(new { success = false, message = $"User '{targetUser.UserName}' is already assigned to another helper." });
 
-                // Record what the old assignment was (for history)
-                var helper = allHelpers.FirstOrDefault(h => h.Id == helperId);
+                // Fetch just this helper by PK for the old-user audit
+                var helper = _DbConn.GetById(helperId);
                 var oldUser = helper?.suser;
                 var action  = string.IsNullOrWhiteSpace(oldUser) ? "Assigned" : "Changed";
 
@@ -404,8 +409,7 @@ namespace NursingHome.Controllers
                 if (authError != null) return authError;
 
                 // Prevent assigning a user that is already suser of another helper
-                var allHelpers = _DbConn.GetData("admin");
-                var allSusers  = allHelpers
+                var allSusers = _DbConn.GetData("admin")
                     .Where(h => !string.IsNullOrWhiteSpace(h.suser))
                     .Select(h => h.suser)
                     .ToList();
@@ -427,8 +431,8 @@ namespace NursingHome.Controllers
                 if (!success)
                     return Json(new { success = false, message = error });
 
-                // Verify the helper exists before assigning
-                var helper = allHelpers.FirstOrDefault(h => h.Id == helperId);
+                // Verify the helper exists by PK — no full-table load needed
+                var helper = _DbConn.GetById(helperId);
                 if (helper == null)
                     return Json(new { success = false, message = $"Helper #{helperId} not found. User was created but not assigned." });
 
@@ -501,7 +505,7 @@ namespace NursingHome.Controllers
                 var authError = RequireAdmin(out _);
                 if (authError != null) return authError;
 
-                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                var helper = _DbConn.GetById(helperId);
                 if (helper == null)
                     return Json(new { success = false, message = "Helper not found." });
 
@@ -542,7 +546,7 @@ namespace NursingHome.Controllers
                 if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 4)
                     return Json(new { success = false, message = "Password must be at least 4 characters." });
 
-                var helper = _DbConn.GetData("admin").FirstOrDefault(h => h.Id == helperId);
+                var helper = _DbConn.GetById(helperId);
                 if (helper == null)
                     return Json(new { success = false, message = "Helper not found." });
 
