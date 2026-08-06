@@ -1373,38 +1373,7 @@
             $('#btnConfirmAssignUser').prop('disabled', true);
             switchAssignTab('existing');
 
-            // Load current assignment info to show banner
-            var uIdCheck = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetAssignedUserInfo", "Helpers")',
-                data: { helperId: helperId, userId: uIdCheck },
-                success: function (r) {
-                    if (r.success && r.assigned) {
-                        _modalCurrentSuser = r.userName || '';
-                        $('#acbUserName').text(r.userName || '');
-                        $('#acbUserRole').text(r.role ? '(' + r.role + ')' : '');
-                        $('#assignCurrentBanner').show();
-                        $('#assignNoBanner').hide();
-                        // Pre-fill the "Full Name" field in Create New tab from helper name
-                        $('#nuFullName').val(helperName || '');
-                        autoFillFromName();
-                    } else {
-                        $('#assignCurrentBanner').hide();
-                        $('#assignNoBanner').show();
-                        $('#nuFullName').val(helperName || '');
-                        autoFillFromName();
-                    }
-                },
-                error: function () {
-                    $('#assignNoBanner').show();
-                }
-            });
-
-            // Auto-fill helper name in Create New tab
-            // (will be replaced after helper data fetched)
-
-            // Init Select2 once
+            // ── Init Select2 once (must happen before showPopup) ──────────────
             if (!$('#assignUserSelect').hasClass('select2-hidden-accessible')) {
                 $('#assignUserSelect').select2({
                     dropdownParent: $('#assignUserModal'),
@@ -1423,7 +1392,6 @@
                         $('#auDetailMobile').text(user.mobileNo || '—');
                         $('#assignUserDetails').show();
 
-                        // Block if user is already assigned to a different helper
                         if (user.isAssignedElsewhere) {
                             $('#auAlreadyAssignedWarn').show();
                             $('#btnConfirmAssignUser').prop('disabled', true);
@@ -1441,29 +1409,71 @@
                 });
             }
 
-            var uId = localStorage.getItem('userId') || localStorage.getItem('userID') || '0';
+            // Clear any old selection and show a loading placeholder
+            var $sel = $('#assignUserSelect');
+            $sel.val(null).trigger('change');
+            $sel.find('option:not(:first)').remove();
+            $sel.append(new Option('Loading users…', '', false, false));
+            $sel.trigger('change');
 
+            // ── Open the modal immediately — never wait for AJAX ──────────────
+            showPopup('assignUserModal');
+
+            // ── AJAX 1: load current assignment banner ────────────────────────
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAssignedUserInfo", "Helpers")',
+                data: { helperId: helperId },
+                success: function (r) {
+                    if (r.success && r.assigned) {
+                        _modalCurrentSuser = r.userName || '';
+                        $('#acbUserName').text(r.userName || '');
+                        $('#acbUserRole').text(r.role ? '(' + r.role + ')' : '');
+                        $('#assignCurrentBanner').show();
+                        $('#assignNoBanner').hide();
+                        $('#nuFullName').val(helperName || '');
+                        autoFillFromName();
+                    } else {
+                        $('#assignCurrentBanner').hide();
+                        $('#assignNoBanner').show();
+                        $('#nuFullName').val(helperName || '');
+                        autoFillFromName();
+                    }
+                },
+                error: function () {
+                    $('#assignNoBanner').show();
+                }
+            });
+
+            // ── AJAX 2: load user list ────────────────────────────────────────
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("GetUsersForAssign", "Helpers")',
-                data: { userId: uId, helperId: helperId },
+                data: { helperId: helperId },
                 success: function (response) {
-                    if (!response.success) { msgPopup('error', 'Failed to load users.'); return; }
-                    _assignUsersCache = response.data;
-                    var $sel = $('#assignUserSelect');
-                    $sel.val(null).trigger('change');   // clear any previous selection before repopulating
+                    $sel.val(null).trigger('change');
                     $sel.find('option:not(:first)').remove();
-                    // Only include users NOT already assigned to another helper
+
+                    if (!response.success) {
+                        msgPopup('error', 'Failed to load users.');
+                        return;
+                    }
+
+                    _assignUsersCache = response.data;
                     response.data.forEach(function (u) {
-                        if (u.isAssignedElsewhere) return; // skip — already taken by another helper
+                        if (u.isAssignedElsewhere) return; // already taken by another helper
                         var label = (u.fullName || u.userName) + ' (' + (u.role || 'N/A') + ') — ' + (u.mobileNo || '');
                         if (u.isThisHelper) label += ' [Currently Assigned]';
                         $sel.append(new Option(label, u.id, false, false));
                     });
                     $sel.trigger('change');
-                    showPopup('assignUserModal');
                 },
-                error: function () { msgPopup('error', 'Error loading users. Please try again.'); }
+                error: function () {
+                    $sel.val(null).trigger('change');
+                    $sel.find('option:not(:first)').remove();
+                    $sel.trigger('change');
+                    msgPopup('error', 'Error loading users. Please try again.');
+                }
             });
         }
 
