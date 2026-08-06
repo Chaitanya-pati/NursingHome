@@ -1258,7 +1258,7 @@
         });
 
         // Delegate: View assigned user info badge click
-        $('#tblHelpers').on('click', '.badge-success', function () {
+        $('#tblHelpers').on('click', '.btn-view-assigned', function () {
             var helperId   = $(this).attr('data-helper-id');
             var helperName = $(this).attr('data-helper-name') || '';
             if (helperId) loadAssignedUserPanel(helperId, helperName);
@@ -1451,6 +1451,7 @@
                     if (!response.success) { msgPopup('error', 'Failed to load users.'); return; }
                     _assignUsersCache = response.data;
                     var $sel = $('#assignUserSelect');
+                    $sel.val(null).trigger('change');   // clear any previous selection before repopulating
                     $sel.find('option:not(:first)').remove();
                     // Only include users NOT already assigned to another helper
                     response.data.forEach(function (u) {
