@@ -231,8 +231,9 @@
                 padding: 6px 14px;
                 z-index: 99;
                 transition: all 0.5s ease;
-                overflow-x: hidden;
-                overflow-y: auto;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
             }
 
             .sidebar.open {
@@ -291,8 +292,15 @@
 
             .sidebar .nav-list {
                 margin-top: 20px;
-                height: 100%;
-                padding-bottom: 60px;
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding-bottom: 8px;
+                /* hide scrollbar visually but keep it functional */
+                scrollbar-width: none;
+            }
+            .sidebar .nav-list::-webkit-scrollbar {
+                display: none;
             }
 
             .sidebar li {
@@ -411,56 +419,93 @@
                 border-radius: 12px;
             }
 
-            .sidebar li.profile {
-                position: absolute;
+            .sidebar-logout {
+                flex-shrink: 0;
                 height: 60px;
-                width: 78px;
-                left: 0;
-                bottom: 0;
+                width: 100%;
                 padding: 10px 14px;
                 background: #1d1b31;
                 transition: all 0.5s ease;
                 overflow: hidden;
+                display: flex;
+                align-items: center;
+                position: relative;
+                margin: 0 -14px;
+                width: calc(100% + 28px);
+                box-sizing: border-box;
             }
 
-            .sidebar.open li.profile {
-                width: 250px;
-            }
-
-            .sidebar li .profile-details {
+            .sidebar-logout .profile-details {
                 display: flex;
                 align-items: center;
                 flex-wrap: nowrap;
+                flex: 1;
+                overflow: hidden;
             }
 
-            .sidebar li.profile .name,
-            .sidebar li.profile .job {
+            .sidebar-logout .profile-details i {
+                height: 40px;
+                min-width: 50px;
+                font-size: 22px;
+                line-height: 40px;
+                color: #fff;
+                flex-shrink: 0;
+            }
+
+            .sidebar-logout .name_job {
+                overflow: hidden;
+                opacity: 0;
+                white-space: nowrap;
+                transition: opacity 0.4s ease;
+                pointer-events: none;
+            }
+
+            .sidebar.open .sidebar-logout .name_job {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .sidebar-logout .name {
                 font-size: 15px;
                 font-weight: 400;
                 color: #fff;
                 white-space: nowrap;
             }
 
-            .sidebar li.profile .job {
-                font-size: 12px;
-            }
-
-            .sidebar .profile #log_out {
+            .sidebar-logout a {
                 position: absolute;
-                top: 50%;
-                right: 0;
-                transform: translateY(-50%);
-                background: #1d1b31;
-                width: 100%;
-                height: 60px;
-                line-height: 60px;
-                border-radius: 0px;
-                transition: all 0.5s ease;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding-right: 14px;
+                text-decoration: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
             }
 
-            .sidebar.open .profile #log_out {
-                width: 50px;
-                background: none;
+            .sidebar.open .sidebar-logout a {
+                opacity: 1;
+            }
+
+            .sidebar-logout a i {
+                height: 40px;
+                min-width: 40px;
+                font-size: 20px;
+                line-height: 40px;
+                color: #fff;
+                text-align: center;
+            }
+
+            /* On collapsed sidebar, the whole row is the logout link */
+            .sidebar:not(.open) .sidebar-logout {
+                cursor: pointer;
+            }
+
+            .sidebar:not(.open) .sidebar-logout a {
+                opacity: 1;
+                justify-content: center;
+                padding-right: 0;
             }
 
             /* ===================================================
@@ -638,18 +683,18 @@
                     </a>
                     <span class="tooltip">Users</span>
                 </li>
-                <li class="profile">
-                    <div class="profile-details">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <div class="name_job">
-                            <div class="name">Logout</div>
-                        </div>
-                    </div>
-                    <a class="" asp-area="" asp-controller="Users" asp-action="Login">
-                        <i class="fa-solid fa-right-from-bracket" id="log_out"></i>
-                    </a>
-                </li>
             </ul>
+            <div class="sidebar-logout">
+                <div class="profile-details">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <div class="name_job">
+                        <div class="name">Logout</div>
+                    </div>
+                </div>
+                <a asp-area="" asp-controller="Users" asp-action="Login" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket" id="log_out"></i>
+                </a>
+            </div>
         </div>
     }
     <div class="home-section">
