@@ -214,54 +214,6 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     ADMIN ADD / EDIT MODAL  (unchanged)
-     ═══════════════════════════════════════════════════════════════ -->
-<div class="modal fade" id="AddAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="AttendanceModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="AttendanceModalLabel">Attendance Form</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="attendanceForm" novalidate>
-                    <div class="form-group">
-                        <label>Select Helper</label>
-                        <select class="form-select ClearAttendenceClass" id="HelperNameDDL" required></select>
-                        <div class="invalid-feedback ClearAttendenceClass">Please select the Helper</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Select Patient</label>
-                        <select class="form-select ClearAttendenceClass" id="PatientNameDDL" required></select>
-                        <div class="invalid-feedback ClearAttendenceClass">Please select the Patient</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Select Date</label>
-                        <input type="datetime-local" class="form-control ClearAttendenceClass" id="AttendanceDate" required>
-                        <div class="invalid-feedback ClearAttendenceClass">Please select the date</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Total Work Hours</label>
-                        <input type="text" class="form-control ClearAttendenceClass" id="TotalHoursAdmin">
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea class="form-control ClearAttendenceClass" id="Description" rows="4"></textarea>
-                    </div>
-                    <input type="hidden" class="ClearAttendenceClass" id="AttendanceId">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="AddandEditAttendence()" id="SaveAttendanceData">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
      PAGE CONTENT
      ═══════════════════════════════════════════════════════════════ -->
 <div class="col-md-12">
@@ -287,14 +239,6 @@
         </li>
     </ul>
 
-    <!-- Admin-only: Add Attendance button (shown after role loads) -->
-    <div class="row mb-2 mt-2 AuthorizedContent" hidden id="adminAddRow">
-        <div class="col-md-12 text-right">
-            <button type="button" class="customBtn" onclick="ClearAttendenceModalData(); $('#AddAttendanceModal').modal('show');">
-                <i class="fa fa-plus"></i> Add Attendance
-            </button>
-        </div>
-    </div>
 
     <div class="tab-content mt-2" id="attendanceTabsContent">
 
@@ -363,8 +307,6 @@
     // ────────────────────────────────────────────────────────────────────────────
     // Pending pre-select values — set by BindAttendanceData when dropdowns not yet loaded
     // ────────────────────────────────────────────────────────────────────────────
-    var _pendingAttendanceHelperVal  = null;
-    var _pendingAttendancePatientVal = null;
 
     // ────────────────────────────────────────────────────────────────────────────
     // Init
@@ -374,9 +316,7 @@
         $('#tablePending').DataTable({ order: [[3, 'desc']] });
 
         GetAttendanceData();
-        HelpersDropDownList();
         HelpersDropDownList1();
-        PatientDropDownList();
 
         // Search button — apply date range + helper filter
         $('#search').on('click', function () {
@@ -398,14 +338,20 @@
             }, 1500);
         }
 
-        // Edit / Delete click handlers on main table
-        $('#tableAttendance').on('click', '.btn-edit', function () {
-            var fullData = JSON.parse($(this).attr('data-full-data'));
-            BindAttendanceData(fullData);
-        });
+        // Delete click handler on main table
         $('#tableAttendance').on('click', '.btn-delete', function () {
             var ID = $(this).attr('data-id');
             confirmDelete(ID);
+        });
+
+        // Approve / Reject via delegated handlers — avoids inline-JSON onclick breakage
+        $('#tablePending').on('click', '.btn-approve', function () {
+            var item = JSON.parse($(this).attr('data-record'));
+            OpenApprovalModal(item, 'approve');
+        });
+        $('#tablePending').on('click', '.btn-reject', function () {
+            var item = JSON.parse($(this).attr('data-record'));
+            OpenApprovalModal(item, 'reject');
         });
     });
 
@@ -724,12 +670,8 @@
                             '<i class="fa fa-sign-out-alt"></i> Check Out</button>';
                     }
 
-                    // Admin-only: Edit and Delete
+                    // Admin-only: Delete
                     if (isAdmin) {
-                        var fullDataJson = JSON.stringify(item).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-                        actions += '<button class="btn btn-sm btn-warning btn-edit mr-1" style="font-size:11px" ' +
-                            'data-full-data=\'' + fullDataJson.replace(/'/g, '&#39;') + '\' ' +
-                            'title="Edit"><i class="fa fa-pencil-alt"></i></button>';
                         actions += '<button class="btn btn-sm btn-danger btn-delete" style="font-size:11px" ' +
                             'data-id="' + item.attendanceId + '" title="Delete"><i class="fa fa-trash"></i></button>';
                     }
@@ -775,13 +717,16 @@
                     var est = calcHours(item.checkInTime, item.checkOutTime);
                     var estDisplay = est !== null ? est + ' hrs' : '—';
 
+                    // Store the full record as a data attribute — avoids inline-JSON
+                    // onclick which breaks when names/addresses contain quotes or backslashes.
+                    var safeRecord = JSON.stringify(item).replace(/'/g, "&#39;");
                     var actions =
                         '<div class="text-center" style="white-space:nowrap">' +
-                        '<button class="btn btn-sm btn-success mr-1" style="font-size:11px" ' +
-                            'onclick="OpenApprovalModal(' + JSON.stringify(item).replace(/'/g, "&#39;") + ',\'approve\')">' +
+                        '<button class="btn btn-sm btn-success btn-approve mr-1" style="font-size:11px" ' +
+                            'data-record=\'' + safeRecord + '\'>' +
                             '<i class="fa fa-check"></i> Approve</button> ' +
-                        '<button class="btn btn-sm btn-danger" style="font-size:11px" ' +
-                            'onclick="OpenApprovalModal(' + JSON.stringify(item).replace(/'/g, "&#39;") + ',\'reject\')">' +
+                        '<button class="btn btn-sm btn-danger btn-reject" style="font-size:11px" ' +
+                            'data-record=\'' + safeRecord + '\'>' +
                             '<i class="fa fa-times"></i> Reject</button>' +
                         '</div>';
 
@@ -912,42 +857,6 @@
         });
     }
 
-    // ────────────────────────────────────────────────────────────────────────────
-    // EXISTING ADMIN FUNCTIONS (unchanged)
-    // ────────────────────────────────────────────────────────────────────────────
-    function AddandEditAttendence() {
-        var helperName    = $('#HelperNameDDL').val();
-        var patientName   = $('#PatientNameDDL').val();
-        var attendanceDate = $('#AttendanceDate').val();
-        var totalHours    = $('#TotalHoursAdmin').val();
-        var description   = $('#Description').val();
-        var attendanceId  = $('#AttendanceId').val();
-
-        $.ajax({
-            url: '/Attendance/AddandUpdateAttendance',
-            type: 'POST',
-            data: {
-                fkHelperId:  helperName,
-                fkNursingId: patientName,
-                Date:        attendanceDate,
-                Time:        totalHours,
-                Description: description,
-                Id:          attendanceId
-            },
-            success: function (response) {
-                if (response) {
-                    GetAttendanceData();
-                    if (localStorage.getItem('userRole') === 'admin') LoadPendingCount();
-                    alert(attendanceId ? 'Success: data updated successfully' : 'Success: data added successfully');
-                    $('#AddAttendanceModal').modal('hide');
-                }
-            },
-            error: function (xhr, status, error) {
-                alert('An error occurred: ' + error);
-            }
-        });
-    }
-
     function confirmDelete(id) {
         $.confirm({
             title: 'Confirm',
@@ -959,31 +868,6 @@
         });
     }
 
-    function BindAttendanceData(data) {
-        var helperVal  = data.fkHelperId != null ? String(data.fkHelperId) : '';
-        var patientVal = data.fknursing  != null ? String(data.fknursing)  : '';
-
-        // Helper dropdown: set immediately if options already exist,
-        // otherwise store so HelpersDropDownList's AJAX callback applies it after loading.
-        if ($('#HelperNameDDL option[value!=""]').length > 0) {
-            $('#HelperNameDDL').val(helperVal);
-        } else {
-            _pendingAttendanceHelperVal = helperVal;
-        }
-
-        // Patient dropdown: same pattern
-        if ($('#PatientNameDDL option[value!=""]').length > 0) {
-            $('#PatientNameDDL').val(patientVal);
-        } else {
-            _pendingAttendancePatientVal = patientVal;
-        }
-        $('#AttendanceDate').val(data.attendanceDate);
-        $('#TotalHoursAdmin').val(data.time);
-        $('#Description').val(data.description);
-        $('#AttendanceId').val(data.attendanceId);
-        $('#AddAttendanceModal').modal('show');
-    }
-
     function deleteAttendance(id) {
         $.ajax({
             type: 'POST', url: '/Attendance/DeleteAttendence', data: { id: id },
@@ -993,43 +877,6 @@
                 alert('Record deleted successfully');
             },
             error: function () { alert('Error occurred deleting record'); }
-        });
-    }
-
-    function PatientDropDownList() {
-        $.ajax({ url: '/Attendance/GetPatientDetails', type: 'GET',
-            success: function (response) {
-                var ddl = $('#PatientNameDDL').empty()
-                    .append($('<option>', { value: '', text: 'Select Patient', selected: true }));
-                $.each(response.data, function (i, item) {
-                    ddl.append($('<option>', { value: item.id, text: item.patientName }));
-                });
-                // Apply pre-select stored by an edit click that arrived before options loaded
-                if (_pendingAttendancePatientVal !== null) {
-                    $('#PatientNameDDL').val(_pendingAttendancePatientVal);
-                    _pendingAttendancePatientVal = null;
-                }
-            },
-            error: function (xhr, status, error) { console.error("Error fetching Patient Details:", error); }
-        });
-    }
-
-    function HelpersDropDownList() {
-        // Server resolves identity from session.
-        $.ajax({ url: '/Attendance/GetHelpers', type: 'GET',
-            success: function (response) {
-                var ddl = $('#HelperNameDDL').empty()
-                    .append($('<option>', { value: '', text: 'Select Helper', selected: true }));
-                $.each(response.data, function (i, item) {
-                    ddl.append($('<option>', { value: item.id, text: item.name }));
-                });
-                // Apply pre-select stored by an edit click that arrived before options loaded
-                if (_pendingAttendanceHelperVal !== null) {
-                    $('#HelperNameDDL').val(_pendingAttendanceHelperVal);
-                    _pendingAttendanceHelperVal = null;
-                }
-            },
-            error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });
     }
 
@@ -1049,10 +896,6 @@
             },
             error: function (xhr, status, error) { console.error("Error fetching Helpers Details:", error); }
         });
-    }
-
-    function ClearAttendenceModalData() {
-        $('.ClearAttendenceClass').val('');
     }
 
     // Escapes a string for safe embedding in a JS string literal inside an HTML attribute
