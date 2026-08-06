@@ -422,90 +422,45 @@
             .sidebar-logout {
                 flex-shrink: 0;
                 height: 60px;
-                width: 100%;
-                padding: 10px 14px;
-                background: #1d1b31;
-                transition: all 0.5s ease;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                position: relative;
                 margin: 0 -14px;
                 width: calc(100% + 28px);
+                padding: 0 14px;
+                background: #1d1b31;
+                display: flex;
+                align-items: center;
+                gap: 0;
+                text-decoration: none;
+                overflow: hidden;
+                transition: background 0.3s ease;
                 box-sizing: border-box;
             }
 
-            .sidebar-logout .profile-details {
-                display: flex;
-                align-items: center;
-                flex-wrap: nowrap;
-                flex: 1;
-                overflow: hidden;
+            .sidebar-logout:hover {
+                background: #2a2845;
             }
 
-            .sidebar-logout .profile-details i {
-                height: 40px;
+            .sidebar-logout i {
+                height: 60px;
                 min-width: 50px;
                 font-size: 22px;
-                line-height: 40px;
+                line-height: 60px;
                 color: #fff;
+                text-align: center;
                 flex-shrink: 0;
             }
 
-            .sidebar-logout .name_job {
-                overflow: hidden;
-                opacity: 0;
-                white-space: nowrap;
-                transition: opacity 0.4s ease;
-                pointer-events: none;
-            }
-
-            .sidebar.open .sidebar-logout .name_job {
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .sidebar-logout .name {
+            .sidebar-logout .logout-label {
+                color: #fff;
                 font-size: 15px;
                 font-weight: 400;
-                color: #fff;
                 white-space: nowrap;
-            }
-
-            .sidebar-logout a {
-                position: absolute;
-                inset: 0;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                padding-right: 14px;
-                text-decoration: none;
                 opacity: 0;
-                transition: opacity 0.3s ease;
+                pointer-events: none;
+                transition: opacity 0.4s ease;
             }
 
-            .sidebar.open .sidebar-logout a {
+            .sidebar.open .sidebar-logout .logout-label {
                 opacity: 1;
-            }
-
-            .sidebar-logout a i {
-                height: 40px;
-                min-width: 40px;
-                font-size: 20px;
-                line-height: 40px;
-                color: #fff;
-                text-align: center;
-            }
-
-            /* On collapsed sidebar, the whole row is the logout link */
-            .sidebar:not(.open) .sidebar-logout {
-                cursor: pointer;
-            }
-
-            .sidebar:not(.open) .sidebar-logout a {
-                opacity: 1;
-                justify-content: center;
-                padding-right: 0;
             }
 
             /* ===================================================
@@ -684,17 +639,10 @@
                     <span class="tooltip">Users</span>
                 </li>
             </ul>
-            <div class="sidebar-logout">
-                <div class="profile-details">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <div class="name_job">
-                        <div class="name">Logout</div>
-                    </div>
-                </div>
-                <a asp-area="" asp-controller="Users" asp-action="Login" title="Logout">
-                    <i class="fa-solid fa-right-from-bracket" id="log_out"></i>
-                </a>
-            </div>
+            <a class="sidebar-logout" asp-area="" asp-controller="Users" asp-action="Login" title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="logout-label">Logout</span>
+            </a>
         </div>
     }
     <div class="home-section">
