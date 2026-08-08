@@ -138,8 +138,12 @@ namespace NursingHome.Db.Implementation
         }
         public int getLatestID()
         {
-            var Db = new TaskContext(_dbConn);
-            int maxId = Db.HomeNursing.AsEnumerable().Select(o => o.Id).DefaultIfEmpty(0).Max();
+            using var Db = new TaskContext(_dbConn);
+            // Let SQL Server calculate the maximum instead of loading every
+            // HomeNursing row into application memory when the form opens.
+            int maxId = Db.HomeNursing
+                .Select(o => (int?)o.Id)
+                .Max() ?? 0;
             return maxId == 0 ? 1 : maxId + 1;
         }
 

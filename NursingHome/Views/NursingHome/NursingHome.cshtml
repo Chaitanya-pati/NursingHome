@@ -364,10 +364,16 @@
              try {
                  // Read the role from the authenticated server-side session. The
                  // localStorage value is only a display/legacy value and may be stale.
-                 var currentUser = await $.ajax({
-                     type: "GET",
-                     url: '@Url.Action("GetCurrentUser", "Users")'
-                 });
+                  // The shared layout already loads this same server-side user on
+                  // page load. Reuse that response so clicking Add does not make a
+                  // second database round trip.
+                  var currentUser = window.currentUser;
+                  if (typeof currentUser === 'undefined') {
+                      currentUser = await $.ajax({
+                          type: "GET",
+                          url: '@Url.Action("GetCurrentUser", "Users")'
+                      });
+                  }
                   if (!currentUser) {
                       alertMessage("Your session has expired. Please log in again.");
                       return;
@@ -550,8 +556,10 @@
             HomeNursingIdproof = '';
             $('#idProof').val('');
             $('#idProofStatus').hide().html('');
-            GetSerialNo();
+             // Render the form first. The serial number is supplementary data
+             // and must not block the user's first interaction with the form.
             showPopup('homeNursingModal');
+             GetSerialNo();
         }
         function GetSerialNo() {
             $.get({

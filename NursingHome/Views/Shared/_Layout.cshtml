@@ -683,6 +683,7 @@
             // Identity is always resolved from the server-side session — never from
             // a client-supplied ID. GetCurrentUser reads HttpContext.Session and
             // returns null if there is no active session.
+            window.currentUser = undefined;
             $.ajax({
                 type: "GET",
                 url: '/Users/GetCurrentUser',
@@ -691,6 +692,9 @@
                         window.location.href = '/Users/Login';
                         return;
                     }
+                    // Make the already-fetched authenticated user available to
+                    // page-specific actions without another request.
+                    window.currentUser = response;
                     // Keep localStorage only for display / legacy references that
                     // are UI-only (not used for server-side authorization).
                     localStorage.setItem('userID',   response.id);
