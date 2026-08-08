@@ -3,6 +3,7 @@ using NursingHome.Models;
 using System.Diagnostics;
 using NursingHome.Db.Implementation;
 using NursingHome.Db.Interface;
+using System.Text.RegularExpressions;
 
 namespace NursingHome.Controllers
 {
@@ -48,6 +49,15 @@ namespace NursingHome.Controllers
         {
             try
             {
+                if (!string.IsNullOrWhiteSpace(homeNursing.MobileNo))
+                {
+                    homeNursing.MobileNo = homeNursing.MobileNo.Trim();
+                    if (!Regex.IsMatch(homeNursing.MobileNo, @"^[0-9]{10}$"))
+                    {
+                        return BadRequest(new { message = "Please enter a valid mobile number (10 digits only)." });
+                    }
+                }
+
                 if (homeNursing.Id == 0)
                 {
                     var isAdded = _DbConn.AddData(homeNursing);

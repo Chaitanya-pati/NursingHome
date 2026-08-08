@@ -158,7 +158,15 @@
                             </tr>
                             <tr>
                                 <td><label for="mobileNo">Mobile No:</label></td>
-                                <td><input type="text" class="form-control NursingHomeIpfields" id="mobileNo"></td>
+                                <td>
+                                    <input type="tel"
+                                           class="form-control NursingHomeIpfields PhonenumberValidation"
+                                           id="mobileNo"
+                                           inputmode="numeric"
+                                           maxlength="10"
+                                           pattern="[0-9]{10}"
+                                           autocomplete="tel">
+                                </td>
                             </tr>
                             <tr>
                                 <td><label for="idProof">ID Proof:</label></td>
@@ -360,14 +368,19 @@
                      type: "GET",
                      url: '@Url.Action("GetCurrentUser", "Users")'
                  });
-                 var role = (currentUser && currentUser.roles ? currentUser.roles : '').trim().toLowerCase();
+                  if (!currentUser) {
+                      alertMessage("Your session has expired. Please log in again.");
+                      return;
+                  }
+
+                  var role = String(currentUser.roles || currentUser.Roles || '').trim().toLowerCase();
 
                  if (role === 'admin') {
                      Clearfields();
                      return;
                  }
 
-                 await verifyFace(currentUser && currentUser.userName);
+                  await verifyFace(currentUser.userName || currentUser.UserName);
              } catch (error) {
                  console.error("Unable to open the Home Nursing form:", error);
                  alertMessage("Unable to open the form. Please try again.");
@@ -557,8 +570,22 @@
     );
     return !pixelBuffer.some(color => color !== 0);
 }
+        function validateHomeNursingMobileNumber() {
+            var mobileField = $('#mobileNo');
+            var mobileNumber = mobileField.val().trim();
+            mobileField.next('.error-message').remove();
+
+            // The field is optional, but a value must be a complete 10-digit number.
+            if (mobileNumber !== '' && !/^[0-9]{10}$/.test(mobileNumber)) {
+                mobileField.after('<small class="error-message" style="color:red;">Please enter a valid mobile number (10 digits only)</small>');
+                mobileField.focus();
+                return false;
+            }
+
+            return true;
+        }
         function AddHomeNursing() {
-            if (CheckEmptyFields()) {
+            if (CheckEmptyFields() && validateHomeNursingMobileNumber()) {
                 var data = {};
                 data.Id = $('#homeNursingPatientId').val();
                 data.PatientName = $('#patientName').val();
@@ -566,7 +593,7 @@
                 data.Age = $('#patientAge').val();
                 data.Condition = $('#patientCondition').val();
                 data.CustomerName = $('#customerName').val();
-                data.MobileNo = $('#mobileNo').val();
+                data.MobileNo = $('#mobileNo').val().trim();
                 data.TypesofServices = $('#typesOfService').val();
                 data.IdProof = HomeNursingIdproof;
                 data.PaymentStatus = "Pending";
@@ -615,7 +642,10 @@
                         }
                     },
                     error: function (response) {
-
+                        var message = response.responseJSON && response.responseJSON.message
+                            ? response.responseJSON.message
+                            : "Unable to save the Home Nursing record. Please try again.";
+                        msgPopup("error", message);
                     }
                 });
             }
