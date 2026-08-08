@@ -70,7 +70,7 @@
 <!-- Button to trigger modal -->
 <div class="col-md-2 page-add-btn">
     <div class="container-fluid mt-2 mb-2">
-        <button type="button" class="customBtn" onclick="verifyFace()">
+        <button type="button" class="customBtn" onclick="openHomeNursingForm()">
             <i class="fa fa-add me-1"></i> Add
         </button>
     </div>
@@ -352,6 +352,27 @@
 <script>
         var HomeNursingIdproof = "";
         var _pendingHelperVal = null; // stores fkHelperId to pre-select once dropdown loads
+         async function openHomeNursingForm() {
+             try {
+                 // Read the role from the authenticated server-side session. The
+                 // localStorage value is only a display/legacy value and may be stale.
+                 var currentUser = await $.ajax({
+                     type: "GET",
+                     url: '@Url.Action("GetCurrentUser", "Users")'
+                 });
+                 var role = (currentUser && currentUser.roles ? currentUser.roles : '').trim().toLowerCase();
+
+                 if (role === 'admin') {
+                     Clearfields();
+                     return;
+                 }
+
+                 await verifyFace(currentUser && currentUser.userName);
+             } catch (error) {
+                 console.error("Unable to open the Home Nursing form:", error);
+                 alertMessage("Unable to open the form. Please try again.");
+             }
+         }
         $(document).ready(function () {
             GetData();
             GetHelperData();

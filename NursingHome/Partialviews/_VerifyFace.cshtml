@@ -11,8 +11,8 @@
 
     });
 
-    async function verifyFace() {
-        let username = localStorage.getItem('username');
+    async function verifyFace(username) {
+        username = username || localStorage.getItem('username');
         try {
             const response = await $.ajax({
                 type: "POST",
@@ -20,7 +20,11 @@
                 data: { username: username }
             });
 
-            let isface = await loginWithFace(response);
+            // GetFaceData returns the descriptor through an IQueryable, so the
+            // JSON response is normally an array containing one descriptor.
+            // Normalize both the current response and a direct string response.
+            const faceDescriptor = Array.isArray(response) ? response[0] : response;
+            let isface = await loginWithFace(faceDescriptor);
            
             if (isface) {
                 stopCamera();
@@ -47,13 +51,22 @@
         const video = await setupCamera();
         console.log("Camera setup complete, starting face detection...");
 
-        const storedDescriptorsJSON = data;
+        const storedDescriptorsJSON = typeof data === 'string'
+            ? data
+            : data && data.faceDescriptor;
         if (!storedDescriptorsJSON) {
             alertMessage('No registered face found.');
             return false;
         }
 
-        const storedDescriptorsObj = JSON.parse(storedDescriptorsJSON);
+        let storedDescriptorsObj;
+        try {
+            storedDescriptorsObj = JSON.parse(storedDescriptorsJSON);
+        } catch (error) {
+            console.error("Invalid stored face descriptor:", error);
+            alertMessage('The registered face data is invalid. Please contact an administrator.');
+            return false;
+        }
         const labeledDescriptors = new faceapi.LabeledFaceDescriptors(
             storedDescriptorsObj.label,
             storedDescriptorsObj.descriptors.map(d => new Float32Array(Object.values(d)))
