@@ -1,0 +1,465 @@
+@*
+    Subramanya Home Healthcare Service - Helper ID Card CSHTML Template
+    High-Definition PVC Portrait Card Design with Vector Logo & Exact Print Layout
+*@
+@{
+    Layout = null;
+    var helperId = ViewBag.HelperId;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helper ID Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #eef4fc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px 40px;
+        }
+
+        /* ── Page header ── */
+        .page-header { text-align: center; margin-bottom: 24px; }
+        .page-header h1 { font-size: 24px; color: #0052a5; font-weight: 800; letter-spacing: -0.3px; }
+        .page-header p { color: #5a6a80; font-size: 13px; margin-top: 4px; }
+
+        /* ── Action buttons ── */
+        .action-buttons { display: flex; gap: 12px; margin-bottom: 28px; justify-content: center; flex-wrap: wrap; }
+        .btn-action {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 24px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-print { background: #0052a5; color: #fff; }
+        .btn-print:hover { background: #004184; }
+        .btn-pdf   { background: #c0392b; color: #fff; }
+        .btn-pdf:hover   { background: #a93226; }
+        .btn-back  { background: #fff; color: #0052a5; border: 2px solid #0052a5; }
+        .btn-back:hover  { background: #f0f4ff; }
+
+        .card-wrapper { display: flex; justify-content: center; }
+
+        /* ══════════════════════════════════════
+           THE PVC ID CARD
+           Width: 340px, Height: 530px (CR-80 Standard)
+           ══════════════════════════════════════ */
+        .id-card {
+            width: 340px;
+            height: 530px;
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #f4f8ff 70%, #e8f1fd 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 52, 120, 0.18);
+            border: 1px solid rgba(220, 235, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Honeycomb Overlay Background */
+        .id-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#0052a5 0.75px, transparent 0.75px);
+            background-size: 12px 12px;
+            opacity: 0.06;
+            pointer-events: none;
+        }
+
+        /* Punch Hole */
+        .punch-hole { display: flex; justify-content: center; padding-top: 10px; z-index: 2; }
+        .punch-hole-inner {
+            width: 32px; height: 12px; background: rgba(220,230,245,0.9);
+            border-radius: 8px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Header */
+        .card-header { padding: 4px 16px 6px; display: flex; align-items: center;justify-content:center; gap: 12px; z-index: 2; }
+        .header-logo { width: 56px; height: 56px; flex-shrink: 0; }
+        .header-company { font-size: 20px; font-weight: 900; color: #0052a5; letter-spacing: -0.5px; text-transform: uppercase; line-height: 1; }
+        .header-service { font-size: 10.5px; font-weight: 700; color: #1e293b; letter-spacing: 0.2px; text-transform: uppercase; margin-top: 2px; }
+        .header-tagline { font-size: 9.5px; color: #1d6bf3; font-style: italic; font-weight: 600; margin-top: 2px; }
+
+        /* Photo */
+        .card-photo-section { display: flex; justify-content: center; z-index: 2; margin: 15px 0; }
+        .card-photo-ring {
+            width: 122px; height: 122px; border-radius: 50%;
+            border: 2.5px solid #1d6bf3; padding: 2.5px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card-photo { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: top; background: #d8e8f8; display: block; }
+        .photo-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #c8dced; display: flex; align-items: center; justify-content: center; }
+        .photo-placeholder i { font-size: 44px; color: #7fa0be; }
+
+        /* Name + ECG + Role */
+        .name-section { text-align: center; padding: 0 12px; z-index: 2; }
+        .name-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .ecg-svg { width: 54px; height: 20px; stroke: #2563eb; opacity: 0.7; }
+        .card-name { font-size: 22px; font-weight: 900; color: #0052a5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+        .role-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 2px;
+            margin-bottom: 12px;
+        }
+        .role-line { height: 1.5px; width: 28px; background: rgba(37, 99, 235, 0.3); border-radius: 2px; }
+        .role-badge { color: #1d6bf3; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Info Rows */
+        .card-info { padding: 4px 24px; display: flex; flex-direction: column; gap: 8px; z-index: 2; font-size: 12px; }
+        .info-row { display: flex; align-items: center; }
+        .info-icon-box {
+            width: 24px; height: 24px; background: #0052a5; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 12px; color: #fff;
+        }
+        .info-icon-box i { font-size: 11px; }
+        .info-label { width: 84px; font-size: 12px; color: #334155; font-weight: 700; flex-shrink: 0; }
+        .info-colon { font-size: 12px; color: #334155; font-weight: 700; margin-right: 14px; }
+        .info-value { font-size: 12.5px; color: #0f172a; font-weight: 800; }
+
+        /* Footer */
+        .card-footer {
+            background: linear-gradient(90deg, #004b99 0%, #0052a5 50%, #0066cc 100%);
+            padding: 10px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2px; z-index: 2; margin-top: auto; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
+        }
+        .footer-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; font-weight: 700; }
+        .footer-row.web { font-size: 10.5px; color: rgba(224, 242, 254, 0.9); font-weight: 500; }
+
+        /* Loading Overlay */
+        #loadingOverlay { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 40px; color: #0052a5; }
+        .spinner { width: 44px; height: 44px; border: 4px solid #d0dce8; border-top-color: #0052a5; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Print Override - High Definition exact dimensions without clipping */
+        @@media print {
+            @@page {
+                size: portrait;
+                margin: 0;
+            }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .page-header, .action-buttons, #loadingOverlay {
+                display: none !important;
+            }
+            .card-wrapper {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                min-height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .id-card {
+                box-shadow: none !important;
+                border: 1px solid #c8dce8 !important;
+                width: 340px !important;
+                height: 530px !important;
+                min-width: 340px !important;
+                min-height: 530px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1><i class="fas fa-id-card"></i> Helper ID Card</h1>
+        <p>Subramanya Home Healthcare Service — Professional Identity Card</p>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-action btn-back" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn-action btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Card
+        </button>
+        <button class="btn-action btn-pdf" onclick="downloadPDF(event)">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+    </div>
+
+    <div class="card-wrapper">
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <span>Loading helper details…</span>
+        </div>
+
+        <!-- THE PVC ID CARD -->
+        <div id="idCardEl" class="id-card" style="display:none;">
+
+            <!-- Punch hole -->
+            <div class="punch-hole"><div class="punch-hole-inner"></div></div>
+
+            <!-- Header: Vector House Logo + Company Info -->
+            <div class="card-header">
+                <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 8 L90 40 L82 46 L50 20 L18 46 L10 40 Z" fill="#0052a5"/>
+                    <path d="M18 44 V80 H30 V88 H10 V40 L18 44 Z" fill="#0052a5"/>
+                    <path d="M12 80 H88 V88 H12 Z" fill="#0052a5"/>
+                    <circle cx="44" cy="40" r="6" fill="#0052a5"/>
+                    <path d="M34 58 C34 48, 48 48, 54 54 C58 58, 58 72, 58 78 H32 C32 72, 34 62, 34 58 Z" fill="#0052a5"/>
+                    <circle cx="56" cy="46" r="4.5" fill="#0052a5"/>
+                    <path d="M48 62 C48 54, 60 54, 64 60 C66 64, 66 74, 66 78 H46 Z" fill="#0052a5"/>
+                    <g transform="translate(68, 60)">
+                        <rect x="0" y="8" width="24" height="8" rx="2" fill="#0052a5"/>
+                        <rect x="8" y="0" width="8" height="24" rx="2" fill="#0052a5"/>
+                    </g>
+                </svg>
+                <div>
+                    <div class="header-company">SUBRAMANYA</div>
+                    <div class="header-service">HOME HEALTHCARE SERVICE</div>
+                    <div class="header-tagline">Your Care, Our Commitment</div>
+                </div>
+            </div>
+
+            <!-- Circular photo -->
+            <div class="card-photo-section">
+                <div class="card-photo-ring">
+                    <img id="helperPhoto" class="card-photo" src="" alt="Helper Photo" />
+                </div>
+            </div>
+
+            <!-- Name flanked by ECG lines, then role badge -->
+            <div class="name-section">
+                <div class="name-row">
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none">
+                        <path d="M0 12 L28 12 L32 5 L36 19 L40 3 L44 21 L48 12 L70 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+
+                    <div class="card-name" id="helperName">—</div>
+
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none">
+                        <path d="M70 12 L42 12 L38 5 L34 19 L30 3 L26 21 L22 12 L0 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="role-row">
+                    <div class="role-line"></div>
+                    <div class="role-badge" id="helperRole">HELPER</div>
+                    <div class="role-line"></div>
+                </div>
+            </div>
+
+            <!-- Info rows -->
+            <div class="card-info">
+                <div class="info-row" id="rowId">
+                    <div class="info-icon-box"><i class="fas fa-user"></i></div>
+                    <span class="info-label">ID No.</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoId">—</span>
+                </div>
+                <div class="info-row" id="rowRole">
+                    <div class="info-icon-box"><i class="fas fa-user-check"></i></div>
+                    <span class="info-label">Role</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoRole">Helper</span>
+                </div>
+                <div class="info-row" id="rowDob">
+                    <div class="info-icon-box"><i class="fas fa-calendar-alt"></i></div>
+                    <span class="info-label">DOB</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoDob">—</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer">
+                <div class="footer-row">
+                    <i class="fas fa-phone-alt"></i>
+                    <span id="companyPhone">+91 90360 39555</span>
+                </div>
+                <div class="footer-row web">
+                    <i class="fas fa-globe"></i>
+                    <span id="companyWeb">www.subramanyahomehealthcare.com</span>
+                </div>
+            </div>
+
+        </div><!-- /#idCardEl -->
+    </div><!-- /.card-wrapper -->
+
+<script>
+    var helperId = @helperId;
+    var userId   = @(ViewBag.UserId ?? 0);
+
+    // ── Iframe detection ──
+    if (window.self !== window.top) {
+        var hdr  = document.querySelector('.page-header');
+        var btns = document.querySelector('.action-buttons');
+        if (hdr)  hdr.style.display  = 'none';
+        if (btns) btns.style.display = 'none';
+        document.body.style.padding = '16px';
+    }
+
+    function fmtDate(val) {
+        if (!val) return null;
+        var d = new Date(val);
+        if (isNaN(d.getTime())) return null;
+        return String(d.getDate()).padStart(2,'0') + '-' +
+               String(d.getMonth() + 1).padStart(2,'0') + '-' +
+               d.getFullYear();
+    }
+
+    function setRow(rowId, infoId, value) {
+        if (!value) {
+            document.getElementById(rowId).style.display = 'none';
+        } else {
+            document.getElementById(infoId).textContent = value;
+        }
+    }
+
+    // ── Fetch helper data ──────────────────────���───────────────────
+    $.ajax({
+        url: '/Helpers/GetHelperById',
+        type: 'GET',
+        data: { id: helperId, userId: userId },
+        success: function (h) {
+            if (!h) {
+                document.getElementById('loadingOverlay').innerHTML =
+                    '<p style="color:red">Helper not found.</p>';
+                return;
+            }
+
+            // Photo
+            var photoEl = document.getElementById('helperPhoto');
+            if (h.image) {
+                var src = h.image.indexOf('~') !== -1
+                    ? 'data:image/png;base64,' + h.image.split('~')[1]
+                    : 'data:image/png;base64,' + h.image;
+                photoEl.src = src;
+                photoEl.onerror = function () { photoEl.replaceWith(makePlaceholder()); };
+            } else {
+                photoEl.replaceWith(makePlaceholder());
+            }
+
+            // Name & Role
+            document.getElementById('helperName').textContent = h.name || '—';
+            var roleText = (h.designation || 'Helper').toUpperCase();
+            document.getElementById('helperRole').textContent = roleText;
+            document.getElementById('infoRole').textContent   = h.designation || 'Helper';
+
+            // Info rows
+            document.getElementById('infoId').textContent = 'SHHS' + String(h.id).padStart(4, '0');
+            setRow('rowDob', 'infoDob', fmtDate(h.dateOfBirth));
+
+
+            // Reveal card
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('idCardEl').style.display       = 'flex';
+        },
+        error: function () {
+            document.getElementById('loadingOverlay').innerHTML =
+                '<p style="color:red">Failed to load helper details.</p>';
+        }
+    });
+
+    // ── Fetch company details ────────────────────
+    $.ajax({
+        url: '/Configuration/CityDetails',
+        type: 'GET',
+        data: { username: 'admin' },
+        success: function (c) {
+            if (!c) return;
+            if (c.mobileNumbers) {
+                document.getElementById('companyPhone').textContent = c.mobileNumbers;
+            }
+            //if (c.email) {
+                document.getElementById('companyWeb').textContent = "www.subramanyafoundation.com"
+           // }
+        },
+        error: function () { }
+    });
+
+    function makePlaceholder() {
+        var div = document.createElement('div');
+        div.className = 'photo-placeholder';
+        div.innerHTML = '<i class="fas fa-user"></i>';
+        return div;
+    }
+
+    // ── Download PDF ────────────────────────────────────────────────
+           // ── Download PDF (Exact 1:1 circular photo crop matching viewer) ─────────────
+        async function downloadPDF(e) {
+            var card = document.getElementById('idCardEl');
+            if (!card) return;
+            var btn = e ? e.currentTarget : null;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+            }
+            try {
+                var canvas = await html2canvas(card, {
+                    scale:           3,
+                    useCORS:         true,
+                    allowTaint:      true,
+                    logging:         false,
+                    backgroundColor: '#ffffff',
+                    onclone: function(clonedDoc) {
+                        var clonedPhoto = clonedDoc.getElementById('helperPhoto');
+                        if (clonedPhoto && clonedPhoto.tagName === 'IMG' && clonedPhoto.src) {
+                            var imgUrl = clonedPhoto.src;
+                            var parent = clonedPhoto.parentNode;
+                            var div = clonedDoc.createElement('div');
+                            div.id = 'helperPhoto';
+                            div.className = clonedPhoto.className;
+                            div.style.width = '100%';
+                            div.style.height = '100%';
+                            div.style.borderRadius = '50%';
+                            div.style.backgroundImage = 'url("' + imgUrl + '")';
+                            div.style.backgroundSize = 'cover';
+                            div.style.backgroundPosition = 'top center';
+                            div.style.backgroundRepeat = 'no-repeat';
+                            if (parent) parent.replaceChild(div, clonedPhoto);
+                        }
+                    }
+                });
+
+                var PDF_W = 54; // mm (CR-80 standard card width)
+                var PDF_H = Math.round(card.offsetHeight / card.offsetWidth * PDF_W);
+                var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                var doc = new jsPDFCtor({ unit: 'mm', format: [PDF_W, PDF_H], orientation: 'portrait' });
+                doc.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, PDF_W, PDF_H);
+
+                var name = (document.getElementById('helperName').textContent || 'Helper').trim().replace(/\s+/g, '_');
+                doc.save('IDCard_' + name + '.pdf');
+            } catch (err) {
+                alert('PDF generation failed. Please try Print instead.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+                }
+            }
+        }
+</script>
+</body>
+</html>
