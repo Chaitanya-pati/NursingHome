@@ -9,6 +9,8 @@
 
 
 <!-- Modal -->
+<input type="text" id="titleValue" value="@ViewData["Title"]" hidden />
+
 <div class="modal fade" id="oldAgePopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="custom-modal-dialog" role="document">
         <div class="modal-content">
@@ -27,14 +29,14 @@
                                 <td colspan="2">
                                     <div class="row mt-2">
                                         <div class="col-3">
-                                            <img src="~/images/Subramanya.png" style="height:70px;width:90px" />
+                                            <img src="~/images/VedhanthOldAgeNew.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-6 contentCenter">
-                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">SUBRAMANYA</label>
+                                            <label style="font-family:fantasy;font-size:50px;color:red;letter-spacing:5px">VEDHANTH</label>
 
                                         </div>
                                         <div class="col-3 contentEnd">
-                                            <img src="~/images/stethoscope.png" style="height:70px;width:90px" />
+                                            <img src="~/images/VedhanthLatestLogo.png" style="height:70px;width:90px" />
                                         </div>
                                         <div class="col-2"></div>
                                         <div class="col-8 contentCenter" style="margin-top:-20px">
@@ -167,7 +169,7 @@
                                         <div style="display: flex; margin-top: 5px;margin-bottom:20px">
                                             <div style="width: 20px; font-weight: bold; text-align: center;"> </div>
                                             <div style="flex: 1; text-align: left;">
-                                                I hereby read, I heard all the above terms and conditions and agree to sign up with SUBRAMANYA Home Care for my service requirement.
+                                                I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.
                                             </div>
                                         </div>
                                         @*<div class="row">
@@ -414,7 +416,7 @@
                     'If the patient\'s discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.',
                     'In case patient death non refund advance amount.'
                 ],
-                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with SUBRAMANYA Home Care for my service requirement.',
+                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.',
                 clientSignSrc:     getPDFSignatureSrc('clientSignature', 'clientSignatureImage'),
                 authorizedSignSrc: getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage')
             });
