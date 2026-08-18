@@ -1,0 +1,731 @@
+@model NursingHome.Models.HelperIdCardViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vedhanth - Helper ID Card</title>
+    <!-- Font Awesome for UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --navy-dark: #041933;
+            --navy-deep: #072242;
+            --emerald: #00684a;
+            --emerald-dark: #00543c;
+            --emerald-light: #00825c;
+            --ink: #061d36;
+            --slate-label: #1e293b;
+            --card-bg: #ffffff;
+            --paper-shadow: 0 16px 40px rgba(4, 25, 51, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px 40px;
+            background: #eaf1f8;
+            color: var(--ink);
+            font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-header {
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            color: var(--navy-dark);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-header p {
+            margin-top: 4px;
+            color: #475569;
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border: 0;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+        }
+
+        .btn-print {
+            background: var(--navy-dark);
+            color: #ffffff;
+        }
+
+        .btn-print:hover {
+            background: var(--navy-deep);
+        }
+
+        .btn-pdf {
+            background: var(--emerald);
+            color: #ffffff;
+        }
+
+        .btn-pdf:hover {
+            background: var(--emerald-dark);
+        }
+
+        .btn-back {
+            border: 1.5px solid var(--navy-dark);
+            background: #ffffff;
+            color: var(--navy-dark);
+        }
+
+        .btn-back:hover {
+            background: #f1f5f9;
+        }
+
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+
+        /* ===== ID CARD CONTAINER ===== */
+        .id-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 260px;
+            height: 500px;
+            border-radius: 24px;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 18px 40px -4px rgba(1, 25, 54, 0.24), 0 4px 14px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* TOP NAVY HEADER WITH LARGE SWEEPING UPWARD ARCH & GREEN BAND */
+        .header-container {
+            position: relative;
+            width: 100%;
+            height: 182px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .header-svg-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 10;
+            padding-top: 10px;
+            padding-left: 12px;
+            padding-right: 12px;
+            color: #ffffff;
+        }
+
+        .punch-hole {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .punch-hole-inner {
+            width: 48px;
+            height: 12px;
+            border-radius: 999px;
+            background: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .brand-logo-svg {
+            width: 54px;
+            height: 54px;
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+        }
+
+        .brand-title {
+            color: #ffffff;
+            font-family: "Playfair Display", "Cinzel", "Georgia", "Times New Roman", serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 7.5px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+        }
+
+        .brand-subtitle::before,
+        .brand-subtitle::after {
+            content: "—";
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* PHOTO SECTION */
+        .card-photo-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-top: -74px;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .photo-ring {
+            width: 104px;
+            height: 104px;
+            padding: 2.5px;
+            border: 1.5px solid var(--emerald);
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        .card-photo,
+        .photo-placeholder {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top center;
+        }
+
+        .photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+        }
+
+        .photo-placeholder i {
+            color: #94a3b8;
+            font-size: 44px;
+        }
+
+        /* NAME & DESIGNATION */
+        .identity-section {
+            text-align: center;
+            padding: 8px 12px 2px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .helper-name {
+            color: #0c213a;
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .helper-designation {
+            margin-top: 2px;
+            color: var(--emerald);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* INFO DETAILS TABLE */
+        .info-section {
+            width: 196px;
+            margin: 0 auto;
+            padding: 8px 0 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 80px 12px 1fr;
+            align-items: baseline;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .info-label {
+            color: var(--slate-label);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-colon {
+            color: var(--slate-label);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .info-value {
+            color: #0c213a;
+            font-weight: 900;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* QR CODE SECTION */
+        .qr-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            margin-bottom: auto;
+            padding: 4px 0;
+            z-index: 2;
+        }
+
+        .qr-box {
+            width: 56px;
+            height: 56px;
+            padding: 2px;
+            background: #ffffff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-box canvas,
+        .qr-box img {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        /* CARD FOOTER BANNER */
+        .card-footer {
+            margin-top: auto;
+            background: var(--emerald);
+            padding: 9px 8px;
+            text-align: center;
+            border-bottom-left-radius: 23px;
+            border-bottom-right-radius: 23px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .motto-text {
+            color: #ffffff;
+            font-size: 9.5px;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        /* LOADING OVERLAY */
+        #loadingOverlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 60px 40px;
+            color: var(--navy-dark);
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #cbd5e1;
+            border-top-color: var(--emerald);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @@keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* PRINT STYLESHEET */
+        @@media print {
+            @@page {
+                size: portrait;
+                margin: 0;
+            }
+
+            html, body {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .page-header, .action-buttons, #loadingOverlay {
+                display: none !important;
+            }
+
+            .card-wrapper {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+                min-height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .id-card {
+                width: 260px !important;
+                height: 500px !important;
+                min-width: 260px !important;
+                min-height: 500px !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1><i class="fas fa-id-card"></i> Helper ID Card</h1>
+        <p>Vedhanth Home Nursing Services — Professional Identity Card</p>
+    </div>
+
+    <div class="action-buttons">
+        <button type="button" class="btn-action btn-back" onclick="history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="button" class="btn-action btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Card</button>
+        <button type="button" class="btn-action btn-pdf" onclick="downloadPDF(event)"><i class="fas fa-file-pdf"></i> Download PDF</button>
+    </div>
+
+    <div class="card-wrapper">
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <span>Loading helper details…</span>
+        </div>
+
+        <div id="idCardEl" class="id-card" style="display:none;">
+            <!-- Top Dark Navy Header Area with Large Upward Arch & Emerald Band -->
+            <div class="header-container">
+                <svg class="header-svg-bg" viewBox="0 0 260 182" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Dark Midnight Navy Header Arch: Reaches y=148 at sides, arches up to y=94 in center -->
+                    <path d="M 0 0 L 260 0 L 260 148 C 195 94 65 94 0 148 Z" fill="#011732" />
+                    <!-- Emerald Green Curved Band (20px thickness at sides) -->
+                    <path d="M 0 148 C 65 94 195 94 260 148 L 260 168 C 195 114 65 114 0 168 Z" fill="#006747" />
+                </svg>
+
+                <div class="header-content">
+                    <div class="punch-hole">
+                        <div class="punch-hole-inner"></div>
+                    </div>
+
+                    <div class="brand-section">
+                        <!-- Vedhanth House Outline with 4 Panes and Caring Hands Logo -->
+                        <svg class="brand-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Vedhanth Logo">
+                            <!-- House Gable Roof & Walls - crisp white outline -->
+                            <path d="M18 66 L18 42 L50 14 L82 42 L82 66" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- 4-Pane Square Window Grid -->
+                            <rect x="37" y="36" width="9.5" height="9.5" rx="1.5" fill="#ffffff"/>
+                            <rect x="53.5" y="36" width="9.5" height="9.5" rx="1.5" fill="#ffffff"/>
+                            <rect x="37" y="49.5" width="9.5" height="9.5" rx="1.5" fill="#ffffff"/>
+                            <rect x="53.5" y="49.5" width="9.5" height="9.5" rx="1.5" fill="#ffffff"/>
+                            <!-- Upper Caring Swoosh / Left Hand -->
+                            <path d="M16 73 C26 63 42 64 56 68 C68 71 78 78 84 76 C76 80 64 77 52 74 C38 70 26 71 16 79 Z" fill="#ffffff"/>
+                            <!-- Lower Caring Swoosh / Right Hand -->
+                            <path d="M32 79 C46 83 60 83 72 79 C80 76 86 71 88 68 C86 76 76 84 62 87 C48 89 36 86 28 82 Z" fill="#ffffff"/>
+                        </svg>
+
+                        <div class="brand-text">
+                            <div class="brand-title">Vedhanth</div>
+                            <div class="brand-subtitle">Home Nursing Services</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Photo Section -->
+            <div class="card-photo-wrapper">
+                <div class="photo-ring">
+                    <img id="helperPhoto" class="card-photo" src="" alt="Helper photo" />
+                </div>
+            </div>
+
+            <!-- Helper Name & Role -->
+            <div class="identity-section">
+                <div class="helper-name" id="helperName">—</div>
+                <div class="helper-designation" id="helperRole">HOME CARE HELPER</div>
+            </div>
+
+            <!-- Bound Helper Information Rows -->
+            <div class="info-section">
+                <div class="info-row" id="rowId">
+                    <span class="info-label">ID No.</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoId">—</span>
+                </div>
+
+                
+
+                <div class="info-row" id="rowContact">
+                    <span class="info-label">Contact</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoContact">—</span>
+                </div>
+
+                <div class="info-row" id="rowDob" style="display: none;">
+                    <span class="info-label">DOB</span>
+                    <span class="info-colon">:</span>
+                    <span class="info-value" id="infoDob">—</span>
+                </div>
+            </div>
+
+            <!-- Dynamic QR Code -->
+            <div class="qr-section">
+                <div class="qr-box" id="qrcode"></div>
+            </div>
+
+            <!-- Emerald Footer Motto -->
+            <div class="card-footer">
+                <div class="motto-text">WE CARE, WE HEAL, WE SERVE</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const helperId = @Model.HelperId;
+        const userId = @Model.UserId;
+
+        if (window.self !== window.top) {
+            const pageHeader = document.querySelector('.page-header');
+            const actionBtns = document.querySelector('.action-buttons');
+            if (pageHeader) pageHeader.style.display = 'none';
+            if (actionBtns) actionBtns.style.display = 'none';
+            document.body.style.padding = '12px';
+        }
+
+        function fmtDate(value) {
+            if (!value) return null;
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return null;
+            return String(date.getDate()).padStart(2, '0') + '-' +
+                String(date.getMonth() + 1).padStart(2, '0') + '-' + date.getFullYear();
+        }
+
+        function setRow(rowId, valueId, value) {
+            const row = document.getElementById(rowId);
+            const valEl = document.getElementById(valueId);
+            if (!row || !valEl) return;
+            if (!value || value === '—') {
+                row.style.display = 'none';
+            } else {
+                row.style.display = 'grid';
+                valEl.textContent = value;
+            }
+        }
+
+        function makePlaceholder() {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'photo-placeholder';
+            placeholder.innerHTML = '<i class="fas fa-user" aria-hidden="true"></i>';
+            return placeholder;
+        }
+
+        function generateQrCode(text) {
+            const qrContainer = document.getElementById('qrcode');
+            if (!qrContainer) return;
+            qrContainer.innerHTML = '';
+            const qrUrl = "https://vedhanthhomenursingandoldagecarecentre.com";
+
+            new QRCode(document.getElementById("qrcode"), {
+                text: qrUrl,
+                width: 60,
+                height: 60,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        // Fetch helper information via AJAX
+        $.ajax({
+            url: '/Helpers/GetHelperById',
+            type: 'GET',
+            data: { id: helperId, userId: userId },
+            success: function (helper) {
+                if (!helper) {
+                    document.getElementById('loadingOverlay').innerHTML = '<p style="color:#c0392b; font-weight:700;">Helper not found.</p>';
+                    return;
+                }
+
+                const photo = document.getElementById('helperPhoto');
+                if (helper.image) {
+                    const encodedImage = helper.image.indexOf('~') !== -1 ? helper.image.split('~')[1] : helper.image;
+                    photo.src = encodedImage.startsWith('data:') || encodedImage.startsWith('http') 
+                        ? encodedImage 
+                        : 'data:image/png;base64,' + encodedImage;
+                    photo.onerror = function () { photo.replaceWith(makePlaceholder()); };
+                } else {
+                    photo.replaceWith(makePlaceholder());
+                }
+
+                const role = helper.designation || 'HOME CARE HELPER';
+                document.getElementById('helperName').textContent = helper.name || '—';
+                document.getElementById('helperRole').textContent = role.toUpperCase();
+
+                const formattedId = helper.helperCode || helper.idNo || ('VHNS' + String(helper.id).padStart(4, '0'));
+                setRow('rowId', 'infoId', formattedId);
+                //setRow('rowBloodGroup', 'infoBloodGroup', helper.bloodGroup || helper.blood_group || 'B+');
+
+                const contactNumber = helper.contactNo || helper.mobile || helper.phone || '90080 56789';
+                setRow('rowContact', 'infoContact', contactNumber);
+
+                if (helper.dateOfBirth || helper.dob) {
+                    setRow('rowDob', 'infoDob', fmtDate(helper.dateOfBirth || helper.dob));
+                }
+
+                const qrPayload = JSON.stringify({
+                    id: formattedId,
+                    name: helper.name,
+                    role: role,
+                    contact: contactNumber,
+                    verified: true
+                });
+                generateQrCode(qrPayload);
+
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('idCardEl').style.display = 'flex';
+            },
+            error: function () {
+                document.getElementById('loadingOverlay').innerHTML = '<p style="color:#c0392b; font-weight:700;">Failed to load helper details.</p>';
+            }
+        });
+
+        // High-Quality PDF Downloader
+        async function downloadPDF(event) {
+            const card = document.getElementById('idCardEl');
+            if (!card) return;
+            const button = event ? event.currentTarget : null;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+            }
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    onclone: function (clonedDocument) {
+                        const clonedPhoto = clonedDocument.getElementById('helperPhoto');
+                        if (clonedPhoto && clonedPhoto.tagName === 'IMG' && clonedPhoto.src) {
+                            const photoDiv = clonedDocument.createElement('div');
+                            photoDiv.id = 'helperPhoto';
+                            photoDiv.className = clonedPhoto.className;
+                            photoDiv.style.background = 'url("' + clonedPhoto.src + '") center top / cover no-repeat';
+                            clonedPhoto.parentNode.replaceChild(photoDiv, clonedPhoto);
+                        }
+                    }
+                });
+                const width = 54;
+                const height = Math.round(card.offsetHeight / card.offsetWidth * width);
+                const jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                const doc = new jsPDFCtor({ unit: 'mm', format: [width, height], orientation: 'portrait' });
+                doc.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, width, height);
+                const name = (document.getElementById('helperName').textContent || 'Helper').trim().replace(/\s+/g, '_');
+                doc.save('Vedhanth_ID_' + name + '.pdf');
+            } catch (error) {
+                console.error(error);
+                alert('PDF generation failed. Please use Print instead.');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
