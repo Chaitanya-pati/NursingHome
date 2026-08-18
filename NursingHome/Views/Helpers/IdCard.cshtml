@@ -1,6 +1,13 @@
 @model NursingHome.Models.HelperIdCardViewModel
+@inject IConfiguration Configuration
 @{
     Layout = null;
+    var idCardReference = Configuration["ID Card Reference"];
+
+    if (string.IsNullOrWhiteSpace(idCardReference))
+    {
+        throw new InvalidOperationException("The 'ID Card Reference' app setting must contain an ID card partial view name.");
+    }
 }
 
-@await Html.PartialAsync("_SubramanyaIDCard", Model)
+@await Html.PartialAsync(idCardReference, Model)
