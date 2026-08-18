@@ -1,0 +1,445 @@
+@model NursingHome.Models.HelperIdCardViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helper ID Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #475569;
+            --brand: #0052a5;
+            --accent: #2563eb;
+            --paper: #f5f9ff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 16px 40px;
+            background: #eef4fc;
+            color: var(--ink);
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .page-header { margin-bottom: 24px; text-align: center; }
+        .page-header h1 { color: var(--brand); font-size: 24px; font-weight: 800; letter-spacing: -.3px; }
+        .page-header p { margin-top: 4px; color: #5a6a80; font-size: 13px; }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform .2s, background .2s;
+        }
+        .btn-action:hover { transform: translateY(-1px); }
+        .btn-print { background: var(--brand); color: #fff; }
+        .btn-print:hover { background: #004184; }
+        .btn-pdf { background: #c0392b; color: #fff; }
+        .btn-pdf:hover { background: #a93226; }
+        .btn-back { border: 2px solid var(--brand); background: #fff; color: var(--brand); }
+        .btn-back:hover { background: #f0f4ff; }
+
+        .card-wrapper { display: flex; justify-content: center; }
+        .id-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 340px;
+            height: 530px;
+            overflow: hidden;
+            border: 1px solid rgba(220, 235, 255, .9);
+            border-radius: 24px;
+            background: radial-gradient(circle at 50% 25%, #fff 0%, var(--paper) 70%, #e8f1fd 100%);
+            box-shadow: 0 16px 40px rgba(0, 52, 120, .18);
+        }
+        .id-card::before {
+            position: absolute;
+            inset: 0;
+            content: "";
+            background-image: radial-gradient(var(--brand) .75px, transparent .75px);
+            background-size: 12px 12px;
+            opacity: .06;
+            pointer-events: none;
+        }
+        .punch-hole, .card-header, .card-photo-section, .name-section, .card-info, .card-footer {
+            position: relative;
+            z-index: 1;
+        }
+        .punch-hole { display: flex; justify-content: center; padding-top: 10px; }
+        .punch-hole-inner {
+            width: 32px;
+            height: 12px;
+            border-radius: 8px;
+            background: rgba(220, 230, 245, .9);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, .15);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 4px 16px 6px;
+        }
+        .header-logo { width: 56px; height: 56px; flex-shrink: 0; }
+        .header-company {
+            color: var(--brand);
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            line-height: 1;
+        }
+        .header-service {
+            margin-top: 2px;
+            color: #1e293b;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+        .header-tagline {
+            margin-top: 2px;
+            color: #1d6bf3;
+            font-size: 9.5px;
+            font-style: italic;
+            font-weight: 600;
+        }
+        .card-photo-section { display: flex; justify-content: center; margin: 15px 0; }
+        .card-photo-ring {
+            width: 122px;
+            height: 122px;
+            padding: 2.5px;
+            border: 2.5px solid #1d6bf3;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+        }
+        .card-photo, .photo-placeholder {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .card-photo { object-fit: cover; object-position: top; background: #d8e8f8; }
+        .photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #c8dced;
+        }
+        .photo-placeholder i { color: #7fa0be; font-size: 44px; }
+        .name-section { padding: 0 12px; text-align: center; }
+        .name-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .ecg-svg { width: 54px; height: 20px; opacity: .7; }
+        .card-name {
+            max-width: 200px;
+            overflow: hidden;
+            color: var(--brand);
+            font-size: 22px;
+            font-weight: 900;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .role-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 2px 0 12px;
+        }
+        .role-line { width: 28px; height: 1.5px; border-radius: 2px; background: rgba(37, 99, 235, .3); }
+        .role-badge { color: #1d6bf3; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+        .card-info { display: flex; flex-direction: column; gap: 8px; padding: 4px 24px; font-size: 12px; }
+        .info-row { display: flex; align-items: center; min-width: 0; }
+        .info-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            margin-right: 12px;
+            border-radius: 6px;
+            background: var(--brand);
+            color: #fff;
+        }
+        .info-icon-box i { font-size: 11px; }
+        .info-label { width: 84px; flex-shrink: 0; color: #334155; font-size: 12px; font-weight: 700; }
+        .info-colon { margin-right: 14px; color: #334155; font-size: 12px; font-weight: 700; }
+        .info-value { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+        .card-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-top: auto;
+            padding: 10px 16px;
+            border-bottom-right-radius: 24px;
+            border-bottom-left-radius: 24px;
+            background: linear-gradient(90deg, #004b99 0%, var(--brand) 50%, #0066cc 100%);
+        }
+        .footer-row { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 13px; font-weight: 700; }
+        .footer-row.web { color: rgba(224, 242, 254, .9); font-size: 10.5px; font-weight: 500; }
+        #loadingOverlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 40px;
+            color: var(--brand);
+        }
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #d0dce8;
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+
+        @@media (max-width: 420px) {
+            body { padding-right: 8px; padding-left: 8px; }
+            .id-card { transform-origin: top center; }
+        }
+        @@media print {
+            @@page { size: portrait; margin: 0; }
+            html, body {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .page-header, .action-buttons, #loadingOverlay { display: none !important; }
+            .card-wrapper {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+                min-height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .id-card {
+                width: 340px !important;
+                height: 530px !important;
+                min-width: 340px !important;
+                min-height: 530px !important;
+                border: 1px solid #c8dce8 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1><i class="fas fa-id-card"></i> Helper ID Card</h1>
+        <p>Subramanya Home Healthcare Service — Professional Identity Card</p>
+    </div>
+
+    <div class="action-buttons">
+        <button type="button" class="btn-action btn-back" onclick="history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="button" class="btn-action btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Card</button>
+        <button type="button" class="btn-action btn-pdf" onclick="downloadPDF(event)"><i class="fas fa-file-pdf"></i> Download PDF</button>
+    </div>
+
+    <div class="card-wrapper">
+        <div id="loadingOverlay"><div class="spinner"></div><span>Loading helper details…</span></div>
+        <div id="idCardEl" class="id-card" style="display:none;">
+            <div class="punch-hole"><div class="punch-hole-inner"></div></div>
+            <div class="card-header">
+                <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Subramanya logo">
+                    <path d="M50 8 L90 40 L82 46 L50 20 L18 46 L10 40 Z" fill="#0052a5"/>
+                    <path d="M18 44 V80 H30 V88 H10 V40 L18 44 Z" fill="#0052a5"/>
+                    <path d="M12 80 H88 V88 H12 Z" fill="#0052a5"/>
+                    <circle cx="44" cy="40" r="6" fill="#0052a5"/>
+                    <path d="M34 58 C34 48, 48 48, 54 54 C58 58, 58 72, 58 78 H32 C32 72, 34 62, 34 58 Z" fill="#0052a5"/>
+                    <circle cx="56" cy="46" r="4.5" fill="#0052a5"/>
+                    <path d="M48 62 C48 54, 60 54, 64 60 C66 64, 66 74, 66 78 H46 Z" fill="#0052a5"/>
+                    <g transform="translate(68, 60)"><rect x="0" y="8" width="24" height="8" rx="2" fill="#0052a5"/><rect x="8" y="0" width="8" height="24" rx="2" fill="#0052a5"/></g>
+                </svg>
+                <div>
+                    <div class="header-company">SUBRAMANYA</div>
+                    <div class="header-service">HOME HEALTHCARE SERVICE</div>
+                    <div class="header-tagline">Your Care, Our Commitment</div>
+                </div>
+            </div>
+
+            <div class="card-photo-section">
+                <div class="card-photo-ring"><img id="helperPhoto" class="card-photo" src="" alt="Helper photo" /></div>
+            </div>
+
+            <div class="name-section">
+                <div class="name-row">
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none" aria-hidden="true"><path d="M0 12 L28 12 L32 5 L36 19 L40 3 L44 21 L48 12 L70 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="card-name" id="helperName">—</div>
+                    <svg class="ecg-svg" viewBox="0 0 70 24" fill="none" aria-hidden="true"><path d="M70 12 L42 12 L38 5 L34 19 L30 3 L26 21 L22 12 L0 12" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="role-row"><div class="role-line"></div><div class="role-badge" id="helperRole">HELPER</div><div class="role-line"></div></div>
+            </div>
+
+            <div class="card-info">
+                <div class="info-row" id="rowId"><div class="info-icon-box"><i class="fas fa-user"></i></div><span class="info-label">ID No.</span><span class="info-colon">:</span><span class="info-value" id="infoId">—</span></div>
+                <div class="info-row" id="rowRole"><div class="info-icon-box"><i class="fas fa-user-check"></i></div><span class="info-label">Role</span><span class="info-colon">:</span><span class="info-value" id="infoRole">Helper</span></div>
+                <div class="info-row" id="rowDob"><div class="info-icon-box"><i class="fas fa-calendar-alt"></i></div><span class="info-label">DOB</span><span class="info-colon">:</span><span class="info-value" id="infoDob">—</span></div>
+            </div>
+
+            <div class="card-footer">
+                <div class="footer-row"><i class="fas fa-phone-alt"></i><span id="companyPhone">+91 90360 39555</span></div>
+                <div class="footer-row web"><i class="fas fa-globe"></i><span id="companyWeb">www.subramanyahomehealthcare.com</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const helperId = @Model.HelperId;
+        const userId = @Model.UserId;
+
+        if (window.self !== window.top) {
+            document.querySelector('.page-header').style.display = 'none';
+            document.querySelector('.action-buttons').style.display = 'none';
+            document.body.style.padding = '16px';
+        }
+
+        function fmtDate(value) {
+            if (!value) return null;
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return null;
+            return String(date.getDate()).padStart(2, '0') + '-' +
+                String(date.getMonth() + 1).padStart(2, '0') + '-' + date.getFullYear();
+        }
+
+        function setRow(rowId, valueId, value) {
+            const row = document.getElementById(rowId);
+            if (!value) row.style.display = 'none';
+            else document.getElementById(valueId).textContent = value;
+        }
+
+        function makePlaceholder() {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'photo-placeholder';
+            placeholder.innerHTML = '<i class="fas fa-user" aria-hidden="true"></i>';
+            return placeholder;
+        }
+
+        $.ajax({
+            url: '/Helpers/GetHelperById',
+            type: 'GET',
+            data: { id: helperId, userId: userId },
+            success: function (helper) {
+                if (!helper) {
+                    document.getElementById('loadingOverlay').innerHTML = '<p style="color:#c0392b">Helper not found.</p>';
+                    return;
+                }
+
+                const photo = document.getElementById('helperPhoto');
+                if (helper.image) {
+                    const encodedImage = helper.image.indexOf('~') !== -1 ? helper.image.split('~')[1] : helper.image;
+                    photo.src = 'data:image/png;base64,' + encodedImage;
+                    photo.onerror = function () { photo.replaceWith(makePlaceholder()); };
+                } else {
+                    photo.replaceWith(makePlaceholder());
+                }
+
+                const role = helper.designation || 'Helper';
+                document.getElementById('helperName').textContent = helper.name || '—';
+                document.getElementById('helperRole').textContent = role.toUpperCase();
+                document.getElementById('infoRole').textContent = role;
+                document.getElementById('infoId').textContent = 'SHHS' + String(helper.id).padStart(4, '0');
+                setRow('rowDob', 'infoDob', fmtDate(helper.dateOfBirth));
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('idCardEl').style.display = 'flex';
+            },
+            error: function () {
+                document.getElementById('loadingOverlay').innerHTML = '<p style="color:#c0392b">Failed to load helper details.</p>';
+            }
+        });
+
+        $.ajax({
+            url: '/Configuration/CityDetails',
+            type: 'GET',
+            data: { username: 'admin' },
+            success: function (city) {
+                if (!city) return;
+                if (city.mobileNumbers) document.getElementById('companyPhone').textContent = city.mobileNumbers;
+                document.getElementById('companyWeb').textContent = 'www.subramanyafoundation.com';
+            }
+        });
+
+        async function downloadPDF(event) {
+            const card = document.getElementById('idCardEl');
+            if (!card) return;
+            const button = event ? event.currentTarget : null;
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+            }
+            try {
+                const canvas = await html2canvas(card, {
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    onclone: function (clonedDocument) {
+                        const clonedPhoto = clonedDocument.getElementById('helperPhoto');
+                        if (clonedPhoto && clonedPhoto.tagName === 'IMG' && clonedPhoto.src) {
+                            const photoDiv = clonedDocument.createElement('div');
+                            photoDiv.id = 'helperPhoto';
+                            photoDiv.className = clonedPhoto.className;
+                            photoDiv.style.background = 'url("' + clonedPhoto.src + '") center top / cover no-repeat';
+                            clonedPhoto.parentNode.replaceChild(photoDiv, clonedPhoto);
+                        }
+                    }
+                });
+                const width = 54;
+                const height = Math.round(card.offsetHeight / card.offsetWidth * width);
+                const jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                const doc = new jsPDFCtor({ unit: 'mm', format: [width, height], orientation: 'portrait' });
+                doc.addImage(canvas.toDataURL('image/jpeg', .98), 'JPEG', 0, 0, width, height);
+                const name = (document.getElementById('helperName').textContent || 'Helper').trim().replace(/\s+/g, '_');
+                doc.save('IDCard_' + name + '.pdf');
+            } catch (error) {
+                alert('PDF generation failed. Please try Print instead.');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

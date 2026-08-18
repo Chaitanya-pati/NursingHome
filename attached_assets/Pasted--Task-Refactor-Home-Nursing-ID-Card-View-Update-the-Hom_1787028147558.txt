@@ -1,0 +1,77 @@
+### Task: Refactor Home Nursing ID Card View
+
+Update the **Home Nursing ID Card** implementation by separating the data-binding logic from the ID card design and UI functionality.
+
+#### Requirements
+
+1. **Update the existing ID Card View**
+
+   * The existing ID Card View should contain **only the values/data required for binding to the ID card**.
+   * Remove all ID card design/styling, layout-specific HTML, download functionality, print functionality, and other UI-related code from the main ID Card View.
+   * Do **not** change any existing business logic.
+
+2. **Create a Partial View**
+
+   * Create a new partial view named:
+     **`_SubramanyaIDCard.cshtml`**
+   * This partial view will contain **everything related to the actual ID card presentation**, including:
+
+     * Complete ID card HTML structure
+     * Design and layout
+     * CSS/styles
+     * Fonts, spacing, colors, borders, etc.
+     * Images/logos if required
+     * Download button/functionality
+     * Print button/functionality
+     * Any other ID-card-specific UI behavior
+   * All design and styling should remain inside this `.cshtml` file so the ID card can be maintained independently.
+
+3. **Data Passing**
+
+   * The main ID Card View should pass **only the required ID card values** to `_SubramanyaIDCard.cshtml`.
+   * Do not pass unnecessary model properties or unrelated data.
+   * The partial view should use these values to render the final ID card.
+
+4. **Design Preservation / Improvement**
+
+   * Preserve the existing business functionality and data flow.
+   * Improve/refactor the ID card design where appropriate so that it looks **clean, professional, premium, and print-ready**.
+   * Ensure the ID card is properly aligned and responsive to the required ID-card dimensions.
+   * The download and print output should contain **only the ID card**, not the surrounding page UI.
+
+5. **Business Logic Constraint**
+
+   * **Do not modify or break any existing business logic.**
+   * Do not change database queries, services, controllers, workflows, validation, or existing ID-card data-generation logic unless absolutely required for passing the existing values to the partial view.
+   * Only refactor the **view/UI structure and rendering logic**.
+
+### Expected Structure
+
+The implementation should follow this approach:
+
+```text
+Main ID Card View
+        |
+        |-- Sends only required ID Card values
+        ↓
+_SubramanyaIDCard.cshtml
+        |
+        |-- ID Card HTML
+        |-- Complete Design
+        |-- CSS / Styling
+        |-- Logo / Images
+        |-- Print functionality
+        |-- Download functionality
+        |-- All ID Card UI
+```
+
+### Important
+
+Before making changes, inspect the existing ID Card View and understand how the current values are being generated and used. Reuse the existing values and business logic wherever possible.
+
+The final result should have a **clean separation between data and presentation**:
+
+* **Main ID Card View → Data only**
+* **`_SubramanyaIDCard.cshtml` → Complete ID card UI/design/functionality**
+
+Do not introduce unnecessary architectural changes or modify unrelated files/features.

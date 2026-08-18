@@ -213,9 +213,11 @@ namespace NursingHome.Controllers
             {
                 var authError = RequireValidUser(out int sessionUserId);
                 if (authError != null) return authError;
-                ViewBag.HelperId = id;
-                ViewBag.UserId   = sessionUserId;
-                return View();
+                return View(new HelperIdCardViewModel
+                {
+                    HelperId = id,
+                    UserId = sessionUserId
+                });
             }
             catch (Exception ex)
             {
