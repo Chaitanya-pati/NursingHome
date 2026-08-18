@@ -219,7 +219,7 @@
 </div>
 
 <div class="container-fluid mb-2 mt-2 page-add-btn">
-    <button type="button" class="customBtn" onclick="verifyFace()">
+    <button type="button" class="customBtn" onclick="openOldAgeForm()">
         <i class="fa fa-add me-1"></i> Add
     </button>
 </div>
@@ -339,6 +339,36 @@
 <script>
 
         var OldAgeIdProof;
+        async function openOldAgeForm() {
+            try {
+                // Use the authenticated server-side session to determine whether
+                // face verification is required. Admins can open the form directly.
+                var currentUser = window.currentUser;
+                if (typeof currentUser === 'undefined') {
+                    currentUser = await $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("GetCurrentUser", "Users")'
+                    });
+                }
+
+                if (!currentUser) {
+                    alertMessage("Your session has expired. Please log in again.");
+                    return;
+                }
+
+                var role = String(currentUser.roles || currentUser.Roles || '').trim().toLowerCase();
+                if (role === 'admin') {
+                    Clearfields();
+                    return;
+                }
+
+                await verifyFace(currentUser.userName || currentUser.UserName);
+            } catch (error) {
+                console.error("Unable to open the Old Age form:", error);
+                alertMessage("Unable to open the form. Please try again.");
+            }
+        }
+
         $(document).ready(function () {
 
             $('#tblOldAge').on('click', '.btn-edit', function () {
