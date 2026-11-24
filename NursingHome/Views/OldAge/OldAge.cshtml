@@ -15,15 +15,16 @@
     <div class="custom-modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Patient Information Form</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Resident Admission &amp; Intake</h5>
                 <button type="button" class="close" data-dismiss="modal" onclick="HidePopup('oldAgePopup')" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body registrationFormContent">
-                <form>
+                <form id="oldAgeAdmissionForm" novalidate>
                     <input type="hidden" id="oldAgePatientId" />
-                    <table class="table table-bordered">
+                    @await Html.PartialAsync("_AdmissionFormSections")
+                    <table class="table table-bordered legacy-fields" aria-hidden="true">
                         <tbody>
                             <tr>
                                 <td colspan="2">
@@ -104,30 +105,30 @@
                                 <td>
                                     <div class="row col-12">
                                         <div class="col-10">
-                                            <input type="file" class="form-control" id="idProof" accept="image/jpeg,image/jpg,image/png,application/pdf">
-                                            <div id="idProofStatus" class="mt-1 small" style="display:none;"></div>
+                                            <input type="file" class="form-control" id="legacy-idProof" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            <div id="legacy-idProofStatus" class="mt-1 small" style="display:none;"></div>
                                         </div>
                                         <div class="col-2 contentEnd">
-                                            <i id="downloadIdProof" class="fa-solid fa-download fa-lg  mt-3 "></i>
+                                            <i id="legacy-downloadIdProof" class="fa-solid fa-download fa-lg  mt-3 "></i>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td><label for="registrationCharges">Registration Charges:</label></td>
-                                <td><input type="text" class="form-control  OldAgeIpfields" id="registrationCharges"></td>
+                                <td><input type="text" class="form-control  OldAgeIpfields" id="legacy-registrationCharges"></td>
                             </tr>
                             <tr>
                                 <td><label for="monthlyPayment">Monthly Payment Rs:</label></td>
-                                <td><input type="text" class="form-control  OldAgeIpfields" id="monthlyPayment"></td>
+                                <td><input type="text" class="form-control  OldAgeIpfields" id="legacy-monthlyPayment"></td>
                             </tr>
                             <tr>
                                 <td><label for="periodFrom">Period From:</label></td>
-                                <td><input type="date" class="form-control  OldAgeIpfields" id="periodFrom"></td>
+                                <td><input type="date" class="form-control  OldAgeIpfields" id="legacy-periodFrom"></td>
                             </tr>
                             <tr>
                                 <td><label for="periodTo">To:</label></td>
-                                <td><input type="date" class="form-control  OldAgeIpfields" id="periodTo"></td>
+                                <td><input type="date" class="form-control  OldAgeIpfields" id="legacy-periodTo"></td>
                             </tr>
                             <tr>
                                 <td colspan="2">
@@ -211,7 +212,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="HidePopup('oldAgePopup')" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-success" onclick="OpenQRPopup()">Pay</button>
-                <button type="button" class="btn btn-success" onclick="AddOldAge()">Save</button>
+                <button type="button" class="btn btn-success" id="saveAdmissionButton" onclick="AddOldAge()">Save admission</button>
                 <button id="downloadRegistrationForm" class="btn btn-info">Download PDF</button>
             </div>
         </div>
@@ -339,6 +340,10 @@
 <script>
 
         var OldAgeIdProof;
+        var OldAgeIdProofProcessing = false;
+        function updateUploadProcessingState() {
+            $('#clearAdmissionButton').prop('disabled', admissionViewOnly || OldAgeIdProofProcessing || medicalDocumentsProcessing);
+        }
         async function openOldAgeForm() {
             try {
                 // Use the authenticated server-side session to determine whether
@@ -371,12 +376,11 @@
 
         $(document).ready(function () {
 
-            $('#tblOldAge').on('click', '.btn-edit', function () {
-                var fullData = JSON.parse($(this).attr('data-full-data'));
-                BindData(fullData);
+            $('#tblOldAge').on('click', '.btn-view, .btn-edit', function () {
+                loadAdmissionData($(this).attr('data-id'), $(this).hasClass('btn-view'));
             });
             $('#tblOldAge').on('click', '.btn-delete', function () {
-                var ID = JSON.parse($(this).attr('dataId'));
+                var ID = Number($(this).attr('data-id'));
                 confirmDelete(ID);
             });
             $('#tblOldAge').on('click', '.btn-sign-link', function () {
@@ -392,7 +396,7 @@
                 BindPaymentData(fullData);
             });
             $('#tblOldAgePayment').on('click', '.btn-delete', function () {
-                var ID = JSON.parse($(this).attr('dataId'));
+                var ID = Number($(this).attr('data-id'));
                 confirmDelete(ID);
             });
             $('#search').on('click', function () {
@@ -416,60 +420,97 @@
             }
 
             await generateRegistrationPDF({
-                filename:          ($('#patientName').val() || 'patient') + '.pdf',
+                filename:          ($('#PatientName').val() || 'resident') + '.pdf',
                 formTitle:         'OLD AGE ADMISSION FORM:',
-                serialNo:          $('#serialNo').val(),
-                date:              $('#adminssionDate').val(),
+                serialNo:          $('#AdmissionNo').val() || $('#serialNo').val(),
+                date:              $('#AdmissionDate').val(),
                 addressLine1:      $('#customAdreesLine1').text().trim(),
                 mobileNumbers:     $('#cutomMobileNumbers').text().trim(),
                 email:             $('#customEmailAddress').text().trim(),
-                fields: [
-                    { label: 'Patient Name',         value: $('#patientName').val() },
-                    { label: 'Address',              value: $('#address').val() },
-                    { label: 'Patient Age',          value: $('#patientAge').val() },
-                    { label: 'Patient Condition',    value: $('#patientCondition').val() },
-                    { label: 'Customer Name',        value: $('#customerName').val() },
-                    { label: 'Mobile No',            value: $('#mobileNo').val() },
-                    { label: 'ID Proof',             value: $('#idProof')[0].files.length ? $('#idProof')[0].files[0].name : '(uploaded)' },
-                    { label: 'Types of Service',     value: $('#typesOfService').val() },
-                    { label: 'Registration Charges', value: $('#registrationCharges').val() },
-                    { label: 'Monthly Payment Rs',   value: $('#monthlyPayment').val() },
-                    { label: 'Period From',          value: $('#periodFrom').val() },
-                    { label: 'To',                   value: $('#periodTo').val() }
-                ],
-                termsTitle:        'Terms and Conditions for Client:',
+                fields: (function () {
+                    var fields = [];
+                    var seen = {};
+                    var multi = ['MedicalConditions', 'AssistanceRequired', 'MentalMemoryConditions', 'ServicesSelected'];
+                    document.querySelectorAll('#admissionFormSections [data-property]').forEach(function (field) {
+                        var property = field.dataset.property;
+                        if (seen[property]) return;
+                        seen[property] = true;
+                        var controls = document.querySelectorAll('#admissionFormSections [data-property="' + property + '"]');
+                        var value = '';
+                        if (multi.includes(property)) {
+                            value = Array.from(controls).filter(function (control) { return control.checked; }).map(function (control) { return control.value; }).join(', ');
+                        } else if (field.type === 'radio') {
+                            var checked = Array.from(controls).find(function (control) { return control.checked; });
+                            value = checked ? checked.value : '';
+                        } else if (field.type === 'checkbox') {
+                            value = field.checked ? 'Yes' : 'No';
+                        } else {
+                            value = field.value || '';
+                        }
+                        var label = field.closest('.admission-field')?.querySelector('label,.admission-field-label')?.textContent?.trim() || property;
+                        fields.push({ label: label.replace(/\*/g, '').trim(), value: value });
+                    });
+                    fields.push({ label: 'Admission / Registration Fee (₹)', value: $('#registrationCharges').val() || '' });
+                    fields.push({ label: 'Monthly Accommodation Fee (₹)', value: $('#monthlyPayment').val() || '' });
+                    fields.push({ label: 'Period From', value: $('#periodFrom').val() || '' });
+                    fields.push({ label: 'Period To', value: $('#periodTo').val() || '' });
+                    fields.push({ label: 'Identity Proof', value: $('#idProof')[0].files.length ? $('#idProof')[0].files[0].name : (OldAgeIdProof ? 'Uploaded' : '') });
+                    fields.push({ label: 'Medical Documents', value: $('#medicalFilesStatus').text() || '' });
+                    return fields;
+                })(),
+                termsTitle:        'Terms, Conditions & Declaration',
                 terms: [
-                    'We give with patients attender and nursing staff with emergency doctor visit.',
-                    'Three times food and tea, coffee (daily changes of food).',
-                    'We don\'t allow outside food and we don\'t provide any event foods for patients.',
-                    'We don\'t gives any personal medication to patients (BP, SUGAR TABLETS DIAPER HAND GLOVES UNDER PAD/PATIENTS AU THINGS).',
-                    'If the patient\'s discharge days are fewer than the advance payment balance, the remaining amount should be returned to the client.',
-                    'In case patient death non refund advance amount.'
+                    'The center will provide the agreed accommodation, attendant and nursing support, with emergency doctor visits arranged as per the services available and agreed.',
+                    'Meals and refreshments will be provided according to the center\'s daily schedule and the agreed care plan.',
+                    'Outside food and special event food are subject to the center\'s approval and applicable care or dietary requirements.',
+                    'Personal medicines, diapers, hand gloves, underpads and other individual medical or hygiene supplies are to be provided by the resident or family unless otherwise agreed in writing.',
+                    'If the resident is discharged before the end of a prepaid period, any refundable balance will be calculated according to the written payment and refund policy agreed at admission.',
+                    'In the event of a resident\'s death, any advance or outstanding amount will be settled according to the written agreement and applicable law. The center should explain the policy to the family before admission.'
                 ],
-                declarationText:   'I hereby read, I heard all the above terms and conditions and agree to sign up with VEDHANTH Home Care for my service requirement.',
-                clientSignSrc:     getPDFSignatureSrc('clientSignature', 'clientSignatureImage'),
-                authorizedSignSrc: getPDFSignatureSrc('authorizedSignature', 'authorizedSignatureImage')
+                declarationText:   'I/We confirm that the information provided is accurate to the best of my/our knowledge, and that I/we have read and understood the admission terms and care arrangements.',
+                clientSignSrc:     getPDFSignatureSrc('clientSignatureNew', 'clientSignatureNewImage'),
+                authorizedSignSrc: getPDFSignatureSrc('authorizedSignatureNew', 'authorizedSignatureNewImage')
             });
         });
+
+        function isAllowedAdmissionDocument(file) {
+            var extension = file.name.split('.').pop().toLowerCase();
+            var allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            var allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            return allowedExtensions.includes(extension) && (!file.type || allowedTypes.includes(file.type));
+        }
 
         $('#idProof').on('change', function (event) {
             var $input = $(this);
             var $status = $('#idProofStatus');
+            var selectedFile = event.target.files && event.target.files[0];
+            if (!selectedFile) return;
+            if (!isAllowedAdmissionDocument(selectedFile)) {
+                $input.val('');
+                alertMessage('Identity proof must be a PDF, JPG, or PNG file.');
+                return;
+            }
             OldAgeIdProof = '';
-            $status.html('<span class="text-muted"><i class="fa-solid fa-spinner fa-spin"></i> Processing file, please wait...</span>');
+            OldAgeIdProofProcessing = true;
+            updateUploadProcessingState();
+            $status.text('Processing file, please wait…');
             $status.show();
             $input.prop('disabled', true);
 
             ConvertToBase64(event.target).then(function (base64) {
                 OldAgeIdProof = base64;
-                var originalSizeMB = (event.target.files[0].size / (1024 * 1024)).toFixed(2);
-                $status.html('<span class="text-success"><i class="fa-solid fa-check"></i> File ready (' + originalSizeMB + ' MB)</span>');
+                var originalSizeMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
+                $status.text('File ready (' + originalSizeMB + ' MB)');
                 $input.prop('disabled', false);
+                OldAgeIdProofProcessing = false;
+                updateUploadProcessingState();
             }).catch(function (err) {
                 OldAgeIdProof = '';
                 $input.val('');
                 $input.prop('disabled', false);
-                $status.html('<span class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ' + err + '</span>');
+                OldAgeIdProofProcessing = false;
+                updateUploadProcessingState();
+                $status.text(typeof err === 'string' ? err : 'Unable to process the file. Please try again.');
                 alertMessage(typeof err === 'string' ? err : 'Failed to process file. Please try again.');
             });
         });
@@ -477,7 +518,7 @@
         document.getElementById('downloadIdProof').addEventListener('click', function () {
             if (OldAgeIdProof) {
                 const mimeType = OldAgeIdProof.split("~")[0];
-                const fileName = $('#patientName').val() + "_IdProof.";
+                const fileName = ($('#PatientName').val() || 'resident') + "_IdProof.";
 
                 downloadFile(OldAgeIdProof.split("~")[1], mimeType, fileName);
             } else {
@@ -494,22 +535,37 @@
         }
 
         function Clearfields() {
+            var form = document.getElementById('oldAgeAdmissionForm');
+            if (form) form.reset();
             $('.OldAgeIpfields').val('');
-            clearSignature('authorizedSignature');
-            clearSignature('clientSignature');
-            $('#authorizedSignatureImage').prop('hidden', true);
-            $('#authorizedSignature').prop('hidden', false);
-            $('#clientSignature').prop('hidden', false);
-            $('#clientSignatureImage').prop('hidden', true);
+            $('#oldAgePatientId').val('');
+            admissionViewOnly = false;
+            $('#admissionFormSections').find('input,select,textarea').prop('disabled', false);
+            $('#clearAdmissionButton,.clear-admission-signature').prop('disabled', false);
+            $('#saveAdmissionButton').prop('hidden', false);
+            $('#oldAgePopup .modal-title').text('Resident Admission & Intake');
+            $('#oldAgePopup .modal-footer button[onclick="OpenQRPopup()"], #downloadRegistrationForm').prop('hidden', false);
+            clearSignature('authorizedSignatureNew');
+            clearSignature('clientSignatureNew');
+            $('#authorizedSignatureNewImage,#clientSignatureNewImage').attr('src', '').prop('hidden', true);
+            $('#authorizedSignatureNew,#clientSignatureNew').prop('hidden', false);
             OldAgeIdProof = '';
-            $('#idProof').val('');
-            $('#idProofStatus').hide().html('');
+            OldAgeIdProofProcessing = false;
+            OldAgeMedicalDocuments = '';
+            OldAgePaymentStatus = 'Pending';
+            medicalDocumentsProcessing = false;
+            updateUploadProcessingState();
+            $('#idProofStatus').hide().text('');
+            $('#medicalFilesStatus').text('');
             GetSerialNo();
-            $('#adminssionDate').val(formatDate(new Date()));
-            $('#periodTo').val(formatDate(new Date()));
-            $('#periodFrom').val(formatDate(new Date()));
+            var today = formatDate(new Date());
+            $('#AdmissionDate').val(today);
+            $('#SignedDate').val(today);
+            $('#adminssionDate').val(today);
+            $('#periodFrom').val(today);
+            $('#periodTo').val('');
+            $('#admissionFormSections').find('input,select,textarea').first().trigger('input');
             showPopup('oldAgePopup');
-            // $('#oldAgePopup').modal('toggle');
         }
 
         function GetSerialNo() {
@@ -517,6 +573,9 @@
                 url: '@Url.Action("GetLatestID", "OldAge")',
                 success: function (response) {
                     $('#serialNo').val(response);
+                    if (!$('#AdmissionNo').val()) {
+                        $('#AdmissionNo').val('VAC-' + new Date().getFullYear() + '-' + String(response).padStart(3, '0'));
+                    }
                 },
                 error: function (response) {
                 }
@@ -532,107 +591,281 @@
         }
 
 
-        function AddOldAge() {
-            if (CheckEmptyFields()) {
-                var data = {};
-                data.Id = $('#oldAgePatientId').val();
-                data.PatientName = $('#patientName').val();
-                data.Address = $('#address').val();
-                data.Age = $('#patientAge').val();
-                data.Condition = $('#patientCondition').val();
-                data.CustomerName = $('#customerName').val();
-                data.MobileNo = $('#mobileNo').val();
-                data.TypesofServices = $('#typesOfService').val();
-                data.IdProof = OldAgeIdProof;
-                data.PaymentStatus = "Pending";
-                data.PeriodFrom = $('#periodFrom').val();
-                data.PeriodTo = $('#periodTo').val();
-                data.AdmissionDate = $('#adminssionDate').val();
-                data.MonthlyPayment = $('#monthlyPayment').val();
-                data.RegistrationCharges = $('#registrationCharges').val();
-                var authorizedCanvas = $('#authorizedSignature')[0];
-                var clientCanvas = $('#clientSignature')[0];
-                // Only update signature if canvas is not blank, else keep previous value (from hidden img src)
-                if (!isCanvasBlank(authorizedCanvas)) {
-                    data.authorizedSign = authorizedCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-                } else if ($('#authorizedSignatureImage').attr('src')) {
-                    data.authorizedSign = $('#authorizedSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
-                } else {
-                    data.authorizedSign = "";
-                }
-                if (!isCanvasBlank(clientCanvas)) {
-                    data.clientSign = clientCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-                } else if ($('#clientSignatureImage').attr('src')) {
-                    data.clientSign = $('#clientSignatureImage').attr('src').replace(/^data:image\/(png|jpg);base64,/, "");
-                } else {
-                    data.clientSign = "";
-                }
-                data.SUser = localStorage.getItem('username');
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("AddorEditOldAge", "OldAge")',
-                    data: data,
-                    success: function (response) {
-                        if (response) {
-                            let msg = $('#oldAgePatientId').val() == '' ? "Data Added Successfully" : "Data Updated Successfully";
-                            HidePopup('oldAgePopup');
-                            msgPopup("success", msg);
-                            GetData();
+        var OldAgeMedicalDocuments = '';
+        var OldAgePaymentStatus = 'Pending';
+        var admissionViewOnly = false;
+        var medicalDocumentsProcessing = false;
 
-                            // Show client signature link
-                            var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
-                            var id = $('#oldAgePatientId').val() == '' ? response : $('#oldAgePatientId').val();
-                            var link = baseUrl + '/OldAge/ClientSignature?id=' + id;
-                            $('#clientSignatureLink').val(link);
-                            $('#clientSignatureLinkContainer').show();
-                        } else {
-                            msgPopup("error", "Error! Please Try Again");
-                        }
-                    },
-                    error: function (response) {
-                        console.error(response);
-                    }
-                });
+        function readMultiSelection(value) {
+            if (!value) return [];
+            try {
+                var parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed.map(String) : [];
+            } catch (_) {
+                return String(value).split(',').map(function (item) { return item.trim(); }).filter(Boolean);
             }
         }
 
-        function BindData(data) {
-            $('#oldAgePatientId').val(data.id);
-            $('#patientName').val(data.patientName);
-            $('#address').val(data.address);
-            $('#patientAge').val(data.age);
-            $('#patientCondition').val(data.condition);
-            $('#customerName').val(data.customerName);
-            $('#mobileNo').val(data.mobileNo);
-            $('#typesOfService').val(data.typesofServices);
-            OldAgeIdProof = data.idProof;
-            // data.PaymentStatus = "Pending";
-            $('#periodFrom').val(formatDate(new Date(data.periodFrom)));
-            $('#periodTo').val(formatDate(new Date(data.periodTo)));
-            $('#adminssionDate').val(formatDate(new Date(data.admissionDate)));
-            $('#monthlyPayment').val(data.monthlyPayment);
-            $('#registrationCharges').val(data.registrationCharges);
-            // Client Signature
-            if (data.clientSign && data.clientSign.trim() !== "") {
-                $('#clientSignatureImage').prop('hidden', false);
-                $('#clientSignature').prop('hidden', true);
-                $('#clientSignatureImage').attr('src', 'data:image/png;base64,' + data.clientSign);
-            } else {
-                $('#clientSignatureImage').prop('hidden', true);
-                $('#clientSignature').prop('hidden', false);
-                $('#clientSignatureImage').attr('src', '');
+        function parseSavedMedicalDocuments(value) {
+            if (!value) return [];
+            try {
+                var parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [{ fileName: 'Previously saved document', legacyValue: value }];
+            } catch (_) {
+                return [{ fileName: 'Previously saved document', legacyValue: value }];
             }
-            // Authorized Signature
-            if (data.authorizedSign && data.authorizedSign.trim() !== "") {
-                $('#authorizedSignatureImage').attr('src', 'data:image/png;base64,' + data.authorizedSign);
-                $('#authorizedSignatureImage').prop('hidden', false);
-                $('#authorizedSignature').prop('hidden', true);
-            } else {
-                $('#authorizedSignatureImage').prop('hidden', true);
-                $('#authorizedSignature').prop('hidden', false);
-                $('#authorizedSignatureImage').attr('src', '');
+        }
+
+        function updateMedicalDocumentsStatus(value) {
+            var status = $('#medicalFilesStatus');
+            if (!value) {
+                status.text('');
+                return;
             }
+            var docs = parseSavedMedicalDocuments(value);
+            var names = docs.map(function (document) { return document.fileName || 'Previously saved document'; });
+            status.text(names.length ? names.length + ' saved document' + (names.length === 1 ? '' : 's') + ': ' + names.join(', ') : 'Previously saved document retained');
+        }
+
+        $('#medicalFiles').on('change', async function (event) {
+            var selectedFiles = Array.from(event.target.files || []);
+            if (!selectedFiles.length) return;
+            var totalBytes = selectedFiles.reduce(function (total, file) { return total + file.size; }, 0);
+            if (totalBytes > 10 * 1024 * 1024 || selectedFiles.some(function (file) { return file.size > 5 * 1024 * 1024 || !isAllowedAdmissionDocument(file); })) {
+                alertMessage('Select PDF, JPG, or PNG files. Each must be 5 MB or less and the combined upload must be 10 MB or less.');
+                event.target.value = '';
+                return;
+            }
+            medicalDocumentsProcessing = true;
+            updateUploadProcessingState();
+            $(this).prop('disabled', true);
+            $('#medicalFilesStatus').text('Processing selected documents…');
+            try {
+                var newDocuments = await Promise.all(selectedFiles.map(function (file) {
+                    return new Promise(function (resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function () { resolve({ fileName: file.name, contentType: file.type || 'application/octet-stream', dataUrl: reader.result }); };
+                        reader.onerror = function () { reject(new Error('Could not read ' + file.name)); };
+                        reader.readAsDataURL(file);
+                    });
+                }));
+                var previousDocuments = parseSavedMedicalDocuments(OldAgeMedicalDocuments);
+                OldAgeMedicalDocuments = JSON.stringify(previousDocuments.concat(newDocuments));
+                $('input[data-property="MedicalDocumentsAttached"][value="true"]').prop('checked', true);
+                updateMedicalDocumentsStatus(OldAgeMedicalDocuments);
+            } catch (error) {
+                $('#medicalFilesStatus').text('Unable to read the selected documents. Please try again.');
+                alertMessage(error.message || 'Unable to read the selected documents.');
+            } finally {
+                medicalDocumentsProcessing = false;
+                $('#medicalFiles').prop('disabled', false);
+                updateUploadProcessingState();
+            }
+        });
+
+        function getSignatureValue(canvasId, imageId) {
+            var canvas = document.getElementById(canvasId);
+            var image = document.getElementById(imageId);
+            if (canvas && !isCanvasBlank(canvas)) {
+                return canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '');
+            }
+            if (image && image.getAttribute('src')) {
+                return image.getAttribute('src').replace(/^data:image\/(png|jpg);base64,/, '');
+            }
+            return '';
+        }
+
+        function AddOldAge() {
+            if (admissionViewOnly) return;
+            if (medicalDocumentsProcessing || OldAgeIdProofProcessing) {
+                alertMessage('Please wait until the selected files have finished processing.');
+                return;
+            }
+            var form = document.getElementById('oldAgeAdmissionForm');
+            if (!form.reportValidity()) return;
+
+            var data = {};
+            data.Id = $('#oldAgePatientId').val() || 0;
+            document.querySelectorAll('#admissionFormSections [data-property]').forEach(function (field) {
+                var property = field.dataset.property;
+                if (['MedicalConditions', 'AssistanceRequired', 'MentalMemoryConditions', 'ServicesSelected'].includes(property)) {
+                    if (!Object.prototype.hasOwnProperty.call(data, property)) {
+                        var selected = Array.from(document.querySelectorAll('#admissionFormSections [data-property="' + property + '"]:checked')).map(function (item) { return item.value; });
+                        data[property] = JSON.stringify(selected);
+                    }
+                    return;
+                }
+                if (field.type === 'radio') {
+                    if (field.checked) data[property] = field.value;
+                    else if (!Object.prototype.hasOwnProperty.call(data, property)) data[property] = null;
+                    return;
+                }
+                if (field.type === 'checkbox') {
+                    data[property] = field.checked;
+                    return;
+                }
+                data[property] = field.value === '' ? null : field.value;
+            });
+
+            data.PatientName = $('#PatientName').val();
+            data.Address = $('#Address').val();
+            data.Age = $('#Age').val();
+            data.Condition = $('#PresentHealthCondition').val();
+            data.CustomerName = $('#GuardianName').val();
+            data.MobileNo = $('#MobileNo').val();
+            data.TypesofServices = readMultiSelection(data.ServicesSelected).join(', ').slice(0, 200);
+            data.IdProof = OldAgeIdProof || null;
+            data.PaymentStatus = data.Id ? OldAgePaymentStatus : 'Pending';
+            data.PeriodFrom = $('#periodFrom').val() || null;
+            data.PeriodTo = $('#periodTo').val() || null;
+            data.AdmissionDate = $('#AdmissionDate').val() || null;
+            data.MonthlyPayment = $('#monthlyPayment').val() || null;
+            data.RegistrationCharges = $('#registrationCharges').val() || null;
+            data.MedicalDocuments = OldAgeMedicalDocuments || null;
+            data.SUser = localStorage.getItem('username');
+            $('#patientName').val(data.PatientName);
+            $('#address').val(data.Address);
+            $('#patientAge').val(data.Age);
+            $('#patientCondition').val(data.Condition);
+            $('#customerName').val(data.CustomerName);
+            $('#mobileNo').val(data.MobileNo);
+            $('#typesOfService').val(data.TypesofServices);
+            $('#adminssionDate').val(data.AdmissionDate);
+
+            data.authorizedSign = getSignatureValue('authorizedSignatureNew', 'authorizedSignatureNewImage');
+            data.clientSign = getSignatureValue('clientSignatureNew', 'clientSignatureNewImage');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddorEditOldAge", "OldAge")',
+                data: data,
+                success: function (response) {
+                    if (response) {
+                        var wasNew = !$('#oldAgePatientId').val();
+                        var id = wasNew ? response : $('#oldAgePatientId').val();
+                        $('#oldAgePatientId').val(id);
+                        HidePopup('oldAgePopup');
+                        msgPopup('success', wasNew ? 'Admission added successfully' : 'Admission updated successfully');
+                        GetData();
+                        var baseUrl = '@Configuration["ClientSignatureBaseUrl"]';
+                        $('#clientSignatureLink').val(baseUrl + '/OldAge/ClientSignature?id=' + id);
+                        $('#clientSignatureLinkContainer').show();
+                    } else {
+                        msgPopup('error', 'Unable to save this admission. Please try again.');
+                    }
+                },
+                error: function (response) {
+                    console.error(response);
+                    msgPopup('error', 'Unable to save this admission. Please check the form and try again.');
+                }
+            });
+        }
+
+        function toDateInput(value) {
+            if (!value) return '';
+            var parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? '' : formatDate(parsed);
+        }
+
+        function setSavedSignature(canvasId, imageId, value) {
+            var canvas = document.getElementById(canvasId);
+            var image = document.getElementById(imageId);
+            var signature = value ? String(value).trim() : '';
+            if (signature) {
+                image.src = signature.indexOf('data:image/') === 0 ? signature : 'data:image/png;base64,' + signature;
+                image.hidden = false;
+                canvas.hidden = true;
+            } else {
+                image.src = '';
+                image.hidden = true;
+                canvas.hidden = false;
+                clearSignature(canvasId);
+            }
+        }
+
+        function BindData(data, viewOnly) {
+            admissionViewOnly = viewOnly === true;
+            $('#oldAgePatientId').val(data.id || '');
+            OldAgePaymentStatus = data.paymentStatus || 'Pending';
+            OldAgeIdProof = data.idProof || '';
+            OldAgeMedicalDocuments = data.medicalDocuments || '';
+            updateMedicalDocumentsStatus(OldAgeMedicalDocuments);
+
+            var multiProperties = ['MedicalConditions', 'AssistanceRequired', 'MentalMemoryConditions', 'ServicesSelected'];
+            var seenProperties = {};
+            document.querySelectorAll('#admissionFormSections [data-property]').forEach(function (field) {
+                var property = field.dataset.property;
+                if (seenProperties[property]) return;
+                seenProperties[property] = true;
+                var key = property.charAt(0).toLowerCase() + property.slice(1);
+                var value = data[key] !== undefined ? data[key] : data[property];
+                var group = document.querySelectorAll('#admissionFormSections [data-property="' + property + '"]');
+                if (multiProperties.includes(property)) {
+                    var selected = readMultiSelection(value);
+                    group.forEach(function (option) { option.checked = selected.includes(option.value); });
+                } else if (field.type === 'radio') {
+                    group.forEach(function (option) { option.checked = value != null && String(option.value).toLowerCase() === String(value).toLowerCase(); });
+                } else if (field.type === 'checkbox') {
+                    field.checked = value === true || String(value).toLowerCase() === 'true' || value === 1;
+                } else if (field.type === 'date') {
+                    field.value = toDateInput(value);
+                } else {
+                    field.value = value == null ? '' : value;
+                }
+            });
+
+            $('#serialNo').val(data.admissionNo || data.id || '');
+            $('#AdmissionNo').val(data.admissionNo || data.id || '');
+            $('#patientName').val(data.patientName || '');
+            $('#address').val(data.address || '');
+            $('#patientAge').val(data.age == null ? '' : data.age);
+            $('#patientCondition').val(data.condition || data.presentHealthCondition || '');
+            if (!data.presentHealthCondition && data.condition) $('#PresentHealthCondition').val(data.condition);
+            $('#customerName').val(data.customerName || data.guardianName || '');
+            $('#mobileNo').val(data.mobileNo || '');
+            $('#typesOfService').val(data.typesofServices || '');
+            if (!data.guardianName && data.customerName) $('#GuardianName').val(data.customerName);
+            if (!data.guardianMobileNo && data.mobileNo) $('#GuardianMobileNo').val(data.mobileNo);
+            if (!data.servicesSelected && data.typesofServices) {
+                var legacyServices = readMultiSelection(data.typesofServices).map(function (service) { return service.toLowerCase(); });
+                var serviceOptions = document.querySelectorAll('#admissionFormSections [data-property="ServicesSelected"]');
+                var matchedLegacyService = false;
+                serviceOptions.forEach(function (option) {
+                    option.checked = legacyServices.includes(option.value.toLowerCase());
+                    if (option.checked) matchedLegacyService = true;
+                });
+                if (!matchedLegacyService) $('#OtherService').val(data.typesofServices);
+            }
+            if (OldAgeIdProof) $('#idProofStatus').text('Existing identity proof saved').show();
+            $('#periodFrom').val(toDateInput(data.periodFrom));
+            $('#periodTo').val(toDateInput(data.periodTo));
+            $('#adminssionDate').val(toDateInput(data.admissionDate));
+            $('#monthlyPayment').val(data.monthlyPayment == null ? '' : data.monthlyPayment);
+            $('#registrationCharges').val(data.registrationCharges == null ? '' : data.registrationCharges);
+            updateMedicalDocumentsStatus(OldAgeMedicalDocuments);
+            setSavedSignature('clientSignatureNew', 'clientSignatureNewImage', data.clientSign);
+            setSavedSignature('authorizedSignatureNew', 'authorizedSignatureNewImage', data.authorizedSign);
+
+            $('#admissionFormSections').find('input,select,textarea').prop('disabled', admissionViewOnly);
+            $('.clear-admission-signature').prop('disabled', admissionViewOnly);
+            updateUploadProcessingState();
+            $('#saveAdmissionButton').prop('hidden', admissionViewOnly);
+            $('#oldAgePopup .modal-title').text(admissionViewOnly ? 'Admission Details' : 'Resident Admission & Intake');
+            $('#oldAgePopup .modal-footer button[onclick="OpenQRPopup()"], #downloadRegistrationForm').prop('hidden', admissionViewOnly);
+            $('#AdmissionNo').trigger('input');
             showPopup('oldAgePopup');
+        }
+
+        function loadAdmissionData(id, viewOnly) {
+            $.get({
+                url: '@Url.Action("GetAdmissionData", "OldAge")',
+                data: { id: id },
+                success: function (admission) { BindData(admission, viewOnly); },
+                error: function (response) {
+                    console.error(response);
+                    alertMessage('Unable to load this admission. Please try again.');
+                }
+            });
         }
 
         function confirmDelete(id) {
@@ -701,15 +934,17 @@
                 success: function (response) {
                     table.clear().draw();
                     response.data.forEach(function (item) {
+                        var safePatientName = $('<div>').text(item.patientName || '').html();
                         table.row.add([
-                            item.patientName,
+                            safePatientName,
                             item.admissionDate ? item.admissionDate.split("T")[0] : null,
                             item.periodFrom ? item.periodFrom.split("T")[0] : null,
                             item.periodTo ? item.periodTo.split("T")[0] : null,
                             '<div class="contentCenter">' +
-                            '<i class="fa fa-edit me-4 ml-2 btn-edit" style="color:green;cursor:pointer;" title="Edit" data-full-data=\'' + JSON.stringify(item).replace(/'/g, "&#39;") + '\'></i>' +
-                            '<i class="fa-solid fa-paper-plane me-4 ml-2 btn-sign-link" style="color:#0d6efd;cursor:pointer;" title="Send Signature Link" data-id="' + item.id + '"></i>' +
-                            '<i class="fa fa-trash ml-2 btn-delete" style="color:red;cursor:pointer;" title="Delete" dataId=\'' + JSON.stringify(item.id).replace(/'/g, "&#39;") + '\'></i>' +
+                            '<button type="button" class="btn btn-link btn-sm p-0 me-3 btn-view" style="color:#24685c;" title="View details" aria-label="View admission details for ' + safePatientName + '" data-id="' + item.id + '"><i class="fa fa-eye" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="btn btn-link btn-sm p-0 me-3 btn-edit" style="color:green;" title="Edit" aria-label="Edit admission for ' + safePatientName + '" data-id="' + item.id + '"><i class="fa fa-edit" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="btn btn-link btn-sm p-0 me-3 btn-sign-link" style="color:#0d6efd;" title="Send Signature Link" aria-label="Send signature link for ' + safePatientName + '" data-id="' + item.id + '"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="btn btn-link btn-sm p-0 btn-delete" style="color:red;" title="Delete" aria-label="Delete admission for ' + safePatientName + '" data-id="' + item.id + '"><i class="fa fa-trash" aria-hidden="true"></i></button>' +
                             '</div>'
                         ]).draw();
                     });

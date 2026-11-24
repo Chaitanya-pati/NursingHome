@@ -84,7 +84,17 @@ namespace NursingHome.Controllers
             try
             {
                 var result = _DbConn.GetData(startDate, endDate, username);
-                return Json(new { data = result });
+                return Json(new
+                {
+                    data = result.Select(item => new
+                    {
+                        item.Id,
+                        item.PatientName,
+                        item.AdmissionDate,
+                        item.PeriodFrom,
+                        item.PeriodTo
+                    })
+                });
             }
             catch (Exception ex)
             {
@@ -116,6 +126,21 @@ namespace NursingHome.Controllers
             catch (Exception ex)
             {
                 _logger.SaveLog("OldAgeController", "GetLatestID", ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAdmissionData(int id)
+        {
+            try
+            {
+                var admission = _DbConn.GetPatientData(id);
+                return admission == null ? NotFound() : Json(admission);
+            }
+            catch (Exception ex)
+            {
+                _logger.SaveLog("OldAgeController", "GetAdmissionData", ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

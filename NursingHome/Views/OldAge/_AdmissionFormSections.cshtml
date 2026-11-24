@@ -1,0 +1,238 @@
+<div class="admission-form" id="admissionFormSections">
+    <header class="admission-hero">
+        <div class="admission-brand-mark" aria-hidden="true">V</div>
+        <div class="admission-hero-copy">
+            <div class="admission-eyebrow">Care · Dignity · Safety · Respect</div>
+            <h1>Old Age Home Admission Form</h1>
+            <p>A thoughtful, clear and secure resident intake experience.</p>
+        </div>
+    </header>
+    <div class="admission-toolbar">
+        <div class="admission-progress" aria-live="polite">
+            <span id="admissionProgressText">0% completed</span>
+            <div class="admission-progress-track" role="progressbar" aria-labelledby="admissionProgressText" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="admissionProgressFill"></span></div>
+        </div>
+        <div class="admission-toolbar-actions">
+            <button type="button" class="admission-button admission-button-light" id="clearAdmissionButton">Clear form</button>
+            <button type="button" class="admission-button admission-button-light" onclick="window.print()">Print / Save PDF</button>
+        </div>
+    </div>
+    <div class="admission-form-body">
+        <div class="admission-intro">
+            <div><h2>Resident Admission &amp; Intake</h2><p>Complete the details below. Fields marked <b>*</b> are required.</p></div>
+            <span class="admission-required-note"><b>*</b> Required fields</span>
+        </div>
+        <div class="admission-sections">
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">00</span><div><h3>Admission Reference</h3><p>Record and identify the admission</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field"><label for="AdmissionNo">Admission No.</label><input id="AdmissionNo" data-property="AdmissionNo" type="text" placeholder="e.g. VAC-2026-001"></div>
+                    <div class="admission-field"><label for="AdmissionDate">Date of Admission <b>*</b></label><input id="AdmissionDate" data-property="AdmissionDate" type="date" required></div>
+                    <div class="admission-field"><label for="ResidentIdNo">Resident ID No.</label><input id="ResidentIdNo" data-property="ResidentIdNo" type="text" placeholder="Enter resident ID"></div>
+                    <div class="admission-field"><label for="RoomBedNo">Room / Bed No.</label><input id="RoomBedNo" data-property="RoomBedNo" type="text" placeholder="e.g. Room 02 / Bed A"></div>
+                    <div class="admission-field"><label for="AdmissionType">Admission Type <b>*</b></label><select id="AdmissionType" data-property="AdmissionType" required><option value="">Select admission type</option><option>Permanent Residential Admission</option><option>Temporary / Short-Term Stay</option><option>Respite Care</option><option>Assisted Living</option><option>Nursing / Care Support</option><option>Other</option></select></div>
+                    <div class="admission-field"><label for="ExpectedDurationOfStay">Expected Duration of Stay</label><input id="ExpectedDurationOfStay" data-property="ExpectedDurationOfStay" type="text" placeholder="e.g. 3 months / long-term"></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">01</span><div><h3>Resident / Senior Citizen Details</h3><p>Personal information and identity</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-6"><label for="PatientName">Full Name <b>*</b></label><input id="PatientName" data-property="PatientName" type="text" required placeholder="Enter resident's full name"></div>
+                    <div class="admission-field span-6"><label for="FatherHusbandWifeName">Father / Husband / Wife Name</label><input id="FatherHusbandWifeName" data-property="FatherHusbandWifeName" type="text" placeholder="Enter name"></div>
+                    <div class="admission-field"><label for="DateOfBirth">Date of Birth</label><input id="DateOfBirth" data-property="DateOfBirth" type="date"></div>
+                    <div class="admission-field"><label for="Age">Age (years) <b>*</b></label><input id="Age" data-property="Age" type="number" min="0" max="125" required placeholder="Age"></div>
+                    <div class="admission-field"><span class="admission-field-label" id="genderFieldLabel">Gender</span><div class="admission-choice-row" role="group" aria-labelledby="genderFieldLabel"><label class="admission-choice"><input type="radio" name="Gender" data-property="Gender" value="Male"> Male</label><label class="admission-choice"><input type="radio" name="Gender" data-property="Gender" value="Female"> Female</label><label class="admission-choice"><input type="radio" name="Gender" data-property="Gender" value="Other"> Other</label></div></div>
+                    <div class="admission-field"><label for="AadhaarNo">Aadhaar No.</label><input id="AadhaarNo" data-property="AadhaarNo" type="text" inputmode="numeric" maxlength="14" placeholder="XXXX XXXX XXXX"></div>
+                    <div class="admission-field"><label for="OtherIdProof">Other ID Proof</label><input id="OtherIdProof" data-property="OtherIdProof" type="text" placeholder="ID type / number"></div>
+                    <div class="admission-field"><label for="MobileNo">Mobile No.</label><input id="MobileNo" data-property="MobileNo" type="tel" placeholder="Resident contact number"></div>
+                    <div class="admission-field span-6"><label for="Address">Permanent Address</label><textarea id="Address" data-property="Address" placeholder="House / street, area, city, state, PIN"></textarea></div>
+                    <div class="admission-field span-6"><label for="CurrentAddress">Current Address</label><textarea id="CurrentAddress" data-property="CurrentAddress" placeholder="If different from permanent address"></textarea></div>
+                    <div class="admission-field"><label for="MaritalStatus">Marital Status</label><select id="MaritalStatus" data-property="MaritalStatus"><option value="">Select status</option><option>Married</option><option>Unmarried</option><option>Widowed</option><option>Divorced</option></select></div>
+                    <div class="admission-field"><label for="NativePlace">Native Place</label><input id="NativePlace" data-property="NativePlace" type="text" placeholder="Native place"></div>
+                    <div class="admission-field"><label for="MotherTongue">Mother Tongue</label><input id="MotherTongue" data-property="MotherTongue" type="text" placeholder="e.g. Kannada, Marathi"></div>
+                    <div class="admission-field"><label for="Religion">Religion (optional)</label><input id="Religion" data-property="Religion" type="text" placeholder="Optional"></div>
+                    <div class="admission-field span-12"><label for="idProof">Identity Proof Upload</label><div class="admission-upload-row"><input type="file" id="idProof" accept="image/jpeg,image/jpg,image/png,application/pdf"><button type="button" class="admission-button admission-button-light" id="downloadIdProof" aria-label="Download current identity proof">Download current</button></div><div id="idProofStatus" class="admission-upload-status" style="display:none"></div></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">02</span><div><h3>Family / Legal Guardian Details</h3><p>Primary family member or authorized representative</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-6"><label for="GuardianName">Name of Son / Daughter / Relative / Guardian</label><input id="GuardianName" data-property="GuardianName" type="text" placeholder="Full name"></div>
+                    <div class="admission-field"><label for="GuardianRelationship">Relationship with Resident</label><input id="GuardianRelationship" data-property="GuardianRelationship" type="text" placeholder="e.g. Son, Daughter"></div>
+                    <div class="admission-field span-6"><label for="GuardianAddress">Address</label><textarea id="GuardianAddress" data-property="GuardianAddress" placeholder="Full contact address"></textarea></div>
+                    <div class="admission-field"><label for="GuardianMobileNo">Mobile No.</label><input id="GuardianMobileNo" data-property="GuardianMobileNo" type="tel" placeholder="Primary contact"></div>
+                    <div class="admission-field"><label for="AlternateMobileNo">Alternate Contact No.</label><input id="AlternateMobileNo" data-property="AlternateMobileNo" type="tel" placeholder="Alternate number"></div>
+                    <div class="admission-field"><label for="GuardianEmail">Email</label><input id="GuardianEmail" data-property="GuardianEmail" type="email" placeholder="name@example.com"></div>
+                    <div class="admission-field"><label for="GuardianIdProof">Guardian / Representative ID Proof</label><input id="GuardianIdProof" data-property="GuardianIdProof" type="text" placeholder="ID type / number"></div>
+                    <div class="admission-field span-6"><label for="LegalGuardianName">Legal Guardian (if applicable)</label><input id="LegalGuardianName" data-property="LegalGuardianName" type="text" placeholder="Full name"></div>
+                    <div class="admission-field"><label for="LegalGuardianRelationship">Relationship</label><input id="LegalGuardianRelationship" data-property="LegalGuardianRelationship" type="text" placeholder="Relationship"></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">03</span><div><h3>Emergency Contact</h3><p>Who should be contacted in an emergency?</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-6"><label for="EmergencyContactName">Emergency Contact Name</label><input id="EmergencyContactName" data-property="EmergencyContactName" type="text" placeholder="Full name"></div>
+                    <div class="admission-field"><label for="EmergencyRelationship">Relationship</label><input id="EmergencyRelationship" data-property="EmergencyRelationship" type="text" placeholder="Relationship"></div>
+                    <div class="admission-field"><label for="EmergencyMobileNo">Mobile No.</label><input id="EmergencyMobileNo" data-property="EmergencyMobileNo" type="tel" placeholder="Contact number"></div>
+                    <div class="admission-field"><label for="EmergencyAlternateNo">Alternate No.</label><input id="EmergencyAlternateNo" data-property="EmergencyAlternateNo" type="tel" placeholder="Alternate number"></div>
+                    <div class="admission-field span-6"><label for="NearestRelativeName">Nearest Relative / Responsible Person</label><input id="NearestRelativeName" data-property="NearestRelativeName" type="text" placeholder="Full name"></div>
+                    <div class="admission-field"><label for="NearestRelativeRelationship">Relationship</label><input id="NearestRelativeRelationship" data-property="NearestRelativeRelationship" type="text" placeholder="Relationship"></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">04</span><div><h3>Medical &amp; Health Information</h3><p>Health conditions, medication and daily assistance needs</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-12"><label for="PresentHealthCondition">Present Health Condition</label><textarea id="PresentHealthCondition" data-property="PresentHealthCondition" placeholder="Describe the resident's current health and care needs"></textarea></div>
+                    <div class="admission-field span-12"><span class="admission-field-label" id="medicalConditionsFieldLabel">Known Medical Conditions</span><div class="admission-check-grid" role="group" aria-labelledby="medicalConditionsFieldLabel">
+                        <label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Diabetes"> Diabetes</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Blood Pressure"> Blood Pressure</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Heart Disease"> Heart Disease</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Asthma/COPD"> Asthma / COPD</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Arthritis"> Arthritis</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Stroke History"> Stroke History</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Dementia/Memory Problem"> Dementia / Memory Problem</label><label class="admission-choice"><input type="checkbox" data-property="MedicalConditions" value="Other"> Other</label>
+                    </div></div>
+                    <div class="admission-field span-6"><label for="OtherMedicalCondition">Other Condition (if any)</label><input id="OtherMedicalCondition" data-property="OtherMedicalCondition" type="text" placeholder="Specify condition"></div>
+                    <div class="admission-field span-6"><label for="Allergies">Allergies</label><input id="Allergies" data-property="Allergies" type="text" placeholder="Medicines, food or other allergies"></div>
+                    <div class="admission-field span-12"><label for="CurrentMedicines">Current Medicines</label><textarea id="CurrentMedicines" data-property="CurrentMedicines" placeholder="Medicine name, dose and schedule"></textarea></div>
+                    <div class="admission-field"><label for="DoctorName">Doctor's Name</label><input id="DoctorName" data-property="DoctorName" type="text" placeholder="Doctor name"></div>
+                    <div class="admission-field"><label for="HospitalClinic">Hospital / Clinic</label><input id="HospitalClinic" data-property="HospitalClinic" type="text" placeholder="Hospital or clinic"></div>
+                    <div class="admission-field"><label for="DoctorContactNo">Doctor Contact No.</label><input id="DoctorContactNo" data-property="DoctorContactNo" type="tel" placeholder="Contact number"></div>
+                    <div class="admission-field"><label for="BloodGroup">Blood Group</label><select id="BloodGroup" data-property="BloodGroup"><option value="">Select blood group</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option><option>Unknown</option></select></div>
+                    <div class="admission-field span-8"><span class="admission-field-label" id="mobilityFieldLabel">Mobility</span><div class="admission-choice-row" role="group" aria-labelledby="mobilityFieldLabel"><label class="admission-choice"><input type="radio" name="Mobility" data-property="Mobility" value="Independent"> Independent</label><label class="admission-choice"><input type="radio" name="Mobility" data-property="Mobility" value="Walking Stick"> Walking stick</label><label class="admission-choice"><input type="radio" name="Mobility" data-property="Mobility" value="Walker"> Walker</label><label class="admission-choice"><input type="radio" name="Mobility" data-property="Mobility" value="Wheelchair"> Wheelchair</label><label class="admission-choice"><input type="radio" name="Mobility" data-property="Mobility" value="Bedridden"> Bedridden</label></div></div>
+                    <div class="admission-field span-12"><span class="admission-field-label" id="assistanceFieldLabel">Assistance Required</span><div class="admission-check-grid" role="group" aria-labelledby="assistanceFieldLabel">
+                        <label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Bathing"> Bathing</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Dressing"> Dressing</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Toileting"> Toileting</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Feeding"> Feeding</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Walking"> Walking</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Medication"> Medication</label><label class="admission-choice"><input type="checkbox" data-property="AssistanceRequired" value="Other"> Other</label>
+                    </div></div>
+                    <div class="admission-field span-6"><label for="OtherAssistance">Other Assistance</label><input id="OtherAssistance" data-property="OtherAssistance" type="text" placeholder="Specify"></div>
+                    <div class="admission-field span-6"><span class="admission-field-label" id="mentalMemoryFieldLabel">Mental / Memory Condition</span><div class="admission-choice-row" role="group" aria-labelledby="mentalMemoryFieldLabel"><label class="admission-choice"><input type="checkbox" data-property="MentalMemoryConditions" value="Normal"> Normal</label><label class="admission-choice"><input type="checkbox" data-property="MentalMemoryConditions" value="Memory Difficulty"> Memory difficulty</label><label class="admission-choice"><input type="checkbox" data-property="MentalMemoryConditions" value="Dementia"> Dementia</label><label class="admission-choice"><input type="checkbox" data-property="MentalMemoryConditions" value="Confusion"> Confusion</label></div></div>
+                    <div class="admission-field span-6"><span class="admission-field-label" id="medicalDocumentsFieldLabel">Medical Documents Attached</span><div class="admission-choice-row" role="group" aria-labelledby="medicalDocumentsFieldLabel"><label class="admission-choice"><input type="radio" name="MedicalDocumentsAttached" data-property="MedicalDocumentsAttached" value="true"> Yes</label><label class="admission-choice"><input type="radio" name="MedicalDocumentsAttached" data-property="MedicalDocumentsAttached" value="false"> No</label></div></div>
+                    <div class="admission-field span-6"><label for="medicalFiles">Upload Medical Documents</label><div class="admission-upload-box"><input id="medicalFiles" type="file" multiple accept=".pdf,.jpg,.jpeg,.png"></div><div id="medicalFilesStatus" class="admission-upload-status" aria-live="polite"></div></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">05</span><div><h3>Medical Emergency Consent</h3><p>Emergency response preferences and insurance information</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-12"><div class="admission-note">I/We understand that VEDHANTH OLD AGE CARE CENTER will provide reasonable care and assistance according to the services available at the center. In a medical emergency, I/we authorize the management/care staff to arrange immediate medical attention, ambulance transportation and hospital admission when considered necessary.</div></div>
+                    <div class="admission-field span-6"><label for="PreferredHospital">Preferred Hospital</label><input id="PreferredHospital" data-property="PreferredHospital" type="text" placeholder="Hospital name"></div>
+                    <div class="admission-field"><label for="HospitalContact">Hospital Contact</label><input id="HospitalContact" data-property="HospitalContact" type="tel" placeholder="Contact number"></div>
+                    <div class="admission-field"><label for="InsuranceHealthScheme">Insurance / Health Scheme</label><input id="InsuranceHealthScheme" data-property="InsuranceHealthScheme" type="text" placeholder="Scheme or insurer"></div>
+                    <div class="admission-field"><label for="PolicyIdNo">Policy / ID No.</label><input id="PolicyIdNo" data-property="PolicyIdNo" type="text" placeholder="Policy or member ID"></div>
+                    <div class="admission-field span-12"><label class="admission-choice"><input id="EmergencyConsent" data-property="EmergencyConsent" type="checkbox"> I confirm that I have read and understood the medical emergency consent above.</label></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">06</span><div><h3>Services &amp; Care Plan</h3><p>Select the services discussed with the family</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-12"><span class="admission-field-label" id="servicesSelectedFieldLabel">Type of Service</span><div class="admission-check-grid" role="group" aria-labelledby="servicesSelectedFieldLabel">
+                        <label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Residential Care"> Residential care</label><label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Nursing Support"> Nursing support</label><label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Personal Attendant"> Personal attendant</label><label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Assisted Living"> Assisted living</label><label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Short-Term Stay"> Short-term stay</label><label class="admission-choice"><input type="checkbox" data-property="ServicesSelected" value="Other"> Other</label>
+                    </div></div>
+                    <div class="admission-field span-6"><label for="OtherService">Other Service</label><input id="OtherService" data-property="OtherService" type="text" placeholder="Specify"></div>
+                    <div class="admission-field span-6"><label for="SpecialCareInstructions">Special Care Instructions</label><textarea id="SpecialCareInstructions" data-property="SpecialCareInstructions" placeholder="Diet, routine, preferences or other instructions"></textarea></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">07</span><div><h3>Fees &amp; Payment Details</h3><p>Agreed charges and admission period</p></div></div>
+                <div class="admission-section-body">
+                    <div class="admission-field"><label for="registrationCharges">Admission / Registration Fee (₹)</label><input id="registrationCharges" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="monthlyPayment">Monthly Accommodation Fee (₹)</label><input id="monthlyPayment" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="FoodCharges">Food Charges (₹)</label><input id="FoodCharges" data-property="FoodCharges" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="NursingCareCharges">Nursing / Care Charges (₹)</label><input id="NursingCareCharges" data-property="NursingCareCharges" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="OtherCharges">Other Charges (₹)</label><input id="OtherCharges" data-property="OtherCharges" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="TotalMonthlyCharges">Total Monthly Charges (₹)</label><input id="TotalMonthlyCharges" data-property="TotalMonthlyCharges" type="number" min="0" step="0.01" placeholder="Enter agreed total"></div>
+                    <div class="admission-field"><label for="AdvancePaid">Advance Paid (₹)</label><input id="AdvancePaid" data-property="AdvancePaid" type="number" min="0" step="0.01" placeholder="0.00"></div>
+                    <div class="admission-field"><label for="PaymentMode">Payment Mode</label><select id="PaymentMode" data-property="PaymentMode"><option value="">Select payment mode</option><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Card</option><option>Other</option></select></div>
+                    <div class="admission-field"><label for="PaymentReference">Payment Reference / Receipt No.</label><input id="PaymentReference" data-property="PaymentReference" type="text" placeholder="Transaction or receipt reference"></div>
+                    <div class="admission-field"><label for="periodFrom">Period From</label><input id="periodFrom" type="date"></div>
+                    <div class="admission-field"><label for="periodTo">Period To</label><input id="periodTo" type="date"></div>
+                    <div class="admission-field span-12"><label for="PaymentNotes">Payment Notes</label><textarea id="PaymentNotes" data-property="PaymentNotes" placeholder="Any agreed payment terms or remarks"></textarea></div>
+                </div>
+            </section>
+            <section class="admission-section">
+                <div class="admission-section-head"><span class="admission-section-number">08</span><div><h3>Terms, Conditions &amp; Declaration</h3><p>Please review before confirming admission</p></div></div>
+                <div class="admission-terms">
+                    <ol>
+                        <li>The center will provide the agreed accommodation, attendant and nursing support, with emergency doctor visits arranged as per the services available and agreed.</li>
+                        <li>Meals and refreshments will be provided according to the center's daily schedule and the agreed care plan.</li>
+                        <li>Outside food and special event food are subject to the center's approval and applicable care or dietary requirements.</li>
+                        <li>Personal medicines, diapers, hand gloves, underpads and other individual medical or hygiene supplies are to be provided by the resident or family unless otherwise agreed in writing.</li>
+                        <li>If the resident is discharged before the end of a prepaid period, any refundable balance will be calculated according to the written payment and refund policy agreed at admission.</li>
+                        <li>In the event of a resident's death, any advance or outstanding amount will be settled according to the written agreement and applicable law. The center should explain the policy to the family before admission.</li>
+                    </ol>
+                    <div class="admission-note">Confirm the final terms, refund policy, medication responsibilities and emergency procedures with the center's management before using this form operationally.</div>
+                    <label class="admission-choice admission-declaration"><input id="DeclarationAccepted" data-property="DeclarationAccepted" type="checkbox" required> I/We confirm that the information provided is accurate to the best of my/our knowledge, and that I/we have read and understood the admission terms and care arrangements. <b>*</b></label>
+                </div>
+                <div class="admission-section-body">
+                    <div class="admission-field span-6"><label for="SignerName">Name of Resident / Authorized Signatory</label><input id="SignerName" data-property="SignerName" type="text" placeholder="Full name"></div>
+                    <div class="admission-field"><label for="SignerRelationship">Relationship to Resident (if applicable)</label><input id="SignerRelationship" data-property="SignerRelationship" type="text" placeholder="Relationship"></div>
+                    <div class="admission-field"><label for="SignedDate">Date</label><input id="SignedDate" data-property="SignedDate" type="date"></div>
+                    <div class="admission-field span-6"><span class="admission-field-label">Resident / Guardian Signature</span><div class="admission-signature-pad"><canvas id="clientSignatureNew" class="signatureContainer" aria-label="Resident or guardian signature pad"></canvas><img id="clientSignatureNewImage" class="signatureContainerImage" alt="Saved resident or guardian signature" hidden></div><div class="admission-signature-actions"><small>Sign using mouse or touch</small><button class="admission-button admission-button-light clear-admission-signature" type="button" data-canvas="clientSignatureNew" aria-label="Clear resident or guardian signature">Clear signature</button></div></div>
+                    <div class="admission-field span-6"><span class="admission-field-label">Authorized Center Representative</span><div class="admission-signature-pad"><canvas id="authorizedSignatureNew" class="signatureContainer" aria-label="Authorized center representative signature pad"></canvas><img id="authorizedSignatureNewImage" class="signatureContainerImage" alt="Saved authorized representative signature" hidden></div><div class="admission-signature-actions"><small>For center use</small><button class="admission-button admission-button-light clear-admission-signature" type="button" data-canvas="authorizedSignatureNew" aria-label="Clear authorized representative signature">Clear signature</button></div></div>
+                    <div class="admission-field span-12"><label for="StaffRemarks">Office Use / Staff Remarks</label><textarea id="StaffRemarks" data-property="StaffRemarks" placeholder="Admission review, documents received, or follow-up notes"></textarea></div>
+                </div>
+            </section>
+        </div>
+        <div class="admission-footer"><span>VEDHANTH OLD AGE CARE CENTER · Care · Dignity · Safety · Respect</span><span>Save to submit this admission record.</span></div>
+    </div>
+</div>
+<style>
+    .custom-modal-dialog{width:min(1180px,calc(100vw - 32px))!important;margin:1rem auto!important}.registrationFormContent{max-height:calc(100vh - 150px);overflow-y:auto}.legacy-fields{display:none!important}
+    .admission-form{--admission-primary:#174e45;--admission-primary-2:#24685c;--admission-accent:#d6a64f;--admission-ink:#24332f;--admission-muted:#65736e;--admission-line:#dce6e1;--admission-soft:#f3f8f5;color:var(--admission-ink);font:14px/1.5 Inter,"Segoe UI",Arial,sans-serif;background:#edf2ef;border-radius:14px;overflow:hidden}
+    .admission-hero{position:relative;display:flex;align-items:center;gap:18px;overflow:hidden;padding:25px 28px;color:#fff;background:linear-gradient(120deg,#123f38,#24685c)}
+    .admission-hero:after{position:absolute;top:-105px;right:-55px;width:230px;height:230px;border:1px solid #ffffff25;border-radius:50%;box-shadow:0 0 0 28px #ffffff0c,0 0 0 58px #ffffff08;content:""}
+    .admission-brand-mark{z-index:1;display:grid;width:68px;height:68px;flex:0 0 68px;place-items:center;border:2px solid #e4c77e;border-radius:16px;background:#ffffff0b;color:#f5d991;font-size:28px;font-weight:900}
+    .admission-hero-copy{z-index:1}.admission-eyebrow{text-transform:uppercase;letter-spacing:1.8px;color:#e8ce8c;font-size:10px;font-weight:800}.admission-hero h1{margin:3px 0 5px;color:#fff;font-size:clamp(22px,3vw,32px);line-height:1.18}.admission-hero p{margin:0;color:#d9e9e2;font-size:13px}
+    .admission-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--admission-line);background:#fff}.admission-progress{min-width:150px;color:var(--admission-muted);font-size:11px;font-weight:700}.admission-progress-track{height:6px;margin-top:5px;overflow:hidden;border-radius:8px;background:#e9efec}.admission-progress-track span{display:block;width:0;height:100%;background:var(--admission-accent);transition:width .2s}.admission-toolbar-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .admission-button{border:1px solid var(--admission-line);border-radius:8px;padding:8px 11px;background:#fff;color:var(--admission-ink);font:inherit;font-size:12px;font-weight:700;cursor:pointer}.admission-button:hover{filter:brightness(.97)}.admission-button-light{background:#fff}.admission-form-body{padding:20px;background:#fff}.admission-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:0 2px 17px}.admission-intro h2{margin:0 0 4px;font-size:19px}.admission-intro p{margin:0;color:var(--admission-muted);font-size:12px}.admission-intro b,.admission-field label b,.admission-declaration b{color:#a64242}.admission-required-note{padding-top:3px;color:var(--admission-muted);font-size:11px;white-space:nowrap}.admission-sections{display:grid;gap:14px}.admission-section{overflow:hidden;border:1px solid var(--admission-line);border-radius:12px;background:#fff}.admission-section-head{display:flex;align-items:center;gap:11px;padding:12px 15px;border-bottom:1px solid var(--admission-line);background:var(--admission-soft)}.admission-section-number{display:grid;width:30px;height:30px;flex:0 0 30px;place-items:center;border-radius:9px;background:var(--admission-primary);color:#fff;font-size:12px;font-weight:800}.admission-section-head h3{margin:0;font-size:14px;letter-spacing:.1px}.admission-section-head p{margin:2px 0 0;color:var(--admission-muted);font-size:11px}.admission-section-body{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;padding:16px}.admission-field{grid-column:span 4;min-width:0}.admission-field.span-6{grid-column:span 6}.admission-field.span-8{grid-column:span 8}.admission-field.span-12{grid-column:1/-1}.admission-field label,.admission-field-label{display:block;margin-bottom:5px;color:#3d514a;font-size:11px;font-weight:750}.admission-field input:not([type=checkbox]):not([type=radio]),.admission-field select,.admission-field textarea{width:100%;min-width:0;border:1px solid #ccd9d2;border-radius:8px;padding:9px 10px;background:#fff;color:var(--admission-ink);font:inherit;outline:none;transition:border .15s,box-shadow .15s}.admission-field textarea{min-height:76px;resize:vertical}.admission-field input:focus,.admission-field select:focus,.admission-field textarea:focus{border-color:var(--admission-primary-2);box-shadow:0 0 0 3px #24685c18}.admission-choice-row,.admission-check-grid{display:flex;flex-wrap:wrap;gap:8px}.admission-check-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.admission-choice{display:inline-flex!important;align-items:flex-start;gap:7px;margin:0!important;border:1px solid var(--admission-line);border-radius:8px;padding:7px 9px;background:#fff;color:var(--admission-ink)!important;font-size:11px!important;font-weight:500!important;cursor:pointer}.admission-choice input{flex:0 0 auto;margin:2px 0 0;accent-color:var(--admission-primary)}.admission-note{border:1px solid #f0dfb9;border-radius:9px;padding:11px 13px;background:#fff8e9;color:#6c572b;font-size:11px}.admission-upload-box{border:1px dashed #b8cbc1;border-radius:9px;padding:11px;background:#f8fbf9}.admission-upload-box input,.admission-upload-row input{width:100%;font-size:11px}.admission-upload-row{display:flex;align-items:center;gap:10px}.admission-upload-status{margin-top:5px;color:var(--admission-muted);font-size:11px}.admission-terms{padding:16px}.admission-terms ol{margin:0 0 14px;padding-left:22px}.admission-terms li{margin-bottom:8px;padding-left:4px;color:#485b54;font-size:11px}.admission-declaration{margin-top:15px!important;line-height:1.6}.admission-signature-pad{height:120px;overflow:hidden;border:1px dashed #aebfb6;border-radius:9px;background:linear-gradient(#fff,#fbfdfc)}.admission-signature-pad .signatureContainer,.admission-signature-pad .signatureContainerImage{width:100%;height:100%;background:transparent;touch-action:none}.admission-signature-pad canvas{display:block;cursor:crosshair}.admission-signature-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.admission-signature-actions small{color:var(--admission-muted);font-size:10px}.admission-footer{display:flex;justify-content:space-between;gap:10px;margin-top:16px;color:#7b8983;font-size:10px}
+    @@media(max-width:850px){.admission-field{grid-column:span 6}.admission-check-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.admission-form-body{padding:15px}}
+    @@media(max-width:560px){.admission-hero{align-items:flex-start;gap:12px;padding:18px 14px}.admission-brand-mark{width:52px;height:52px;flex-basis:52px;border-radius:13px;font-size:21px}.admission-eyebrow{font-size:9px;letter-spacing:1px}.admission-hero p{font-size:11px}.admission-toolbar{align-items:flex-start;padding:10px}.admission-progress{min-width:108px}.admission-toolbar-actions{justify-content:flex-end}.admission-button{padding:7px 8px;font-size:10px}.admission-form-body{padding:11px}.admission-intro{display:block;padding-bottom:13px}.admission-required-note{display:block;margin-top:7px}.admission-section-head{padding:11px}.admission-section-body{gap:12px;padding:12px}.admission-field,.admission-field.span-6,.admission-field.span-8,.admission-field.span-12{grid-column:1/-1}.admission-check-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admission-choice{padding:7px;font-size:10px!important}.admission-footer{flex-direction:column}.admission-upload-row{align-items:stretch;flex-direction:column}.admission-upload-row .admission-button{width:100%}}
+    @@media print{.admission-form{background:#fff}.admission-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}.admission-toolbar,.admission-signature-actions{display:none!important}.admission-section{break-inside:avoid}.admission-section-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}.admission-form-body{padding:12px}}
+</style>
+<script>
+    (function () {
+        const root = document.getElementById('admissionFormSections');
+        if (!root) return;
+        const updateProgress = function () {
+            const fields = Array.from(root.querySelectorAll('input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea'));
+            const filled = fields.filter(function (field) { return String(field.value || '').trim() !== ''; }).length;
+            const percentage = fields.length ? Math.round((filled / fields.length) * 100) : 0;
+            document.getElementById('admissionProgressText').textContent = percentage + '% completed';
+            document.querySelector('.admission-progress-track').setAttribute('aria-valuenow', percentage);
+            document.getElementById('admissionProgressFill').style.width = percentage + '%';
+        };
+        root.addEventListener('input', updateProgress);
+        root.addEventListener('change', updateProgress);
+        document.getElementById('clearAdmissionButton').addEventListener('click', function () {
+            if (!window.confirm('Clear all entered admission information?')) return;
+            var form = document.getElementById('oldAgeAdmissionForm');
+            if (form) form.reset();
+            $('#oldAgePatientId').val('');
+            OldAgeIdProof = '';
+            OldAgeMedicalDocuments = '';
+            OldAgePaymentStatus = 'Pending';
+            OldAgeIdProofProcessing = false;
+            medicalDocumentsProcessing = false;
+            $('#medicalFiles').prop('disabled', false);
+            updateUploadProcessingState();
+            $('#idProofStatus').hide().text('');
+            $('#medicalFilesStatus').text('');
+            $('#clientSignatureNewImage,#authorizedSignatureNewImage').attr('src', '').prop('hidden', true);
+            $('#clientSignatureNew,#authorizedSignatureNew').prop('hidden', false);
+            clearSignature('clientSignatureNew');
+            clearSignature('authorizedSignatureNew');
+            var today = new Date().toISOString().slice(0, 10);
+            ['AdmissionDate', 'periodFrom', 'SignedDate'].forEach(function (id) { document.getElementById(id).value = today; });
+            document.getElementById('periodTo').value = '';
+            GetSerialNo();
+            updateProgress();
+        });
+        root.querySelectorAll('.clear-admission-signature').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var canvas = document.getElementById(button.dataset.canvas);
+                var image = canvas.parentElement.querySelector('img');
+                clearSignature(button.dataset.canvas);
+                if (image) { image.src = ''; image.hidden = true; }
+                canvas.hidden = false;
+            });
+        });
+        const today = new Date().toISOString().slice(0, 10);
+        ['AdmissionDate', 'periodFrom', 'SignedDate'].forEach(function (id) {
+            const field = document.getElementById(id);
+            if (field && !field.value) field.value = today;
+        });
+        updateProgress();
+    })();
+</script>
